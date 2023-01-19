@@ -1,6 +1,6 @@
 {
   "name": "rent-market",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "The rent market contract package for realbits.",
   "main": "dist/index.js",
   "scripts": {
@@ -11,7 +11,7 @@
     "realbits",
     "rent-market"
   ],
-  "author": "dev210601@gmail.com",
+  "author": "dev.realbits@gmail.com",
   "license": "Apache-2.0",
   "devDependencies": {
     "@babel/cli": "^7.19.3",
