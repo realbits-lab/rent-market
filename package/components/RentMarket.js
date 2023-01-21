@@ -664,25 +664,6 @@ class RentMarket {
     return this.rentMarketContract;
   };
 
-  getAllRequestData = async () => {
-    // 2. Call rentMarket getAllRequestData function.
-    const response = await this.rentMarketContract.getAllRequestData();
-    // console.log("getAllRequestData response: ", response);
-
-    // 3. Get register data from smart contract.
-    let requestData = [];
-    response.forEach(function (element) {
-      requestData.push({
-        key: element.nftAddress + element.tokenId.toString(),
-        nftAddress: element.nftAddress,
-        tokenId: element.tokenId.toString(),
-      });
-    });
-
-    // 4. Return request data.
-    return requestData;
-  };
-
   getAllToken = async () => {
     // console.log("call getAllToken()");
 
