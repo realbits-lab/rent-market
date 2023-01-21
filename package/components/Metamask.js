@@ -254,7 +254,8 @@ const Metamask = ({ blockchainNetwork }) => {
       <Button
         aria-describedby={id}
         variant="contained"
-        onMouseOver={async (event) => {
+        onMouseLeave={handleClose}
+        onMouseEnter={async (event) => {
           if (MetaMaskOnboarding.isMetaMaskInstalled()) {
             // console.log("metamaskLogin: ", metamaskLogin);
             if (metamaskLogin === true) {
@@ -293,6 +294,9 @@ const Metamask = ({ blockchainNetwork }) => {
       {/* Show popover.                                                      */}
       {/*--------------------------------------------------------------------*/}
       <Popover
+        sx={{
+          pointerEvents: "none",
+        }}
         id={id}
         open={open}
         anchorEl={anchorEl}
@@ -301,6 +305,7 @@ const Metamask = ({ blockchainNetwork }) => {
           vertical: "bottom",
           horizontal: "left",
         }}
+        disableRestoreFocus
       >
         <Typography sx={{ p: 2 }}>
           Account : {shortenAddress(metamaskAccountAddress, 20)} <br /> Chain :{" "}
