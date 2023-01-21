@@ -14,16 +14,16 @@ import {
 } from "./RentMarketUtil";
 
 const Metamask = ({ blockchainNetwork }) => {
-  //----------------------------------------------------------------------------
-  // Constant variables.
-  //----------------------------------------------------------------------------
+  // * -------------------------------------------------------------------------
+  // * Constant variables.
+  // * -------------------------------------------------------------------------
   const ONBOARD_TEXT = "Click here to install MetaMask!";
   const CONNECT_TEXT = "Connect";
   const CONNECTED_TEXT = "Connected";
 
-  //----------------------------------------------------------------------------
-  // Metamask variables.
-  //----------------------------------------------------------------------------
+  // * -------------------------------------------------------------------------
+  // * Metamask variables.
+  // * -------------------------------------------------------------------------
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
@@ -33,9 +33,9 @@ const Metamask = ({ blockchainNetwork }) => {
   const [metamaskChainId, setMetamaskChainId] = React.useState("");
   const [metamaskChainName, setMetamaskChainName] = React.useState("n/a");
 
-  //----------------------------------------------------------------------------
-  // Handle toast mesage.
-  //----------------------------------------------------------------------------
+  // * -------------------------------------------------------------------------
+  // * Handle toast mesage.
+  // * -------------------------------------------------------------------------
   const [snackbarValue, setSnackbarValue] = React.useState({
     snackbarSeverity: AlertSeverity.info,
     snackbarMessage: "",
@@ -45,15 +45,15 @@ const Metamask = ({ blockchainNetwork }) => {
   const { snackbarSeverity, snackbarMessage, snackbarTime, snackbarOpen } =
     snackbarValue;
 
-  //----------------------------------------------------------------------------
-  // Metamask provider variables.
-  //----------------------------------------------------------------------------
+  // * -------------------------------------------------------------------------
+  // * Metamask provider variables.
+  // * -------------------------------------------------------------------------
   const metamaskProvider = React.useRef();
   const onboarding = React.useRef();
 
-  //----------------------------------------------------------------------------
-  // Initialize useEffect case.
-  //----------------------------------------------------------------------------
+  // * -------------------------------------------------------------------------
+  // * Initialize useEffect case.
+  // * -------------------------------------------------------------------------
   React.useEffect(() => {
     if (!onboarding.current) {
       onboarding.current = new MetaMaskOnboarding();
@@ -80,11 +80,11 @@ const Metamask = ({ blockchainNetwork }) => {
     }
   }, [metamaskProvider.current]);
 
-  //----------------------------------------------------------------------------
-  // Get metamask provider and set event listener and
-  // call initial event for account and chain.
-  //----------------------------------------------------------------------------
-  const getMetamaskEthereumProvider = async () => {
+  // * -------------------------------------------------------------------------
+  // * Get metamask provider and set event listener and
+  // * call initial event for account and chain.
+  // * -------------------------------------------------------------------------
+  async function getMetamaskEthereumProvider() {
     metamaskProvider.current = await detectEthereumProvider({
       mustBeMetaMask: true,
     });
@@ -104,12 +104,12 @@ const Metamask = ({ blockchainNetwork }) => {
 
     handleAccountsChanged();
     handleChainChanged();
-  };
+  }
 
-  //----------------------------------------------------------------------------
-  // Account change case.
-  //----------------------------------------------------------------------------
-  const handleAccountsChanged = async (accounts) => {
+  // * -------------------------------------------------------------------------
+  // * Account change case.
+  // * -------------------------------------------------------------------------
+  async function handleAccountsChanged(accounts) {
     // console.log("handleAccountsChanged accounts: ", accounts);
     if (accounts) {
       if (accounts.length === 0) {
@@ -130,12 +130,12 @@ const Metamask = ({ blockchainNetwork }) => {
       // console.log("metamaskConnect false");
       setMetamaskLogin(false);
     }
-  };
+  }
 
-  //----------------------------------------------------------------------------
-  // Chain network change case.
-  //----------------------------------------------------------------------------
-  const handleChainChanged = async () => {
+  // * -------------------------------------------------------------------------
+  // * Chain network change case.
+  // * -------------------------------------------------------------------------
+  async function handleChainChanged() {
     // console.log("handleChainChanged");
     const chainId = await metamaskProvider.current.request({
       method: "eth_chainId",
@@ -158,24 +158,24 @@ const Metamask = ({ blockchainNetwork }) => {
       // console.log("metamaskConnect false");
       setMetamaskLogin(false);
     }
-  };
+  }
 
-  //----------------------------------------------------------------------------
-  // Disconnect network change case.
-  //----------------------------------------------------------------------------
-  const handleDisconnect = async () => {
+  // * -------------------------------------------------------------------------
+  // * Disconnect network change case.
+  // * -------------------------------------------------------------------------
+  async function handleDisconnect() {
     // console.log("handleDisconnect");
     // console.log("metamaskConnect false");
     setMetamaskLogin(false);
-  };
+  }
 
-  //----------------------------------------------------------------------------
-  // Connect network change case.
-  //----------------------------------------------------------------------------
-  const connectMetamask = async () => {
+  // * -------------------------------------------------------------------------
+  // * Connect network change case.
+  // * -------------------------------------------------------------------------
+  async function connectMetamask() {
     console.log("call connectMetamask()");
 
-    // 1. Get metamask account.
+    // * Get metamask account.
     try {
       metamaskProvider.current
         .request({ method: "eth_requestAccounts" })
@@ -204,7 +204,7 @@ const Metamask = ({ blockchainNetwork }) => {
           }
         });
 
-      // 2. Set metamask chain id to mumbai.
+      // * Set metamask chain id to mumbai.
       let response;
       console.log("blockchainNetwork: ", blockchainNetwork);
       if (blockchainNetwork === "0x539") {
@@ -217,11 +217,11 @@ const Metamask = ({ blockchainNetwork }) => {
       }
 
       if (response === null) {
-        // 3. Set state variables.
+        // * Set state variables.
         setMetamaskChainId(blockchainNetwork);
         setMetamaskChainName(getChainName({ chainId: blockchainNetwork }));
 
-        // 4. Set true to login state.
+        // * Set true to login state.
         // console.log("metamaskConnect true");
         setMetamaskLogin(true);
       } else {
@@ -232,25 +232,25 @@ const Metamask = ({ blockchainNetwork }) => {
       // console.log("connectMetamask throw error");
       throw error;
     }
-  };
+  }
 
-  //----------------------------------------------------------------------------
-  // Metamask related functions.
-  //----------------------------------------------------------------------------
-  const handleMetamaskButtonClick = (event) => {
+  // * -------------------------------------------------------------------------
+  // * Metamask related functions.
+  // * -------------------------------------------------------------------------
+  function handleMetamaskButtonClick(event) {
     // console.log("event: ", event);
     setAnchorEl(event.currentTarget);
-  };
+  }
 
-  const handleClose = () => {
+  function handleClose() {
     setAnchorEl(null);
-  };
+  }
 
   return (
     <div>
-      {/*--------------------------------------------------------------------*/}
-      {/* Show metamask button.                                              */}
-      {/*--------------------------------------------------------------------*/}
+      {/* // * --------------------------------------------------------------*/}
+      {/* // * Show metamask button.                                         */}
+      {/* // * --------------------------------------------------------------*/}
       <Button
         aria-describedby={id}
         variant="contained"
@@ -290,9 +290,9 @@ const Metamask = ({ blockchainNetwork }) => {
           : ONBOARD_TEXT}
       </Button>
 
-      {/*--------------------------------------------------------------------*/}
-      {/* Show popover.                                                      */}
-      {/*--------------------------------------------------------------------*/}
+      {/* // * --------------------------------------------------------------*/}
+      {/* // * Show popover.                                                 */}
+      {/* // * --------------------------------------------------------------*/}
       <Popover
         sx={{
           pointerEvents: "none",
@@ -313,9 +313,9 @@ const Metamask = ({ blockchainNetwork }) => {
         </Typography>
       </Popover>
 
-      {/*--------------------------------------------------------------------*/}
-      {/* Snackbar component.                                                */}
-      {/*--------------------------------------------------------------------*/}
+      {/* // * --------------------------------------------------------------*/}
+      {/* // * Snackbar component.                                           */}
+      {/* // * --------------------------------------------------------------*/}
       <RBSnackbar
         open={snackbarOpen}
         message={snackbarMessage}
