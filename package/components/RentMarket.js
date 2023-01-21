@@ -25,11 +25,10 @@ class RentMarket {
   // Alchemy variables.
   //----------------------------------------------------------------------------
   // https://docs.alchemy.com/alchemy/enhanced-apis/nft-api/getnfts
-  // TODO: Get from .env file.
   ALCHEMY_BASE_URL =
     "https://polygon-mumbai.g.alchemy.com/nft/v2/LHa8IuNu6lXI6de12LL1Uw7j6HSLCyFl/getNFTs/";
   ALCHEMY_DEFAULT_PAGE_COUNT = 100;
-  NFT_MODE = process.env.NFT_MODE;
+  NFT_MODE = process.env.NEXT_PUBLIC_NFT_MODE;
 
   // * -------------------------------------------------------------------------
   // * Constructor function.
