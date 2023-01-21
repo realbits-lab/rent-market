@@ -17,3 +17,19 @@ foo@bar:~$ remixd
 # Use hardhat
 
 - If you want to use hardhat, use hardhat command.
+
+# Build package
+
+- For development.
+
+```console
+foo@bar:~$ cd package
+foo@bar:~$ npm run build:development
+```
+
+- For production.
+
+```console
+foo@bar:~$ cd package
+foo@bar:~$ npm run build:production
+```
