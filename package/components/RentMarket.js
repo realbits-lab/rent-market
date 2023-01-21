@@ -42,14 +42,18 @@ class RentMarket {
   // * -------------------------------------------------------------------------
   constructor({
     rentMarketAddress,
-    testNFTAddress,
+    testNftAddress,
     blockchainNetwork,
     onEventFunc,
     onErrorFunc,
   }) {
-    // console.log("call constructor()");
+    console.log("call constructor()");
     // console.log("onEventFunc: ", onEventFunc);
     // console.log("onErrorFunc: ", onErrorFunc);
+    console.log("rentMarketAddress: ", rentMarketAddress);
+    console.log("testNftAddress: ", testNftAddress);
+    console.log("blockchainNetwork: ", blockchainNetwork);
+    console.log("serviceAddress: ", serviceAddress);
 
     // * -----------------------------------------------------------------------
     // * Set blockchain network.
@@ -69,11 +73,11 @@ class RentMarket {
     // * -----------------------------------------------------------------------
     // * Set test nft smart contract address.
     // * -----------------------------------------------------------------------
-    if (testNFTAddress) {
-      this.testNFTAddress = testNFTAddress;
+    if (testNftAddress) {
+      this.testNftAddress = testNftAddress;
     } else {
       // The default address on local node.
-      this.testNFTAddress = this.TEST_NFT_ADDRESS;
+      this.testNftAddress = this.TEST_NFT_ADDRESS;
     }
 
     // * -----------------------------------------------------------------------
@@ -206,19 +210,19 @@ class RentMarket {
     if (getChainName(this.inputBlockchainNetwork) === "localhost") {
       if (this.NFT_MODE === "rent") {
         this.testNFTContract = new ethers.Contract(
-          this.testNFTAddress,
+          this.testNftAddress,
           rentNFTABI["abi"],
           this.provider
         );
       } else if (this.NFT_MODE === "prompt") {
         this.testNFTContract = new ethers.Contract(
-          this.testNFTAddress,
+          this.testNftAddress,
           promptNFTABI["abi"],
           this.provider
         );
       } else {
         this.testNFTContract = new ethers.Contract(
-          this.testNFTAddress,
+          this.testNftAddress,
           rentNFTABI["abi"],
           this.provider
         );
@@ -346,7 +350,7 @@ class RentMarket {
       await this.initializeData();
     } else {
       this.onErrorFunc({
-        message: `Metamask blockchain should be
+        message: `Metamask blockchain is changed and should be
         ${getChainName({
           chainId: this.inputBlockchainNetwork,
         })}, but you are using 
@@ -1307,8 +1311,8 @@ class RentMarket {
       }
 
       tokenArray.push({
-        key: `${this.testNFTAddress}/${tokenId}`,
-        nftAddress: this.testNFTAddress,
+        key: `${this.testNftAddress}/${tokenId}`,
+        nftAddress: this.testNftAddress,
         tokenId: tokenId,
         metadata: metadata,
       });
