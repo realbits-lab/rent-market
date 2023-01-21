@@ -55,29 +55,32 @@ const Metamask = ({ blockchainNetwork }) => {
   // * Initialize useEffect case.
   // * -------------------------------------------------------------------------
   React.useEffect(() => {
-    if (!onboarding.current) {
-      onboarding.current = new MetaMaskOnboarding();
-    }
+    async function initialize() {
+      if (!onboarding.current) {
+        onboarding.current = new MetaMaskOnboarding();
+      }
 
-    if (MetaMaskOnboarding.isMetaMaskInstalled()) {
-      getMetamaskEthereumProvider();
+      if (MetaMaskOnboarding.isMetaMaskInstalled()) {
+        await getMetamaskEthereumProvider();
 
-      return () => {
-        // TODO: Remove event listener.
-        // metamaskProvider.current.removeListener(
-        //   "accountsChanged",
-        //   handleAccountsChanged
-        // );
-        // metamaskProvider.current.removeListener(
-        //   "chainChanged",
-        //   handleChainChanged
-        // );
-        // metamaskProvider.current.removeListener("disconnect", handleDisconnect);
-      };
-    } else {
-      // console.log("metamaskConnect false");
-      setMetamaskLogin(false);
+        return () => {
+          // TODO: Remove event listener.
+          // metamaskProvider.current.removeListener(
+          //   "accountsChanged",
+          //   handleAccountsChanged
+          // );
+          // metamaskProvider.current.removeListener(
+          //   "chainChanged",
+          //   handleChainChanged
+          // );
+          // metamaskProvider.current.removeListener("disconnect", handleDisconnect);
+        };
+      } else {
+        // console.log("metamaskConnect false");
+        setMetamaskLogin(false);
+      }
     }
+    initialize();
   }, [metamaskProvider.current]);
 
   // * -------------------------------------------------------------------------
@@ -89,21 +92,19 @@ const Metamask = ({ blockchainNetwork }) => {
       mustBeMetaMask: true,
     });
 
-    // Open metamask.
-    metamaskProvider.current
-      .request({ method: "eth_requestAccounts" })
-      .then(handleAccountsChanged)
-      .catch((error) => {
-        console.error(error);
-      });
+    // * Open metamask.
+    try {
+      await metamaskProvider.current.request({ method: "eth_requestAccounts" });
+      handleAccountsChanged();
+      handleChainChanged();
+    } catch (error) {
+      console.error(error);
+    }
 
-    // Add event listener.
+    // * Add event listener.
     metamaskProvider.current.on("accountsChanged", handleAccountsChanged);
     metamaskProvider.current.on("chainChanged", handleChainChanged);
     // metamaskProvider.current.on("disconnect", handleDisconnect);
-
-    handleAccountsChanged();
-    handleChainChanged();
   }
 
   // * -------------------------------------------------------------------------
