@@ -50,7 +50,7 @@ class RentMarket {
     // * -----------------------------------------------------------------------
     // * Set blockchain network.
     // * -----------------------------------------------------------------------
-    this.inputBlockchainNetwork = blockchainNetwork;
+    this.inputBlockchainNetworkName = getChainName(blockchainNetwork);
 
     // * -----------------------------------------------------------------------
     // * Set rent market smart contract address.
@@ -147,20 +147,15 @@ class RentMarket {
     // *------------------------------------------------------------------------
     // * Show error, if block chain is not the same as setting.
     // *------------------------------------------------------------------------
-    // console.log("this.inputBlockchainNetwork: ", this.inputBlockchainNetwork);
+    // console.log("this.inputBlockchainNetworkName: ", this.inputBlockchainNetworkName);
     // console.log(
     //   "this.currentBlockchainNetworkName: ",
     //   this.currentBlockchainNetworkName
     // );
-    if (
-      getChainName({ chainId: this.inputBlockchainNetwork }) !==
-      this.currentBlockchainNetworkName
-    ) {
+    if (this.inputBlockchainNetworkName !== this.currentBlockchainNetworkName) {
       this.onErrorFunc({
         message: `Metamask blockchain should be
-        ${getChainName({
-          chainId: this.inputBlockchainNetwork,
-        })}, but you are using 
+        ${this.inputBlockchainNetworkName}, but you are using 
         ${this.currentBlockchainNetworkName}.`,
       });
     }
@@ -170,12 +165,12 @@ class RentMarket {
     // console.log("call initializeData()");
     // console.log("this.currentBlockchainNetworkName: ", this.currentBlockchainNetworkName);
     // console.log("this.rentMarketAddress: ", this.rentMarketAddress);
-    // console.log("this.inputBlockchainNetwork: ", this.inputBlockchainNetwork);
+    // console.log("this.inputBlockchainNetworkName: ", this.inputBlockchainNetworkName);
 
     // *------------------------------------------------------------------------
     // * If blockchain is not valid, remove all memory data.
     // *------------------------------------------------------------------------
-    if (this.currentBlockchainNetworkName !== this.inputBlockchainNetwork) {
+    if (this.currentBlockchainNetworkName !== this.inputBlockchainNetworkName) {
       this.clearAllData();
       return;
     }
@@ -193,7 +188,7 @@ class RentMarket {
     // *------------------------------------------------------------------------
     // * Get test nft contract instance.
     // *------------------------------------------------------------------------
-    if (getChainName(this.inputBlockchainNetwork) === "localhost") {
+    if (this.inputBlockchainNetworkName === "localhost") {
       if (this.NFT_MODE === "rent") {
         this.testNFTContract = new ethers.Contract(
           this.localNftContractAddress,
@@ -281,16 +276,17 @@ class RentMarket {
     }
   };
 
+  // TODO: Add polygon case.
   requestChangeNetwork = async () => {
     // console.log("requestChangeNetwork");
-    if (this.inputBlockchainNetwork === "0x539") {
+    if (this.inputBlockchainNetworkName === "localhost") {
       switchNetworkLocalhost(this.metamaskProvider);
-    } else if (this.inputBlockchainNetwork === "0x13881") {
+    } else if (this.inputBlockchainNetworkName === "maticmum") {
       switchNetworkMumbai(this.metamaskProvider);
     } else {
       console.error(
         "No support blockchain network: ",
-        this.inputBlockchainNetwork
+        this.inputBlockchainNetworkName
       );
     }
   };
@@ -326,7 +322,7 @@ class RentMarket {
     this.currentBlockchainNetworkName = getChainName(chainId);
     // console.log("this.currentBlockchainNetworkName: ", this.currentBlockchainNetworkName);
 
-    if (this.inputBlockchainNetwork === this.currentBlockchainNetworkName) {
+    if (this.inputBlockchainNetworkName === this.currentBlockchainNetworkName) {
       this.onErrorFunc({
         message: `Metamask blockchain is set to ${getChainName({
           chainId,
@@ -337,9 +333,7 @@ class RentMarket {
     } else {
       this.onErrorFunc({
         message: `Metamask blockchain is changed and should be
-        ${getChainName({
-          chainId: this.inputBlockchainNetwork,
-        })}, but you are using 
+        ${this.inputBlockchainNetworkName}, but you are using 
         ${this.currentBlockchainNetworkName}.`,
       });
     }
@@ -1071,7 +1065,7 @@ class RentMarket {
     let nftContract;
 
     if (
-      getChainName(this.inputBlockchainNetwork) === "localhost" &&
+      this.inputBlockchainNetworkName === "localhost" &&
       this.testNFTContract.address.localeCompare(
         element.nftAddress,
         undefined,

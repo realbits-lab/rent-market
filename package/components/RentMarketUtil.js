@@ -117,7 +117,7 @@ export const switchNetworkLocalhost = async (provider) => {
 // Switch to mumbai network.
 //----------------------------------------------------------------------------
 export const switchNetworkMumbai = async (provider) => {
-  console.log("switchNetworkMumbai");
+  console.log("call switchNetworkMumbai()");
   console.log("Try to wallet_switchEthereumChain");
 
   let response;
