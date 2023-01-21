@@ -441,7 +441,11 @@ export const getChainName = ({ chainId }) => {
 
   // console.log("chainId: ", chainId);
   if (typeof chainId === "string" || chainId instanceof String) {
-    return chainIds[Number(chainId)];
+    if (chainId.startsWith("0x") === true) {
+      return chainIds[Number(chainId)];
+    } else {
+      return chainId;
+    }
   } else if (isInt(chainId) === true) {
     return chainIds[chainId];
   }

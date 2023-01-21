@@ -40,12 +40,12 @@ class RentMarket {
     onEventFunc,
     onErrorFunc,
   }) {
-    console.log("call constructor()");
+    // console.log("call constructor()");
     // console.log("onEventFunc: ", onEventFunc);
     // console.log("onErrorFunc: ", onErrorFunc);
-    console.log("rentMarketAddress: ", rentMarketAddress);
-    console.log("localNftContractAddress: ", localNftContractAddress);
-    console.log("blockchainNetwork: ", blockchainNetwork);
+    // console.log("rentMarketAddress: ", rentMarketAddress);
+    // console.log("localNftContractAddress: ", localNftContractAddress);
+    // console.log("blockchainNetwork: ", blockchainNetwork);
 
     // * -----------------------------------------------------------------------
     // * Set blockchain network.
