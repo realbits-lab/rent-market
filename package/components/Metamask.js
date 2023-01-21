@@ -2,6 +2,7 @@ import React from "react";
 import detectEthereumProvider from "@metamask/detect-provider";
 import MetaMaskOnboarding from "@metamask/onboarding";
 import { Popover, Typography, Button, Portal } from "@mui/material";
+import AccountBoxRoundedIcon from "@mui/icons-material/AccountBoxRounded";
 import {
   switchNetworkMumbai,
   switchNetworkLocalhost,
@@ -146,7 +147,7 @@ const Metamask = ({ blockchainNetwork }) => {
       setMetamaskChainName(getChainName({ chainId }));
     }
 
-		// * Compare blockchain network id case or name case.
+    // * Compare blockchain network id case or name case.
     if (
       chainId === blockchainNetwork ||
       getChainName({ chainId: chainId }) === blockchainNetwork
@@ -253,7 +254,7 @@ const Metamask = ({ blockchainNetwork }) => {
       <Button
         aria-describedby={id}
         variant="contained"
-        onClick={async (event) => {
+        onMouseOver={async (event) => {
           if (MetaMaskOnboarding.isMetaMaskInstalled()) {
             // console.log("metamaskLogin: ", metamaskLogin);
             if (metamaskLogin === true) {
@@ -279,6 +280,7 @@ const Metamask = ({ blockchainNetwork }) => {
           }
         }}
         color={metamaskLogin ? "success" : "error"}
+        endIcon={metamaskLogin ? <AccountBoxRoundedIcon /> : <></>}
       >
         {metamaskLogin
           ? CONNECTED_TEXT

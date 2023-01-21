@@ -25,6 +25,7 @@
     "@emotion/styled": "^11.10.5",
     "@metamask/detect-provider": "^2.0.0",
     "@metamask/onboarding": "^1.0.1",
+    "@mui/icons-material": "^5.11.0",
     "@mui/material": "^5.11.2",
     "axios": "^1.2.3",
     "core-js": "^3.27.0",
