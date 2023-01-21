@@ -17,12 +17,6 @@ import promptNFTABI from "../contracts/promptNFT.json";
 // TODO: Set the highest gas limit on every call.
 // TODO: Make the return value type as the same as contract return value.
 class RentMarket {
-  //----------------------------------------------------------------------------
-  // Default smart contract address for undefined input case.
-  //----------------------------------------------------------------------------
-  RENT_MARKET_ADDRESS = undefined;
-  TEST_NFT_ADDRESS = undefined;
-  TEST_TOKEN_ADDRESS = undefined;
   // For alchemy API call max count.
   // TODO: Handle maximum count.
   MAX_LOOP_COUNT = 10;
@@ -53,7 +47,6 @@ class RentMarket {
     console.log("rentMarketAddress: ", rentMarketAddress);
     console.log("testNftAddress: ", testNftAddress);
     console.log("blockchainNetwork: ", blockchainNetwork);
-    console.log("serviceAddress: ", serviceAddress);
 
     // * -----------------------------------------------------------------------
     // * Set blockchain network.
@@ -63,22 +56,12 @@ class RentMarket {
     // * -----------------------------------------------------------------------
     // * Set rent market smart contract address.
     // * -----------------------------------------------------------------------
-    if (rentMarketAddress) {
-      this.rentMarketAddress = rentMarketAddress;
-    } else {
-      // The default address on local node.
-      this.rentMarketAddress = this.RENT_MARKET_ADDRESS;
-    }
+    this.rentMarketAddress = rentMarketAddress;
 
     // * -----------------------------------------------------------------------
     // * Set test nft smart contract address.
     // * -----------------------------------------------------------------------
-    if (testNftAddress) {
-      this.testNftAddress = testNftAddress;
-    } else {
-      // The default address on local node.
-      this.testNftAddress = this.TEST_NFT_ADDRESS;
-    }
+    this.testNftAddress = testNftAddress;
 
     // * -----------------------------------------------------------------------
     // * Define variables.
