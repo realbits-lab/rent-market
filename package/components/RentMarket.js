@@ -40,17 +40,19 @@ class RentMarket {
     onEventFunc,
     onErrorFunc,
   }) {
-    // console.log("call constructor()");
+    console.log("call constructor()");
     // console.log("onEventFunc: ", onEventFunc);
     // console.log("onErrorFunc: ", onErrorFunc);
     // console.log("rentMarketAddress: ", rentMarketAddress);
     // console.log("localNftContractAddress: ", localNftContractAddress);
-    // console.log("blockchainNetwork: ", blockchainNetwork);
+    console.log("blockchainNetwork: ", blockchainNetwork);
 
     // * -----------------------------------------------------------------------
     // * Set blockchain network.
     // * -----------------------------------------------------------------------
-    this.inputBlockchainNetworkName = getChainName(blockchainNetwork);
+    this.inputBlockchainNetworkName = getChainName({
+      chainId: blockchainNetwork,
+    });
 
     // * -----------------------------------------------------------------------
     // * Set rent market smart contract address.
@@ -317,15 +319,14 @@ class RentMarket {
     // console.log("-- chainChanged event");
     // console.log("call handelChainChanged()");
     // console.log("chainId: ", chainId);
-    // console.log("chain name: ", getChainName({ chainId }));
 
-    this.currentBlockchainNetworkName = getChainName(chainId);
+    this.currentBlockchainNetworkName = getChainName({ chainId: chainId });
     // console.log("this.currentBlockchainNetworkName: ", this.currentBlockchainNetworkName);
 
     if (this.inputBlockchainNetworkName === this.currentBlockchainNetworkName) {
       this.onErrorFunc({
         message: `Metamask blockchain is set to ${getChainName({
-          chainId,
+          chainId: chainId,
         })}.`,
       });
 
@@ -849,12 +850,12 @@ class RentMarket {
   };
 
   getAllAccountBalance = async () => {
-    // 1. Call rentMarket getAllAccountBalance function.
+    // * Call rentMarket getAllAccountBalance function.
     // console.log("this.rentMarketContract: ", this.rentMarketContract);
     const response = await this.rentMarketContract.getAllAccountBalance();
     // console.log("getAllAccountBalance response: ", response);
 
-    // 2. Get account balance array from smart contract.
+    // * Get account balance array from smart contract.
     // struct accountBalance {
     //     address accountAddress;
     //     address tokenAddress;
@@ -869,29 +870,27 @@ class RentMarket {
       });
     });
 
-    // 3. Return account balance array.
+    // * Return account balance array.
     return accountBalanceArray;
   };
 
   getMyContentData = async () => {
-    // 1. Get my all minted NFT.
-    // console.log("this.currentBlockchainNetworkName: ", this.currentBlockchainNetworkName);
+    // * Get my all minted NFT.
+    console.log(
+      "this.currentBlockchainNetworkName: ",
+      this.currentBlockchainNetworkName
+    );
+
     try {
       if (
-        this.isEmpty(this.currentBlockchainNetworkName) === false &&
-        (this.currentBlockchainNetworkName === "matic" ||
-          this.currentBlockchainNetworkName === "maticmum")
-      ) {
-        // console.log("Get data from local node.");
-        // Use local node.
-        this.allMyNFTArray = await this.fetchMyNFTDataOnLocalhost();
-      } else if (
-        this.isEmpty(this.currentBlockchainNetworkName) === false &&
-        this.currentBlockchainNetworkName === "localhost"
+        this.currentBlockchainNetworkName === "matic" ||
+        this.currentBlockchainNetworkName === "maticmum"
       ) {
         // Use public node.
-        // console.log("call fetchMyNFTData()");
         this.allMyNFTArray = await this.fetchMyNFTData();
+      } else if (this.currentBlockchainNetworkName === "localhost") {
+        // Use local node.
+        this.allMyNFTArray = await this.fetchMyNFTDataOnLocalhost();
       } else {
         // console.log("network is empty.");
         return;
@@ -902,7 +901,7 @@ class RentMarket {
     }
     // console.log("this.allMyNFTArray: ", this.allMyNFTArray);
 
-    // 2. Update my registered and unregistered NFT data.
+    // * Update my registered and unregistered NFT data.
     await this.updateMyContentData();
   };
 
