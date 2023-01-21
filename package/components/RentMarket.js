@@ -69,7 +69,7 @@ class RentMarket {
     this.provider = undefined;
     this.signer = undefined;
     this.signerAddress = undefined;
-    this.currentBlockchainNetwork = undefined;
+    this.currentBlockchainNetworkName = undefined;
     this.rentMarketContract = undefined;
     this.testNFTContract = undefined;
 
@@ -137,8 +137,11 @@ class RentMarket {
     // *------------------------------------------------------------------------
     // * Get metamask chain id.
     // *------------------------------------------------------------------------
-    this.currentBlockchainNetwork = await this.metamaskProvider.request({
+    const blockchainNetwork = await this.metamaskProvider.request({
       method: "eth_chainId",
+    });
+    this.currentBlockchainNetworkName = getChainName({
+      chainId: blockchainNetwork,
     });
 
     // *------------------------------------------------------------------------
@@ -146,32 +149,33 @@ class RentMarket {
     // *------------------------------------------------------------------------
     // console.log("this.inputBlockchainNetwork: ", this.inputBlockchainNetwork);
     // console.log(
-    //   "this.currentBlockchainNetwork: ",
-    //   this.currentBlockchainNetwork
+    //   "this.currentBlockchainNetworkName: ",
+    //   this.currentBlockchainNetworkName
     // );
-    if (this.inputBlockchainNetwork !== this.currentBlockchainNetwork) {
+    if (
+      getChainName({ chainId: this.inputBlockchainNetwork }) !==
+      this.currentBlockchainNetworkName
+    ) {
       this.onErrorFunc({
         message: `Metamask blockchain should be
         ${getChainName({
           chainId: this.inputBlockchainNetwork,
         })}, but you are using 
-        ${getChainName({
-          chainId: this.currentBlockchainNetwork,
-        })}.`,
+        ${this.currentBlockchainNetworkName}.`,
       });
     }
   };
 
   initializeData = async () => {
     // console.log("call initializeData()");
-    // console.log("this.currentBlockchainNetwork: ", this.currentBlockchainNetwork);
+    // console.log("this.currentBlockchainNetworkName: ", this.currentBlockchainNetworkName);
     // console.log("this.rentMarketAddress: ", this.rentMarketAddress);
     // console.log("this.inputBlockchainNetwork: ", this.inputBlockchainNetwork);
 
     // *------------------------------------------------------------------------
     // * If blockchain is not valid, remove all memory data.
     // *------------------------------------------------------------------------
-    if (this.currentBlockchainNetwork !== this.inputBlockchainNetwork) {
+    if (this.currentBlockchainNetworkName !== this.inputBlockchainNetwork) {
       this.clearAllData();
       return;
     }
@@ -319,10 +323,10 @@ class RentMarket {
     // console.log("chainId: ", chainId);
     // console.log("chain name: ", getChainName({ chainId }));
 
-    this.currentBlockchainNetwork = chainId;
-    // console.log("this.currentBlockchainNetwork: ", this.currentBlockchainNetwork);
+    this.currentBlockchainNetworkName = getChainName(chainId);
+    // console.log("this.currentBlockchainNetworkName: ", this.currentBlockchainNetworkName);
 
-    if (this.inputBlockchainNetwork === this.currentBlockchainNetwork) {
+    if (this.inputBlockchainNetwork === this.currentBlockchainNetworkName) {
       this.onErrorFunc({
         message: `Metamask blockchain is set to ${getChainName({
           chainId,
@@ -336,9 +340,7 @@ class RentMarket {
         ${getChainName({
           chainId: this.inputBlockchainNetwork,
         })}, but you are using 
-        ${getChainName({
-          chainId: this.currentBlockchainNetwork,
-        })}.`,
+        ${this.currentBlockchainNetworkName}.`,
       });
     }
   };
@@ -879,16 +881,20 @@ class RentMarket {
 
   getMyContentData = async () => {
     // 1. Get my all minted NFT.
-    // console.log("this.currentBlockchainNetwork: ", this.currentBlockchainNetwork);
+    // console.log("this.currentBlockchainNetworkName: ", this.currentBlockchainNetworkName);
     try {
       if (
-        this.isEmpty(this.currentBlockchainNetwork) === false &&
-        this.currentBlockchainNetwork === "0x539"
+        this.isEmpty(this.currentBlockchainNetworkName) === false &&
+        (this.currentBlockchainNetworkName === "matic" ||
+          this.currentBlockchainNetworkName === "maticmum")
       ) {
         // console.log("Get data from local node.");
         // Use local node.
         this.allMyNFTArray = await this.fetchMyNFTDataOnLocalhost();
-      } else if (this.isEmpty(this.currentBlockchainNetwork) === false) {
+      } else if (
+        this.isEmpty(this.currentBlockchainNetworkName) === false &&
+        this.currentBlockchainNetworkName === "localhost"
+      ) {
         // Use public node.
         // console.log("call fetchMyNFTData()");
         this.allMyNFTArray = await this.fetchMyNFTData();

@@ -361,6 +361,8 @@ export const getErrorDescription = ({ errorString }) => {
 };
 
 export const getChainName = ({ chainId }) => {
+  console.log("-- chainId: ", chainId);
+
   // https://github.com/DefiLlama/chainlist/blob/main/constants/chainIds.js
   const chainIds = {
     0: "kardia",
@@ -391,7 +393,7 @@ export const getChainName = ({ chainId }) => {
     108: "thundercore",
     122: "fuse",
     128: "heco",
-    137: "polygon",
+    137: "matic",
     200: "xdaiarb",
     246: "energyweb",
     250: "fantom",
@@ -439,7 +441,6 @@ export const getChainName = ({ chainId }) => {
     836542336838601: "curio",
   };
 
-  // console.log("chainId: ", chainId);
   if (typeof chainId === "string" || chainId instanceof String) {
     if (chainId.startsWith("0x") === true) {
       return chainIds[Number(chainId)];
