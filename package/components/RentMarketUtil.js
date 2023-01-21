@@ -430,7 +430,7 @@ export const getChainName = ({ chainId }) => {
     47805: "rei",
     55555: "reichain",
     71402: "godwoken",
-    80001: "mumbai",
+    80001: "maticmum",
     333999: "polis",
     888888: "vision",
     1313161554: "aurora",
