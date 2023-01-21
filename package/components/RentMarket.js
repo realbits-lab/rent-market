@@ -40,12 +40,12 @@ class RentMarket {
     onEventFunc,
     onErrorFunc,
   }) {
-    console.log("call constructor()");
+    // console.log("call constructor()");
     // console.log("onEventFunc: ", onEventFunc);
     // console.log("onErrorFunc: ", onErrorFunc);
     // console.log("rentMarketAddress: ", rentMarketAddress);
     // console.log("localNftContractAddress: ", localNftContractAddress);
-    console.log("blockchainNetwork: ", blockchainNetwork);
+    // console.log("blockchainNetwork: ", blockchainNetwork);
 
     // * -----------------------------------------------------------------------
     // * Set blockchain network.
@@ -876,10 +876,10 @@ class RentMarket {
 
   getMyContentData = async () => {
     // * Get my all minted NFT.
-    console.log(
-      "this.currentBlockchainNetworkName: ",
-      this.currentBlockchainNetworkName
-    );
+    // console.log(
+    //   "this.currentBlockchainNetworkName: ",
+    //   this.currentBlockchainNetworkName
+    // );
 
     try {
       if (

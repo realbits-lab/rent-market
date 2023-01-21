@@ -146,7 +146,11 @@ const Metamask = ({ blockchainNetwork }) => {
       setMetamaskChainName(getChainName({ chainId }));
     }
 
-    if (chainId === blockchainNetwork) {
+		// * Compare blockchain network id case or name case.
+    if (
+      chainId === blockchainNetwork ||
+      getChainName({ chainId: chainId }) === blockchainNetwork
+    ) {
       // console.log("metamaskConnect true");
       setMetamaskLogin(true);
     } else {
