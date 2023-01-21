@@ -35,7 +35,7 @@ class RentMarket {
   // * -------------------------------------------------------------------------
   constructor({
     rentMarketAddress,
-    testNftAddress,
+    localNftContractAddress,
     blockchainNetwork,
     onEventFunc,
     onErrorFunc,
@@ -44,7 +44,7 @@ class RentMarket {
     // console.log("onEventFunc: ", onEventFunc);
     // console.log("onErrorFunc: ", onErrorFunc);
     console.log("rentMarketAddress: ", rentMarketAddress);
-    console.log("testNftAddress: ", testNftAddress);
+    console.log("localNftContractAddress: ", localNftContractAddress);
     console.log("blockchainNetwork: ", blockchainNetwork);
 
     // * -----------------------------------------------------------------------
@@ -60,7 +60,7 @@ class RentMarket {
     // * -----------------------------------------------------------------------
     // * Set test nft smart contract address.
     // * -----------------------------------------------------------------------
-    this.testNftAddress = testNftAddress;
+    this.localNftContractAddress = localNftContractAddress;
 
     // * -----------------------------------------------------------------------
     // * Define variables.
@@ -192,19 +192,19 @@ class RentMarket {
     if (getChainName(this.inputBlockchainNetwork) === "localhost") {
       if (this.NFT_MODE === "rent") {
         this.testNFTContract = new ethers.Contract(
-          this.testNftAddress,
+          this.localNftContractAddress,
           rentNFTABI["abi"],
           this.provider
         );
       } else if (this.NFT_MODE === "prompt") {
         this.testNFTContract = new ethers.Contract(
-          this.testNftAddress,
+          this.localNftContractAddress,
           promptNFTABI["abi"],
           this.provider
         );
       } else {
         this.testNFTContract = new ethers.Contract(
-          this.testNftAddress,
+          this.localNftContractAddress,
           rentNFTABI["abi"],
           this.provider
         );
@@ -1293,8 +1293,8 @@ class RentMarket {
       }
 
       tokenArray.push({
-        key: `${this.testNftAddress}/${tokenId}`,
-        nftAddress: this.testNftAddress,
+        key: `${this.localNftContractAddress}/${tokenId}`,
+        nftAddress: this.localNftContractAddress,
         tokenId: tokenId,
         metadata: metadata,
       });
