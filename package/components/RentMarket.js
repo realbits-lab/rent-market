@@ -667,7 +667,7 @@ class RentMarket {
   getAllToken = async () => {
     // console.log("call getAllToken()");
 
-    // 1. Call rentMarket getAllToken function.
+    // * Call rentMarket getAllToken function.
     // console.log("this.rentMarketContract: ", this.rentMarketContract);
     if (isObject(this.rentMarketContract) === false) {
       throw new Error("Rent market contract is not defined.");
@@ -676,7 +676,7 @@ class RentMarket {
     const response = await this.rentMarketContract.getAllToken();
     // console.log("getAllToken response: ", response);
 
-    // 2. Get register data from smart contract.
+    // * Get register data from smart contract.
     let tokenArray = [];
     response.forEach(function (element) {
       tokenArray.push({
@@ -686,17 +686,17 @@ class RentMarket {
       });
     });
 
-    // 4. Return token data.
+    // * Return token data.
     return tokenArray;
   };
 
   getAllCollection = async () => {
-    // 1. Call rentMarket getAllCollection function.
+    // * Call rentMarket getAllCollection function.
     // console.log("this.rentMarketContract: ", this.rentMarketContract);
     const response = await this.rentMarketContract.getAllCollection();
     // console.log("getAllCollection response: ", response);
 
-    // 2. Get register data from smart contract.
+    // * Get register data from smart contract.
     let collectionArray = [];
     response.forEach(async (element) => {
       const response = await axios.get(element.uri);
@@ -710,17 +710,17 @@ class RentMarket {
       });
     });
 
-    // 4. Return collection data.
+    // * Return collection data.
     return collectionArray;
   };
 
   getAllService = async () => {
-    // 1. Call rentMarket getAllService function.
+    // * Call rentMarket getAllService function.
     // console.log("this.rentMarketContract: ", this.rentMarketContract);
     const response = await this.rentMarketContract.getAllService();
     // console.log("getAllService response: ", response);
 
-    // 2. Get register data from smart contract.
+    // * Get register data from smart contract.
     let serviceArray = [];
     response.forEach(function (element) {
       serviceArray.push({
@@ -730,7 +730,7 @@ class RentMarket {
       });
     });
 
-    // 4. Return service data.
+    // * Return service data.
     return serviceArray;
   };
 
@@ -938,7 +938,7 @@ class RentMarket {
               myElement.nftAddress,
               undefined,
               { sensitivity: "accent" }
-            ) === 0 && registerElement.tokenId.toNumber() === myElement.tokenId
+            ) === 0 && registerElement.tokenId.eq(myElement.tokenId) === true
         );
         // console.log("foundIndex: ", foundIndex);
         // console.log("found element: ", this.allMyNFTArray[foundIndex]);
@@ -954,7 +954,7 @@ class RentMarket {
                 undefined,
                 { sensitivity: "accent" }
               ) === 0 &&
-              registerElement.tokenId.toString() === rentElement.tokenId
+              registerElement.tokenId.eq(rentElement.tokenId) === true
           );
 
           let data = {};
@@ -965,7 +965,7 @@ class RentMarket {
               //   registerElement.nftAddress
               // }/${registerElement.tokenId.toNumber()}`,
               nftAddress: registerElement.nftAddress,
-              tokenId: registerElement.tokenId.toNumber(),
+              tokenId: registerElement.tokenId,
               rentFee: this.allRentNFTArray[rentFoundIndex].rentFee,
               feeTokenAddress:
                 this.allRentNFTArray[rentFoundIndex].feeTokenAddress,
@@ -991,11 +991,11 @@ class RentMarket {
               // }/${registerElement.tokenId.toNumber()}`,
               nftAddress: registerElement.nftAddress,
               // TODO: Handle type.
-              tokenId: registerElement.tokenId.toNumber(),
-              rentFee: registerElement.rentFee.toString(),
+              tokenId: registerElement.tokenId,
+              rentFee: registerElement.rentFee,
               feeTokenAddress: registerElement.feeTokenAddress,
-              rentFeeByToken: registerElement.rentFeeByToken.toString(),
-              rentDuration: registerElement.rentDuration.toString(),
+              rentFeeByToken: registerElement.rentFeeByToken,
+              rentDuration: registerElement.rentDuration,
               renterAddress: registerElement.renterAddress,
               renteeAddress: registerElement.renteeAddress,
               serviceAddress: registerElement.serviceAddress,
@@ -1024,7 +1024,7 @@ class RentMarket {
               myElement.nftAddress,
               undefined,
               { sensitivity: "accent" }
-            ) === 0 && registerElement.tokenId === myElement.tokenId
+            ) === 0 && registerElement.tokenId.eq(myElement.tokenId) === true
         );
 
         if (foundIndex === -1) {
@@ -1091,28 +1091,28 @@ class RentMarket {
       );
     }
 
-    // 3. Get json metadata fomr tokenURI.
+    // * Get json metadata fomr tokenURI.
     try {
       // const rawTokenURI = await nftContract.tokenURI(element.tokenId);
       const rawTokenURI = await nftContract.tokenURI(
         ethers.BigNumber.from(element.tokenId)
       );
 
-      // 3-1. Get image from json metadata.
+      // * Get image from json metadata.
       const tokenURI = changeIPFSToGateway(rawTokenURI);
       // console.log("rawTokenURI: ", rawTokenURI);
       // console.log("tokenURI: ", tokenURI);
       const response = await axios.get(tokenURI);
       const metadata = response.data;
 
-      // 3-2. Get name, description, and attributes from json metadata.
+      // * Get name, description, and attributes from json metadata.
       // console.log("metadata: ", metadata);
       // console.log("name: ", metadata.name);
       // console.log("description: ", metadata.description);
       // console.log("attributes: ", JSON.stringify(metadata.attributes, null, 2));
       newData.metadata = metadata;
 
-      // 3-3. Return image(url), name, description, and attributes.
+      // * Return image(url), name, description, and attributes.
       return newData;
     } catch (error) {
       console.error(error);
@@ -1125,7 +1125,7 @@ class RentMarket {
     // console.log("tokenName: ", tokenName);
     // console.log("this.signer: ", this.signer);
 
-    // 3. Call registerToken function.
+    // * Call registerToken function.
     try {
       await this.rentMarketContract
         .connect(this.signer)
@@ -1136,7 +1136,7 @@ class RentMarket {
   };
 
   unregisterToken = async (element) => {
-    // 3. Call unregisterToken function.
+    // * Call unregisterToken function.
     try {
       await this.rentMarketContract
         .connect(this.signer)
@@ -1171,7 +1171,7 @@ class RentMarket {
     // console.log("serviceName: ", serviceName);
     // console.log("this.signer: ", this.signer);
 
-    // 1. Call registerService function.
+    // * Call registerService function.
     try {
       await this.rentMarketContract
         .connect(this.signer)
@@ -1182,7 +1182,7 @@ class RentMarket {
   };
 
   unregisterService = async (element) => {
-    // 3. Call unregisterService function.
+    // * Call unregisterService function.
     try {
       await this.rentMarketContract
         .connect(this.signer)
@@ -1196,7 +1196,7 @@ class RentMarket {
     // console.log("element.nftAddress: ", element.nftAddress);
     // console.log("element.tokenId: ", element.tokenId);
 
-    // 3. Call registerNFT function.
+    // * Call registerNFT function.
     try {
       await this.rentMarketContract
         .connect(this.signer)
@@ -1223,7 +1223,7 @@ class RentMarket {
     // console.log("typeof rentDuration: ", typeof rentDuration);
     // console.log("rentDuration: ", rentDuration);
 
-    // 3. Call acceptRegisterNFT function.
+    // * Call acceptRegisterNFT function.
     try {
       await this.rentMarketContract
         .connect(this.signer)
@@ -1244,7 +1244,7 @@ class RentMarket {
     // console.log("element.nftAddress: ", element.nftAddress);
     // console.log("element.tokenId: ", element.tokenId);
 
-    // 3. Call unregisterNFT function.
+    // * Call unregisterNFT function.
     try {
       await this.rentMarketContract
         .connect(this.signer)
@@ -1290,10 +1290,12 @@ class RentMarket {
 
       // * Get token ID from enumerator index.
       try {
-        tokenId = (
-          await this.testNFTContract.tokenOfOwnerByIndex(this.signerAddress, i)
-        ).toNumber();
-        rawTokenURI = await this.testNFTContract.tokenURI(tokenId);
+        tokenId = await this.testNFTContract.tokenOfOwnerByIndex(
+          this.signerAddress,
+          i
+        );
+        const tokenIdNumber = tokenId.toNumber();
+        rawTokenURI = await this.testNFTContract.tokenURI(tokenIdNumber);
         tokenURI = changeIPFSToGateway(rawTokenURI);
         response = await axios.get(tokenURI);
         metadata = response.data;
@@ -1303,7 +1305,6 @@ class RentMarket {
       }
 
       tokenArray.push({
-        key: `${this.localNftContractAddress}/${tokenId}`,
         nftAddress: this.localNftContractAddress,
         tokenId: tokenId,
         metadata: metadata,
@@ -1342,7 +1343,7 @@ class RentMarket {
           break;
         }
 
-        // 1. Set alchemy API URL.
+        // * Set alchemy API URL.
         alchemyAPIUrl = pageKey
           ? `${this.ALCHEMY_BASE_URL}?owner=${this.signerAddress}&pageKey=${pageKey}`
           : `${this.ALCHEMY_BASE_URL}?owner=${this.signerAddress}`;
@@ -1360,7 +1361,7 @@ class RentMarket {
         }
         // console.log(JSON.stringify(response.data, null, 2));
 
-        // 2. Get response and set variables.
+        // * Get response and set variables.
         pageKey = response.data["pageKey"];
         // Set response count while loop.
         if (responseCount === undefined) {
@@ -1372,7 +1373,7 @@ class RentMarket {
         // console.log("pageKey: ", pageKey);
         // console.log("responseCount: ", responseCount);
 
-        // 3. Add nft array list to tokenArray.
+        // * Add nft array list to tokenArray.
         // https://docs.alchemy.com/alchemy/enhanced-apis/nft-api/getnfts
         responseNftArray.forEach((element) => {
           // console.log("element: ", element);
@@ -1384,7 +1385,7 @@ class RentMarket {
           });
         });
 
-        // Update my content data by now.
+        // * Update my content data by now.
         this.allMyNFTArray = tokenArray;
 
         const totalCount = response.data["totalCount"];
@@ -1406,7 +1407,7 @@ class RentMarket {
       this.updateMyContentData();
       this.onEventFunc({ message: "Reading NFT data is done." });
 
-      // 4. Return tokenArray.
+      // * Return tokenArray.
       return tokenArray;
     } catch (error) {
       throw error;
@@ -1453,7 +1454,8 @@ class RentMarket {
           //   1 (FEMTO)ETHER = 0.000000000000001 ETHER = 1,000 WEI = 1 (KILO)WEI
           // 1 (ATTO)ETHER = 0.000000000000000001 ETHER = 1 WEI
 
-          value: ethers.utils.parseUnits(element.rentFee, "wei"),
+          // value: ethers.utils.parseUnits(element.rentFee, "wei"),
+          value: element.rentFee,
           // gasPrice: hre.ethers.utils.parseUnits("50", "gwei"),
           // gasLimit: 500_000,
         });
@@ -1463,7 +1465,7 @@ class RentMarket {
   };
 
   unrentNFT = async (element) => {
-    // 1. Call rentNFT function.
+    // * Call rentNFT function.
     try {
       await this.rentMarketContract
         .connect(this.signer)
@@ -1478,7 +1480,7 @@ class RentMarket {
     try {
       await this.rentMarketContract
         .connect(this.signer)
-        .settleRentData(nftAddress, tokenId, { gasLimit: 5_000_000 });
+        .settleRentData(nftAddress, tokenId);
     } catch (error) {
       throw error;
     }
@@ -1488,7 +1490,7 @@ class RentMarket {
     try {
       await this.rentMarketContract
         .connect(this.signer)
-        .withdrawMyBalance(recipient, tokenAddress, { gasLimit: 5_000_000 });
+        .withdrawMyBalance(recipient, tokenAddress);
     } catch (error) {
       throw error;
     }
