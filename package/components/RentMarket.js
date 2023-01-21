@@ -558,74 +558,49 @@ class RentMarket {
   };
 
   fetchCollection = async () => {
-    // 1. Get request collection array.
+    // * Get request collection array.
     const allCollectionArray = await this.getAllCollection();
     // console.log("allCollectionArray: ", allCollectionArray);
 
-    // 2. Set request collection data array.
+    // * Set request collection data array.
     this.collectionArray = allCollectionArray;
   };
 
   fetchService = async () => {
-    // 1. Get request service array.
+    // * Get request service array.
     const allServiceArray = await this.getAllService();
     // console.log("allServiceArray: ", allServiceArray);
 
-    // 2. Set request service data array.
+    // * Set request service data array.
     this.serviceArray = allServiceArray;
   };
 
-  fetchPendingRentFee = async () => {
-    // 1. Data type.
-    // struct pendingRentFee {
-    //     address renterAddress;
-    //     address serviceAddress;
-    //     address feeTokenAddress;
-    //     uint256 amount;
-    // }
-
-    // 2. Get and set pending rent fee data array.
-    this.pendingRentFeeArray = await this.getAllPendingRentFee();
-  };
-
-  fetchAccountBalance = async () => {
-    // 1. Data type.
-    // struct accountBalance {
-    //     address accountAddress;
-    //     address tokenAddress;
-    //     uint256 amount;
-    // }
-
-    // 2. Get and set account balance data array.
-    this.accountBalanceArray = await this.getAllAccountBalance();
-  };
-
   fetchRegisterData = async () => {
-    // console.log("fetchRegisterData");
-    // 2. Get registerNFT data array with renter, rentee address and start block number.
-    // - key will be returned also as nftAddress + tokenId.
+    // console.log("call fetchRegisterData()");
+
+    // * Get registerNFT data array with renter, rentee address and start block number.
     const allRegisterNFTArray = await this.getAllRegisterData();
     // console.log("rentMarketAddress: ", rentMarketAddress);
     // console.log("allRegisterNFTArray: ", allRegisterNFTArray);
 
-    // 3. Get rentNFT data array.
-    // - key will be returned also as nftAddress + tokenId.
+    // * Get rentNFT data array.
     const allRentNFTArray = await this.getAllRentData();
     // console.log("allRentNFTArray: ", allRentNFTArray);
 
-    // 4. Set registerNFT data list with register and rent NFT data array intersection.
+    // * Set registerNFT data list with register and rent NFT data array intersection.
     // Should show rent status if any rent data.
     // https://stackoverflow.com/questions/1885557/simplest-code-for-array-intersection-in-javascript
     const registerNFTArray = await Promise.all(
       allRegisterNFTArray.map(async (registerNFTElement) => {
-        // 1-4-1. Find the key in the allRentNFTArray and set renter, rentee address and start block number.
+        // * Find the matched one in the allRentNFTArray and set renter, rentee address and start block number.
         const foundElement = allRentNFTArray.find(
           (rentNFTElement) =>
             registerNFTElement.nftAddress === rentNFTElement.nftAddress &&
-            registerNFTElement.tokenId === rentNFTElement.tokenId
+            // registerNFTElement.tokenId === rentNFTElement.tokenId
+            registerNFTElement.tokenId.eq(rentNFTElement.tokenId) === true
         );
 
-        // 1-4-2. Get metadta.
+        // * Get metadta.
         if (foundElement) {
           // console.log("Call addMetadata");
           return this.addMetadata(foundElement);
@@ -637,7 +612,7 @@ class RentMarket {
     );
     // console.log("registerNFTArray: ", registerNFTArray);
 
-    // 5. Set renteeNFT data.
+    // * Set renteeNFT data.
     const myRenteeNFTArray = await Promise.all(
       allRentNFTArray.map(async (element) => {
         if (element.renteeAddress === this.signerAddress) {
@@ -654,10 +629,35 @@ class RentMarket {
     );
     // console.log("filteredMyRenteeeNFTArray: ", filteredMyRenteeeNFTArray);
 
-    // 7. Set request, register, renter, and rentee NFT data array.
+    // * Set request, register, renter, and rentee NFT data array.
     this.registerNFTArray = registerNFTArray;
     this.myRentNFTArray = filteredMyRenteeeNFTArray;
     this.allRentNFTArray = allRentNFTArray;
+  };
+
+  fetchPendingRentFee = async () => {
+    // * Data type.
+    // struct pendingRentFee {
+    //     address renterAddress;
+    //     address serviceAddress;
+    //     address feeTokenAddress;
+    //     uint256 amount;
+    // }
+
+    // * Get and set pending rent fee data array.
+    this.pendingRentFeeArray = await this.getAllPendingRentFee();
+  };
+
+  fetchAccountBalance = async () => {
+    // * Data type.
+    // struct accountBalance {
+    //     address accountAddress;
+    //     address tokenAddress;
+    //     uint256 amount;
+    // }
+
+    // * Get and set account balance data array.
+    this.accountBalanceArray = await this.getAllAccountBalance();
   };
 
   getRentMarketContract = async () => {
@@ -754,22 +754,38 @@ class RentMarket {
   };
 
   getAllRegisterData = async () => {
-    // 2. Call rentMarket getAllRegisterData function.
+    // * Call rentMarket getAllRegisterData function.
     const response = await this.rentMarketContract.getAllRegisterData();
     // console.log("getAllRegisterData response: ", response);
 
-    // 3. Get register data from smart contract.
+    // * Get register data from smart contract.
     let registerData = [];
     response.forEach(function (element) {
+      // * Use a raw format instead of string.
+      // * Remove key.
+      // registerData.push({
+      //   key: element.nftAddress + element.tokenId.toString(),
+      //   nftAddress: element.nftAddress,
+      //   tokenId: element.tokenId.toString(),
+      //   rentFee: element.rentFee.toString(),
+      //   feeTokenAddress: element.feeTokenAddress,
+      //   rentFeeByToken: element.rentFeeByToken.toString(),
+      //   isRentByToken: element.isRentByToken,
+      //   rentDuration: element.rentDuration.toString(),
+      //   // For intersection with rentData, fill the rest with default value.
+      //   renterAddress: "0",
+      //   renteeAddress: "0",
+      //   serviceAddress: "0",
+      //   rentStartTimestamp: "0",
+      // });
       registerData.push({
-        key: element.nftAddress + element.tokenId.toString(),
         nftAddress: element.nftAddress,
-        tokenId: element.tokenId.toString(),
-        rentFee: element.rentFee.toString(),
+        tokenId: element.tokenId,
+        rentFee: element.rentFee,
         feeTokenAddress: element.feeTokenAddress,
-        rentFeeByToken: element.rentFeeByToken.toString(),
+        rentFeeByToken: element.rentFeeByToken,
         isRentByToken: element.isRentByToken,
-        rentDuration: element.rentDuration.toString(),
+        rentDuration: element.rentDuration,
         // For intersection with rentData, fill the rest with default value.
         renterAddress: "0",
         renteeAddress: "0",
@@ -778,12 +794,12 @@ class RentMarket {
       });
     });
 
-    // 4. Return register data.
+    // * Return register data.
     return registerData;
   };
 
   getAllRentData = async () => {
-    // 2. Call rentMarket getAllRentData function.
+    // * Call rentMarket getAllRentData function.
     const response = await this.rentMarketContract.getAllRentData();
     // console.log("getAllRentData response: ", response);
 
@@ -800,17 +816,31 @@ class RentMarket {
     //     address serviceAddress;
     //     uint256 rentStartTimestamp;
     // }
-    // 3. Get rent data from smart contract.
+    // * Get rent data from smart contract.
     let rentData = [];
     response.forEach(function (e) {
+      // * Use a raw format.
+      // rentData.push({
+      //   nftAddress: e.nftAddress,
+      //   tokenId: e.tokenId.toString(),
+      //   rentFee: e.rentFee.toString(),
+      //   feeTokenAddress: e.feeTokenAddress,
+      //   rentFeeByToken: e.rentFeeByToken.toString(),
+      //   isRentByToken: e.isRentByToken,
+      //   rentDuration: e.rentDuration.toString(),
+      //   renterAddress: e.renterAddress,
+      //   renteeAddress: e.renteeAddress,
+      //   serviceAddress: e.serviceAddress,
+      //   rentStartTimestamp: e.rentStartTimestamp,
+      // });
       rentData.push({
         nftAddress: e.nftAddress,
-        tokenId: e.tokenId.toString(),
-        rentFee: e.rentFee.toString(),
+        tokenId: e.tokenId,
+        rentFee: e.rentFee,
         feeTokenAddress: e.feeTokenAddress,
-        rentFeeByToken: e.rentFeeByToken.toString(),
+        rentFeeByToken: e.rentFeeByToken,
         isRentByToken: e.isRentByToken,
-        rentDuration: e.rentDuration.toString(),
+        rentDuration: e.rentDuration,
         renterAddress: e.renterAddress,
         renteeAddress: e.renteeAddress,
         serviceAddress: e.serviceAddress,
@@ -818,17 +848,17 @@ class RentMarket {
       });
     });
 
-    // 4. Return register data.
+    // * Return register data.
     return rentData;
   };
 
   getAllPendingRentFee = async () => {
-    // 1. Call rentMarket getAllPendingRentFee function.
+    // * Call rentMarket getAllPendingRentFee function.
     // console.log("this.rentMarketContract: ", this.rentMarketContract);
     const response = await this.rentMarketContract.getAllPendingRentFee();
     // console.log("getAllPendingRentFee response: ", response);
 
-    // 2. Get pending rent fee from smart contract.
+    // * Get pending rent fee from smart contract.
     // struct pendingRentFee {
     //     address renterAddress;
     //     address serviceAddress;
@@ -845,7 +875,7 @@ class RentMarket {
       });
     });
 
-    // 3. Return pending rent fee array.
+    // * Return pending rent fee array.
     return pendingRentFeeArray;
   };
 
@@ -1416,10 +1446,10 @@ class RentMarket {
   };
 
   rentNFT = async (element, serviceAddress) => {
-    // console.log("element: ", element);
-    // console.log("serviceAddress: ", serviceAddress);
+    console.log("element: ", element);
+    console.log("serviceAddress: ", serviceAddress);
 
-    // 3. Call rentNFT function.
+    // * Call rentNFT function.
     try {
       await this.rentMarketContract
         .connect(this.signer)
