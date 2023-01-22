@@ -108,7 +108,7 @@ class RentMarket {
     this.metamaskProvider = await detectEthereumProvider({
       mustBeMetaMask: true,
     });
-    console.log("this.metamaskProvider: ", this.metamaskProvider);
+    // console.log("this.metamaskProvider: ", this.metamaskProvider);
 
     // * Check metamask is installed.
     if (this.metamaskProvider !== null) {
@@ -159,11 +159,11 @@ class RentMarket {
       );
       // throw new Error("Metamask in not installed.");
     }
-    console.log("this.provider: ", this.provider);
+    // console.log("this.provider: ", this.provider);
   }
 
   async initializeData() {
-    console.log("call initializeData()");
+    // console.log("call initializeData()");
     // console.log("this.currentBlockchainNetworkName: ", this.currentBlockchainNetworkName);
     // console.log("this.rentMarketAddress: ", this.rentMarketAddress);
     // console.log("this.inputBlockchainNetworkName: ", this.inputBlockchainNetworkName);
@@ -213,8 +213,7 @@ class RentMarket {
 
     // * Fetch data.
     try {
-      console.log("call fetchToken()");
-      this.fetchToken();
+      await this.fetchToken();
 
       // console.log("call fetchCollection()");
       await this.fetchCollection();
@@ -1422,8 +1421,17 @@ class RentMarket {
   }
 
   async rentNFT(element, serviceAddress) {
-    console.log("element: ", element);
-    console.log("serviceAddress: ", serviceAddress);
+    // console.log("element: ", element);
+    // console.log("serviceAddress: ", serviceAddress);
+
+    // * Check metamask install.
+    if (this.metamaskProvider === null) {
+      this.onErrorFunc({
+        message: "Metamask is not connected.",
+        severity: AlertSeverity.error,
+      });
+      return;
+    }
 
     // * Call rentNFT function.
     try {
