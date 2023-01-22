@@ -108,63 +108,62 @@ class RentMarket {
     this.metamaskProvider = await detectEthereumProvider({
       mustBeMetaMask: true,
     });
-    // console.log("this.metamaskProvider: ", this.metamaskProvider);
+    console.log("this.metamaskProvider: ", this.metamaskProvider);
 
-    // Check error.
-    if (this.metamaskProvider === null) {
-      throw new Error("Metamask in not installed.");
-    }
+    // * Check metamask is installed.
+    if (this.metamaskProvider !== null) {
+      this.provider = new ethers.providers.Web3Provider(this.metamaskProvider);
 
-    this.provider = new ethers.providers.Web3Provider(this.metamaskProvider);
-    // console.log("this.provider: ", this.provider);
+      // * Register metamask event.
+      this.metamaskProvider.on("accountsChanged", this.handleAccountsChanged);
+      this.metamaskProvider.on("chainChanged", this.handleChainChanged);
+      this.metamaskProvider.on("disconnect", this.handleDisconnect);
 
-    // *------------------------------------------------------------------------
-    // * Register metamask event.
-    // *------------------------------------------------------------------------
-    this.metamaskProvider.on("accountsChanged", this.handleAccountsChanged);
-    this.metamaskProvider.on("chainChanged", this.handleChainChanged);
-    this.metamaskProvider.on("disconnect", this.handleDisconnect);
+      // * Get signer.
+      this.signer = this.provider.getSigner();
+      // console.log("this.signer: ", this.signer);
+      try {
+        this.signerAddress = await this.signer.getAddress();
+      } catch (error) {
+        throw error;
+      }
 
-    // *------------------------------------------------------------------------
-    // * Get signer and address and register change event.
-    // *------------------------------------------------------------------------
-    this.signer = this.provider.getSigner();
-    // console.log("this.signer: ", this.signer);
-    try {
-      this.signerAddress = await this.signer.getAddress();
-    } catch (error) {
-      throw error;
-    }
+      // * Get metamask chain id.
+      const blockchainNetwork = await this.metamaskProvider.request({
+        method: "eth_chainId",
+      });
+      this.currentBlockchainNetworkName = getChainName({
+        chainId: blockchainNetwork,
+      });
 
-    // *------------------------------------------------------------------------
-    // * Get metamask chain id.
-    // *------------------------------------------------------------------------
-    const blockchainNetwork = await this.metamaskProvider.request({
-      method: "eth_chainId",
-    });
-    this.currentBlockchainNetworkName = getChainName({
-      chainId: blockchainNetwork,
-    });
-
-    // *------------------------------------------------------------------------
-    // * Show error, if block chain is not the same as setting.
-    // *------------------------------------------------------------------------
-    // console.log("this.inputBlockchainNetworkName: ", this.inputBlockchainNetworkName);
-    // console.log(
-    //   "this.currentBlockchainNetworkName: ",
-    //   this.currentBlockchainNetworkName
-    // );
-    if (this.inputBlockchainNetworkName !== this.currentBlockchainNetworkName) {
-      this.onErrorFunc({
-        message: `Metamask blockchain should be
+      // * Show error, if block chain is not the same as setting.
+      // console.log("this.inputBlockchainNetworkName: ", this.inputBlockchainNetworkName);
+      // console.log(
+      //   "this.currentBlockchainNetworkName: ",
+      //   this.currentBlockchainNetworkName
+      // );
+      if (
+        this.inputBlockchainNetworkName !== this.currentBlockchainNetworkName
+      ) {
+        this.onErrorFunc({
+          message: `Metamask blockchain should be
         ${this.inputBlockchainNetworkName}, but you are using 
         ${this.currentBlockchainNetworkName}.`,
-      });
+        });
+      }
+    } else {
+      // * Get alchemy provider without metamask.
+      this.provider = new ethers.providers.AlchemyProvider(
+        this.inputBlockchainNetworkName,
+        process.env.NEXT_PUBLIC_ALCHEMY_KEY
+      );
+      // throw new Error("Metamask in not installed.");
     }
+    console.log("this.provider: ", this.provider);
   }
 
   async initializeData() {
-    // console.log("call initializeData()");
+    console.log("call initializeData()");
     // console.log("this.currentBlockchainNetworkName: ", this.currentBlockchainNetworkName);
     // console.log("this.rentMarketAddress: ", this.rentMarketAddress);
     // console.log("this.inputBlockchainNetworkName: ", this.inputBlockchainNetworkName);
@@ -172,14 +171,15 @@ class RentMarket {
     // *------------------------------------------------------------------------
     // * If blockchain is not valid, remove all memory data.
     // *------------------------------------------------------------------------
-    if (this.currentBlockchainNetworkName !== this.inputBlockchainNetworkName) {
+    if (
+      this.metamaskProvider !== null &&
+      this.currentBlockchainNetworkName !== this.inputBlockchainNetworkName
+    ) {
       this.clearAllData();
       return;
     }
 
-    // *------------------------------------------------------------------------
-    // * Get rent market contract instance.
-    // *------------------------------------------------------------------------
+    // * Get the rent market contract.
     this.rentMarketContract = new ethers.Contract(
       this.rentMarketAddress,
       rentMarketABI["abi"],
@@ -187,9 +187,7 @@ class RentMarket {
     );
     // console.log("this.rentMarketContract: ", this.rentMarketContract);
 
-    // *------------------------------------------------------------------------
-    // * Get test nft contract instance.
-    // *------------------------------------------------------------------------
+    // * Get the local nft contract.
     if (this.inputBlockchainNetworkName === "localhost") {
       if (this.NFT_MODE === "rent") {
         this.testNFTContract = new ethers.Contract(
@@ -213,11 +211,9 @@ class RentMarket {
       // console.log("this.testNFTContract: ", this.testNFTContract);
     }
 
-    // *------------------------------------------------------------------------
     // * Fetch data.
-    // *------------------------------------------------------------------------
     try {
-      // console.log("call fetchToken()");
+      console.log("call fetchToken()");
       this.fetchToken();
 
       // console.log("call fetchCollection()");
@@ -268,10 +264,10 @@ class RentMarket {
     // console.log("call initializeAll()");
 
     try {
-      // 1. Get provider and register event and signer, chain ID.
+      // * Get provider and register event and signer, chain ID.
       await this.initializeMetamask();
 
-      // 2. Get rentMarket contract and fetch all data from the contract.
+      // * Get rentMarket contract and fetch all data from the contract.
       await this.initializeData();
     } catch (error) {
       throw error;
