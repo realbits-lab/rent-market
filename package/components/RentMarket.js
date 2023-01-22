@@ -233,8 +233,7 @@ class RentMarket {
       await this.getMyContentData();
       this.onEventFunc();
 
-      // Register event.
-      // console.log("call registerEvent()");
+      // * Register contract event.
       await this.registerEvent();
     } catch (error) {
       throw error;
@@ -345,15 +344,20 @@ class RentMarket {
   }
 
   async registerEvent() {
-    this.rentMarketContract.on("RegisterToken", async (tokenAddress, name) => {
-      // console.log("-- RegisterToken event");
-      await this.fetchCollection();
-      this.onEventFunc();
-    });
+    console.log("call registerEvent()");
+
+    this.rentMarketContract.on(
+      "RegisterToken",
+      async function (tokenAddress, name) {
+        // console.log("-- RegisterToken event");
+        await this.fetchCollection();
+        this.onEventFunc();
+      }
+    );
 
     this.rentMarketContract.on(
       "UnregisterToken",
-      async (tokenAddress, name) => {
+      async function (tokenAddress, name) {
         // console.log("-- UnregisterToken event");
         await this.fetchCollection();
         this.onEventFunc();
@@ -362,7 +366,7 @@ class RentMarket {
 
     this.rentMarketContract.on(
       "RegisterCollection",
-      async (collectionAddress, uri) => {
+      async function (collectionAddress, uri) {
         // console.log("-- RegisterCollection event");
         await this.fetchCollection();
         this.onEventFunc();
@@ -371,7 +375,7 @@ class RentMarket {
 
     this.rentMarketContract.on(
       "UnregisterCollection",
-      async (collectionAddress, uri) => {
+      async function (collectionAddress, uri) {
         // console.log("-- UnregisterCollection event");
         await this.fetchCollection();
         this.onEventFunc();
@@ -380,7 +384,7 @@ class RentMarket {
 
     this.rentMarketContract.on(
       "RegisterService",
-      async (serviceAddress, uri) => {
+      async function (serviceAddress, uri) {
         // console.log("-- RegisterService event");
         // console.log("serviceAddress: ", serviceAddress);
         // Update request service data.
@@ -391,7 +395,7 @@ class RentMarket {
 
     this.rentMarketContract.on(
       "UnregisterService",
-      async (serviceAddress, uri) => {
+      async function (serviceAddress, uri) {
         // console.log("-- UnregisterService event");
         // console.log("serviceAddress: ", serviceAddress);
         // Update register data.
@@ -402,7 +406,13 @@ class RentMarket {
 
     this.rentMarketContract.on(
       "RegisterNFT",
-      async (nftAddress, tokenId, rentFee, rentDuration, NFTOwnerAddress) => {
+      async function (
+        nftAddress,
+        tokenId,
+        rentFee,
+        rentDuration,
+        NFTOwnerAddress
+      ) {
         // console.log("-- RegisterNFT event");
         // console.log("tokenId: ", tokenId.toString());
         // Update request data.
@@ -414,7 +424,7 @@ class RentMarket {
 
     this.rentMarketContract.on(
       "ChangeNFT",
-      async (
+      async function (
         nftAddress,
         tokenId,
         rentFee,
@@ -423,7 +433,7 @@ class RentMarket {
         rentDuration,
         NFTOwnerAddress,
         changerAddress
-      ) => {
+      ) {
         // console.log("-- ChangeNFT event");
         // console.log("tokenId: ", tokenId.toString());
         // Update register data.
@@ -435,7 +445,7 @@ class RentMarket {
 
     this.rentMarketContract.on(
       "UnregisterNFT",
-      async (
+      async function (
         nftAddress,
         tokenId,
         rentFee,
@@ -444,7 +454,7 @@ class RentMarket {
         rentDuration,
         NFTOwnerAddress,
         UnregisterAddress
-      ) => {
+      ) {
         // console.log("-- UnregisterNFT event");
         // console.log("tokenId: ", tokenId.toString());
         // Update register data.
@@ -456,7 +466,7 @@ class RentMarket {
 
     this.rentMarketContract.on(
       "RentNFT",
-      async (
+      async function (
         nftAddress,
         tokenId,
         rentFee,
@@ -468,7 +478,7 @@ class RentMarket {
         renteeAddress,
         serviceAddress,
         rentStartTimestamp
-      ) => {
+      ) {
         // console.log("-- RentNFT event");
         // console.log("tokenId: ", tokenId.toString());
         // Update register and rente data and interconnect them.
@@ -480,7 +490,7 @@ class RentMarket {
 
     this.rentMarketContract.on(
       "UnrentNFT",
-      async (
+      async function (
         nftAddress,
         tokenId,
         rentFee,
@@ -492,7 +502,7 @@ class RentMarket {
         renteeAddress,
         serviceAddress,
         rentStartTimestamp
-      ) => {
+      ) {
         // console.log("-- UnrentNFT event");
         // console.log("tokenId: ", tokenId.toString());
         // Update register and rente data and interconnect them.
@@ -505,7 +515,7 @@ class RentMarket {
 
     this.rentMarketContract.on(
       "SettleRentData",
-      async (
+      async function (
         nftAddress,
         tokenId,
         rentFee,
@@ -517,7 +527,7 @@ class RentMarket {
         renteeAddress,
         serviceAddress,
         rentStartTimestamp
-      ) => {
+      ) {
         // console.log("-- SettleRentData event");
         // console.log("tokenId: ", tokenId.toString());
         // Update register data.
@@ -530,7 +540,7 @@ class RentMarket {
 
     this.rentMarketContract.on(
       "WithdrawMyBalance",
-      async (recipient, tokenAddress, amount) => {
+      async function (recipient, tokenAddress, amount) {
         // console.log("-- WithdrawMyBalance event");
         // Update account data.
         await this.fetchAccountBalance();
