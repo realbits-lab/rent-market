@@ -99,7 +99,7 @@ class RentMarket {
     this.onErrorFunc = onErrorFunc;
   }
 
-  initializeMetamask = async () => {
+  async initializeMetamask() {
     // console.log("call initializeMetamask()");
 
     // *------------------------------------------------------------------------
@@ -161,9 +161,9 @@ class RentMarket {
         ${this.currentBlockchainNetworkName}.`,
       });
     }
-  };
+  }
 
-  initializeData = async () => {
+  async initializeData() {
     // console.log("call initializeData()");
     // console.log("this.currentBlockchainNetworkName: ", this.currentBlockchainNetworkName);
     // console.log("this.rentMarketAddress: ", this.rentMarketAddress);
@@ -244,9 +244,9 @@ class RentMarket {
     } catch (error) {
       throw error;
     }
-  };
+  }
 
-  clearAllData = () => {
+  clearAllData() {
     this.tokenArray = [];
     this.collectionArray = [];
     this.serviceArray = [];
@@ -262,9 +262,9 @@ class RentMarket {
     this.myUnregisteredNFTArray = [];
 
     this.onEventFunc();
-  };
+  }
 
-  initializeAll = async () => {
+  async initializeAll() {
     // console.log("call initializeAll()");
 
     try {
@@ -276,10 +276,10 @@ class RentMarket {
     } catch (error) {
       throw error;
     }
-  };
+  }
 
   // TODO: Add polygon case.
-  requestChangeNetwork = async () => {
+  async requestChangeNetwork() {
     // console.log("requestChangeNetwork");
     if (this.inputBlockchainNetworkName === "localhost") {
       switchNetworkLocalhost(this.metamaskProvider);
@@ -291,9 +291,9 @@ class RentMarket {
         this.inputBlockchainNetworkName
       );
     }
-  };
+  }
 
-  handleAccountsChanged = async (accounts) => {
+  async handleAccountsChanged(accounts) {
     // console.log("-- accountsChanged event");
     // console.log("accounts: ", accounts);
     // console.log("call handleAccountsChanged()");
@@ -313,9 +313,9 @@ class RentMarket {
 
     // Reset data.
     await this.initializeData();
-  };
+  }
 
-  handleChainChanged = async (chainId) => {
+  async handleChainChanged(chainId) {
     // console.log("-- chainChanged event");
     // console.log("call handelChainChanged()");
     // console.log("chainId: ", chainId);
@@ -338,18 +338,18 @@ class RentMarket {
         ${this.currentBlockchainNetworkName}.`,
       });
     }
-  };
+  }
 
-  handleDisconnect = async () => {
+  async handleDisconnect() {
     // console.log("-- disconnect event");
     // console.log("handleDisconnect");
 
     this.onErrorFunc({
       message: "Metamask is disconnected.",
     });
-  };
+  }
 
-  registerEvent = async () => {
+  async registerEvent() {
     this.rentMarketContract.on("RegisterToken", async (tokenAddress, name) => {
       // console.log("-- RegisterToken event");
       await this.fetchCollection();
@@ -542,40 +542,38 @@ class RentMarket {
         this.onEventFunc();
       }
     );
-  };
+  }
 
-  fetchToken = () => {
+  async fetchToken() {
     // console.log("call fetchToken()");
 
-    this.getAllToken().then(
-      (allTokenArray) => {
-        this.tokenArray = allTokenArray;
-      },
-      (error) => {
-        throw error;
-      }
-    );
-  };
+    try {
+      const allTokenArray = await this.getAllToken();
+      this.tokenArray = allTokenArray;
+    } catch (error) {
+      throw error;
+    }
+  }
 
-  fetchCollection = async () => {
+  async fetchCollection() {
     // * Get request collection array.
     const allCollectionArray = await this.getAllCollection();
     // console.log("allCollectionArray: ", allCollectionArray);
 
     // * Set request collection data array.
     this.collectionArray = allCollectionArray;
-  };
+  }
 
-  fetchService = async () => {
+  async fetchService() {
     // * Get request service array.
     const allServiceArray = await this.getAllService();
     // console.log("allServiceArray: ", allServiceArray);
 
     // * Set request service data array.
     this.serviceArray = allServiceArray;
-  };
+  }
 
-  fetchRegisterData = async () => {
+  async fetchRegisterData() {
     // console.log("call fetchRegisterData()");
 
     // * Get registerNFT data array with renter, rentee address and start block number.
@@ -633,9 +631,9 @@ class RentMarket {
     this.registerNFTArray = registerNFTArray;
     this.myRentNFTArray = filteredMyRenteeeNFTArray;
     this.allRentNFTArray = allRentNFTArray;
-  };
+  }
 
-  fetchPendingRentFee = async () => {
+  async fetchPendingRentFee() {
     // * Data type.
     // struct pendingRentFee {
     //     address renterAddress;
@@ -646,9 +644,9 @@ class RentMarket {
 
     // * Get and set pending rent fee data array.
     this.pendingRentFeeArray = await this.getAllPendingRentFee();
-  };
+  }
 
-  fetchAccountBalance = async () => {
+  async fetchAccountBalance() {
     // * Data type.
     // struct accountBalance {
     //     address accountAddress;
@@ -658,13 +656,13 @@ class RentMarket {
 
     // * Get and set account balance data array.
     this.accountBalanceArray = await this.getAllAccountBalance();
-  };
+  }
 
-  getRentMarketContract = async () => {
+  getRentMarketContract() {
     return this.rentMarketContract;
-  };
+  }
 
-  getAllToken = async () => {
+  async getAllToken() {
     // console.log("call getAllToken()");
 
     // * Call rentMarket getAllToken function.
@@ -688,9 +686,9 @@ class RentMarket {
 
     // * Return token data.
     return tokenArray;
-  };
+  }
 
-  getAllCollection = async () => {
+  async getAllCollection() {
     // * Call rentMarket getAllCollection function.
     // console.log("this.rentMarketContract: ", this.rentMarketContract);
     const response = await this.rentMarketContract.getAllCollection();
@@ -712,9 +710,9 @@ class RentMarket {
 
     // * Return collection data.
     return collectionArray;
-  };
+  }
 
-  getAllService = async () => {
+  async getAllService() {
     // * Call rentMarket getAllService function.
     // console.log("this.rentMarketContract: ", this.rentMarketContract);
     const response = await this.rentMarketContract.getAllService();
@@ -732,9 +730,9 @@ class RentMarket {
 
     // * Return service data.
     return serviceArray;
-  };
+  }
 
-  getAllRegisterData = async () => {
+  async getAllRegisterData() {
     // * Call rentMarket getAllRegisterData function.
     const response = await this.rentMarketContract.getAllRegisterData();
     // console.log("getAllRegisterData response: ", response);
@@ -777,9 +775,9 @@ class RentMarket {
 
     // * Return register data.
     return registerData;
-  };
+  }
 
-  getAllRentData = async () => {
+  async getAllRentData() {
     // * Call rentMarket getAllRentData function.
     const response = await this.rentMarketContract.getAllRentData();
     // console.log("getAllRentData response: ", response);
@@ -831,9 +829,9 @@ class RentMarket {
 
     // * Return register data.
     return rentData;
-  };
+  }
 
-  getAllPendingRentFee = async () => {
+  async getAllPendingRentFee() {
     // * Call rentMarket getAllPendingRentFee function.
     // console.log("this.rentMarketContract: ", this.rentMarketContract);
     const response = await this.rentMarketContract.getAllPendingRentFee();
@@ -858,9 +856,9 @@ class RentMarket {
 
     // * Return pending rent fee array.
     return pendingRentFeeArray;
-  };
+  }
 
-  getAllAccountBalance = async () => {
+  async getAllAccountBalance() {
     // * Call rentMarket getAllAccountBalance function.
     // console.log("this.rentMarketContract: ", this.rentMarketContract);
     const response = await this.rentMarketContract.getAllAccountBalance();
@@ -883,9 +881,9 @@ class RentMarket {
 
     // * Return account balance array.
     return accountBalanceArray;
-  };
+  }
 
-  getMyContentData = async () => {
+  async getMyContentData() {
     // * Get my all minted NFT.
     // console.log(
     //   "this.currentBlockchainNetworkName: ",
@@ -914,9 +912,9 @@ class RentMarket {
 
     // * Update my registered and unregistered NFT data.
     await this.updateMyContentData();
-  };
+  }
 
-  updateMyContentData = async () => {
+  async updateMyContentData() {
     // * -----------------------------------------------------------------------
     // * Get all register nft data.
     // * -----------------------------------------------------------------------
@@ -1039,9 +1037,9 @@ class RentMarket {
       .filter((element) => element !== undefined);
     // console.log("myUnregisteredNFTArray: ", myUnregisteredNFTArray);
     this.myUnregisteredNFTArray = myUnregisteredNFTArray;
-  };
+  }
 
-  addMetadata = async (element) => {
+  async addMetadata(element) {
     // 1. Check pre-existed metadata.
     // console.log("element: ", element);
     if (element.metadata !== undefined) {
@@ -1118,9 +1116,9 @@ class RentMarket {
       console.error(error);
       return element;
     }
-  };
+  }
 
-  registerToken = async (tokenAddress, tokenName) => {
+  async registerToken(tokenAddress, tokenName) {
     // console.log("tokenAddress: ", tokenAddress);
     // console.log("tokenName: ", tokenName);
     // console.log("this.signer: ", this.signer);
@@ -1133,9 +1131,9 @@ class RentMarket {
     } catch (error) {
       throw error;
     }
-  };
+  }
 
-  unregisterToken = async (element) => {
+  async unregisterToken(element) {
     // * Call unregisterToken function.
     try {
       await this.rentMarketContract
@@ -1144,9 +1142,9 @@ class RentMarket {
     } catch (error) {
       throw error;
     }
-  };
+  }
 
-  registerCollection = async (collectionAddress, collectionUri) => {
+  async registerCollection(collectionAddress, collectionUri) {
     try {
       await this.rentMarketContract
         .connect(this.signer)
@@ -1154,9 +1152,9 @@ class RentMarket {
     } catch (error) {
       throw error;
     }
-  };
+  }
 
-  unregisterCollection = async (collectionAddress) => {
+  async unregisterCollection(collectionAddress) {
     try {
       await this.rentMarketContract
         .connect(this.signer)
@@ -1164,9 +1162,9 @@ class RentMarket {
     } catch (error) {
       throw error;
     }
-  };
+  }
 
-  registerService = async (serviceAddress, serviceName) => {
+  async registerService(serviceAddress, serviceName) {
     // console.log("serviceAddress: ", serviceAddress);
     // console.log("serviceName: ", serviceName);
     // console.log("this.signer: ", this.signer);
@@ -1179,9 +1177,9 @@ class RentMarket {
     } catch (error) {
       throw error;
     }
-  };
+  }
 
-  unregisterService = async (element) => {
+  async unregisterService(element) {
     // * Call unregisterService function.
     try {
       await this.rentMarketContract
@@ -1190,9 +1188,9 @@ class RentMarket {
     } catch (error) {
       throw error;
     }
-  };
+  }
 
-  registerNFT = async (element) => {
+  async registerNFT(element) {
     // console.log("element.nftAddress: ", element.nftAddress);
     // console.log("element.tokenId: ", element.tokenId);
 
@@ -1204,15 +1202,15 @@ class RentMarket {
     } catch (error) {
       throw error;
     }
-  };
+  }
 
-  changeNFT = async (
+  async changeNFT(
     element,
     rentFee,
     feeTokenAddress,
     rentFeeByToken,
     rentDuration
-  ) => {
+  ) {
     // console.log("element: ", element);
     // console.log("typeof rentFee: ", typeof rentFee);
     // console.log("rentFee: ", rentFee);
@@ -1238,9 +1236,9 @@ class RentMarket {
     } catch (error) {
       throw error;
     }
-  };
+  }
 
-  unregisterNFT = async (element) => {
+  async unregisterNFT(element) {
     // console.log("element.nftAddress: ", element.nftAddress);
     // console.log("element.tokenId: ", element.tokenId);
 
@@ -1252,10 +1250,10 @@ class RentMarket {
     } catch (error) {
       throw error;
     }
-  };
+  }
 
   // Fetch all minted token on local blockchain network.
-  fetchMyNFTDataOnLocalhost = async () => {
+  async fetchMyNFTDataOnLocalhost() {
     try {
       const allMintTokens = await this.getAllMintTokenOnLocalhost();
       // console.log("allMintTokens: ", allMintTokens);
@@ -1264,10 +1262,10 @@ class RentMarket {
       console.error(error);
       return [];
     }
-  };
+  }
 
   // * Get all minted token on local blockchain network.
-  getAllMintTokenOnLocalhost = async () => {
+  async getAllMintTokenOnLocalhost() {
     // *------------------------------------------------------------------------
     // * Get token balance of owner.
     // *------------------------------------------------------------------------
@@ -1315,10 +1313,10 @@ class RentMarket {
     // * Return token data.
     // *------------------------------------------------------------------------
     return tokenArray;
-  };
+  }
 
   // Fetch all minted token on public blockchain network.
-  fetchMyNFTData = async () => {
+  async fetchMyNFTData() {
     // console.log("call fetchMyNFTData()");
 
     let tokenArray = [];
@@ -1412,9 +1410,9 @@ class RentMarket {
     } catch (error) {
       throw error;
     }
-  };
+  }
 
-  isEmpty = (value) => {
+  isEmpty(value) {
     if (
       value === "" ||
       value === null ||
@@ -1425,9 +1423,9 @@ class RentMarket {
     } else {
       return false;
     }
-  };
+  }
 
-  rentNFT = async (element, serviceAddress) => {
+  async rentNFT(element, serviceAddress) {
     console.log("element: ", element);
     console.log("serviceAddress: ", serviceAddress);
 
@@ -1462,9 +1460,9 @@ class RentMarket {
     } catch (error) {
       throw error;
     }
-  };
+  }
 
-  unrentNFT = async (element) => {
+  async unrentNFT(element) {
     // * Call rentNFT function.
     try {
       await this.rentMarketContract
@@ -1473,9 +1471,9 @@ class RentMarket {
     } catch (error) {
       throw error;
     }
-  };
+  }
 
-  settleRentData = async (nftAddress, tokenId) => {
+  async settleRentData(nftAddress, tokenId) {
     // console.log("call settleRentData");
     try {
       await this.rentMarketContract
@@ -1484,9 +1482,9 @@ class RentMarket {
     } catch (error) {
       throw error;
     }
-  };
+  }
 
-  withdrawMyBalance = async (recipient, tokenAddress) => {
+  async withdrawMyBalance(recipient, tokenAddress) {
     try {
       await this.rentMarketContract
         .connect(this.signer)
@@ -1494,9 +1492,9 @@ class RentMarket {
     } catch (error) {
       throw error;
     }
-  };
+  }
 
-  isOwnerOrRenter = async (account) => {
+  async isOwnerOrRenter(account) {
     // console.log("this.rentMarketContract: ", this.rentMarketContract);
 
     let response;
@@ -1510,7 +1508,7 @@ class RentMarket {
     }
 
     return response;
-  };
+  }
 }
 
 export default RentMarket;
