@@ -1,6 +1,7 @@
 import { ethers } from "ethers";
 import axios from "axios";
 import detectEthereumProvider from "@metamask/detect-provider";
+import { Alchemy, Network } from "alchemy-sdk";
 
 import {
   switchNetworkMumbai,
@@ -48,11 +49,27 @@ class RentMarket {
     // console.log("blockchainNetwork: ", blockchainNetwork);
 
     // * -----------------------------------------------------------------------
-    // * Set blockchain network.
+    // * Set blockchain network and alchemy sdk.
     // * -----------------------------------------------------------------------
     this.inputBlockchainNetworkName = getChainName({
       chainId: blockchainNetwork,
     });
+    switch (this.inputBlockchainNetworkName) {
+      case "matic":
+        this.alchemy = new Alchemy({
+          apiKey: process.env.NEXT_PUBLIC_ALCHEMY_KEY,
+          network: Network.MATIC_MAINNET,
+        });
+        break;
+
+      case "maticmum":
+      default:
+        this.alchemy = new Alchemy({
+          apiKey: process.env.NEXT_PUBLIC_ALCHEMY_KEY,
+          network: Network.MATIC_MUMBAI,
+        });
+        break;
+    }
 
     // * -----------------------------------------------------------------------
     // * Set rent market smart contract address.
@@ -234,7 +251,7 @@ class RentMarket {
       this.onEventFunc();
 
       // * Register contract event.
-      await this.registerEvent();
+      // await this.registerEvent();
     } catch (error) {
       throw error;
     }
@@ -345,6 +362,19 @@ class RentMarket {
 
   async registerEvent() {
     console.log("call registerEvent()");
+
+    // * Subscription for Alchemy's pendingTransactions API.
+    this.alchemy.ws.on(
+      {
+        method: "alchemy_pendingTransactions",
+        toAddress: this.rentMarketAddress,
+      },
+      function (tx) {
+        console.log("tx: ", tx);
+      }
+    );
+
+    return;
 
     this.rentMarketContract.on(
       "RegisterToken",
