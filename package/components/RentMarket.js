@@ -232,13 +232,10 @@ class RentMarket {
     try {
       await this.fetchToken();
 
-      // console.log("call fetchCollection()");
       await this.fetchCollection();
 
-      // console.log("call fetchService()");
       await this.fetchService();
 
-      // console.log("call fetchRegisterData()");
       await this.fetchRegisterData();
 
       await this.fetchPendingRentFee();
@@ -246,7 +243,6 @@ class RentMarket {
       await this.fetchAccountBalance();
       this.onEventFunc();
 
-      // console.log("call getMyContentData()");
       await this.getMyContentData();
       this.onEventFunc();
 
@@ -609,12 +605,12 @@ class RentMarket {
   }
 
   async fetchRegisterData() {
-    // console.log("call fetchRegisterData()");
+    console.log("call fetchRegisterData()");
 
     // * Get registerNFT data array with renter, rentee address and start block number.
     const allRegisterNFTArray = await this.getAllRegisterData();
     // console.log("rentMarketAddress: ", rentMarketAddress);
-    // console.log("allRegisterNFTArray: ", allRegisterNFTArray);
+    console.log("allRegisterNFTArray: ", allRegisterNFTArray);
 
     // * Get rentNFT data array.
     const allRentNFTArray = await this.getAllRentData();
@@ -643,7 +639,7 @@ class RentMarket {
         }
       })
     );
-    // console.log("registerNFTArray: ", registerNFTArray);
+    console.log("registerNFTArray: ", registerNFTArray);
 
     // * Set renteeNFT data.
     const myRenteeNFTArray = await Promise.all(
@@ -961,7 +957,6 @@ class RentMarket {
     // * -----------------------------------------------------------------------
     // * Set my register nft data.
     // * -----------------------------------------------------------------------
-    // TODO: All data type should be string.
     const myRegisteredNFTArray = allRegisterNFTArray
       .map((registerElement) => {
         const foundIndex = this.allMyNFTArray.findIndex(
@@ -994,9 +989,6 @@ class RentMarket {
           if (rentFoundIndex !== -1) {
             // Data is in rent.
             data = {
-              // key: `${
-              //   registerElement.nftAddress
-              // }/${registerElement.tokenId.toNumber()}`,
               nftAddress: registerElement.nftAddress,
               tokenId: registerElement.tokenId,
               rentFee: this.allRentNFTArray[rentFoundIndex].rentFee,
@@ -1013,17 +1005,10 @@ class RentMarket {
                 this.allRentNFTArray[rentFoundIndex].rentStartTimestamp,
               metadata: this.allMyNFTArray[foundIndex].metadata,
             };
-
-            // console.log("rentFoundIndex: ", rentFoundIndex);
-            // console.log("data: ", data);
           } else {
             // Data is not in rent.
             data = {
-              // key: `${
-              //   registerElement.nftAddress
-              // }/${registerElement.tokenId.toNumber()}`,
               nftAddress: registerElement.nftAddress,
-              // TODO: Handle type.
               tokenId: registerElement.tokenId,
               rentFee: registerElement.rentFee,
               feeTokenAddress: registerElement.feeTokenAddress,
@@ -1035,9 +1020,6 @@ class RentMarket {
               rentStartTimestamp: registerElement.rentStartTimestamp,
               metadata: this.allMyNFTArray[foundIndex].metadata,
             };
-
-            // console.log("rentFoundIndex: ", rentFoundIndex);
-            // console.log("data: ", data);
           }
           return data;
         }
