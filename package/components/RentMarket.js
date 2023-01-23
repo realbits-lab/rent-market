@@ -605,12 +605,12 @@ class RentMarket {
   }
 
   async fetchRegisterData() {
-    console.log("call fetchRegisterData()");
+    // console.log("call fetchRegisterData()");
 
     // * Get registerNFT data array with renter, rentee address and start block number.
     const allRegisterNFTArray = await this.getAllRegisterData();
     // console.log("rentMarketAddress: ", rentMarketAddress);
-    console.log("allRegisterNFTArray: ", allRegisterNFTArray);
+    // console.log("allRegisterNFTArray: ", allRegisterNFTArray);
 
     // * Get rentNFT data array.
     const allRentNFTArray = await this.getAllRentData();
@@ -639,7 +639,7 @@ class RentMarket {
         }
       })
     );
-    console.log("registerNFTArray: ", registerNFTArray);
+    // console.log("registerNFTArray: ", registerNFTArray);
 
     // * Set renteeNFT data.
     const myRenteeNFTArray = await Promise.all(
@@ -973,55 +973,15 @@ class RentMarket {
         // console.log("registerElement: ", registerElement);
 
         if (foundIndex !== -1) {
-          // Check rent data.
-          const rentFoundIndex = this.allRentNFTArray.findIndex(
-            (rentElement) =>
-              // https://stackoverflow.com/questions/2140627/how-to-do-case-insensitive-string-comparison
-              registerElement.nftAddress.localeCompare(
-                rentElement.nftAddress,
-                undefined,
-                { sensitivity: "accent" }
-              ) === 0 &&
-              registerElement.tokenId.eq(rentElement.tokenId) === true
-          );
-
-          let data = {};
-          if (rentFoundIndex !== -1) {
-            // Data is in rent.
-            data = {
-              nftAddress: registerElement.nftAddress,
-              tokenId: registerElement.tokenId,
-              rentFee: this.allRentNFTArray[rentFoundIndex].rentFee,
-              feeTokenAddress:
-                this.allRentNFTArray[rentFoundIndex].feeTokenAddress,
-              rentFeeByToken:
-                this.allRentNFTArray[rentFoundIndex].rentFeeByToken,
-              rentDuration: this.allRentNFTArray[rentFoundIndex].rentDuration,
-              renterAddress: this.allRentNFTArray[rentFoundIndex].renterAddress,
-              renteeAddress: this.allRentNFTArray[rentFoundIndex].renteeAddress,
-              serviceAddress:
-                this.allRentNFTArray[rentFoundIndex].serviceAddress,
-              rentStartTimestamp:
-                this.allRentNFTArray[rentFoundIndex].rentStartTimestamp,
-              metadata: this.allMyNFTArray[foundIndex].metadata,
-            };
-          } else {
-            // Data is not in rent.
-            data = {
-              nftAddress: registerElement.nftAddress,
-              tokenId: registerElement.tokenId,
-              rentFee: registerElement.rentFee,
-              feeTokenAddress: registerElement.feeTokenAddress,
-              rentFeeByToken: registerElement.rentFeeByToken,
-              rentDuration: registerElement.rentDuration,
-              renterAddress: registerElement.renterAddress,
-              renteeAddress: registerElement.renteeAddress,
-              serviceAddress: registerElement.serviceAddress,
-              rentStartTimestamp: registerElement.rentStartTimestamp,
-              metadata: this.allMyNFTArray[foundIndex].metadata,
-            };
-          }
-          return data;
+          return {
+            nftAddress: registerElement.nftAddress,
+            tokenId: registerElement.tokenId,
+            rentFee: registerElement.rentFee,
+            feeTokenAddress: registerElement.feeTokenAddress,
+            rentFeeByToken: registerElement.rentFeeByToken,
+            rentDuration: registerElement.rentDuration,
+            metadata: this.allMyNFTArray[foundIndex].metadata,
+          };
         }
       })
       .filter((element) => element !== undefined);
@@ -1044,7 +1004,6 @@ class RentMarket {
 
         if (foundIndex === -1) {
           return {
-            // key: `${myElement.nftAddress}/${myElement.tokenId}`,
             nftAddress: myElement.nftAddress,
             tokenId: myElement.tokenId,
             metadata: myElement.metadata,
