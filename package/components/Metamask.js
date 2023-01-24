@@ -55,7 +55,7 @@ const Metamask = ({ inputBlockchainNetwork }) => {
   // * Initialize useEffect case.
   // * -------------------------------------------------------------------------
   React.useEffect(() => {
-    console.log("call useEffect()");
+    // console.log("call useEffect()");
 
     async function initialize() {
       if (!onboarding.current) {
@@ -90,7 +90,7 @@ const Metamask = ({ inputBlockchainNetwork }) => {
   // * call initial event for account and chain.
   // * -------------------------------------------------------------------------
   async function getMetamaskEthereumProvider() {
-    console.log("call getMetamaskEthereumProvider()");
+    // console.log("call getMetamaskEthereumProvider()");
 
     metamaskProvider.current = await detectEthereumProvider({
       mustBeMetaMask: true,
@@ -117,16 +117,16 @@ const Metamask = ({ inputBlockchainNetwork }) => {
   // * Account change case.
   // * -------------------------------------------------------------------------
   async function handleAccountsChanged(accounts) {
-    console.log("call handleAccountsChanged()");
-    console.log("accounts: ", accounts);
+    // console.log("call handleAccountsChanged()");
+    // console.log("accounts: ", accounts);
 
     if (accounts) {
       if (accounts.length === 0) {
         // console.log("metamaskConnect false");
         setMetamaskLogin(false);
       } else if (accounts[0] !== metamaskAccountAddress) {
-        console.log("accounts: ", accounts);
-        console.log("accounts[0]: ", accounts[0]);
+        // console.log("accounts: ", accounts);
+        // console.log("accounts[0]: ", accounts[0]);
         setMetamaskAccountAddress((prevState) => accounts[0]);
       }
     } else {
@@ -176,7 +176,7 @@ const Metamask = ({ inputBlockchainNetwork }) => {
   // * Connect network change case.
   // * -------------------------------------------------------------------------
   async function connectMetamask() {
-    console.log("call connectMetamask()");
+    // console.log("call connectMetamask()");
 
     // * Get metamask account.
     try {
@@ -207,7 +207,7 @@ const Metamask = ({ inputBlockchainNetwork }) => {
 
     // * Set metamask chain id to the preset blockchain network.
     let response;
-    console.log("inputBlockchainNetwork: ", inputBlockchainNetwork);
+    // console.log("inputBlockchainNetwork: ", inputBlockchainNetwork);
     if (getChainName({ chainId: inputBlockchainNetwork }) === "localhost") {
       response = await switchNetworkLocalhost(metamaskProvider.current);
     } else if (
