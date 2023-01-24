@@ -1,6 +1,6 @@
 {
-  "name": "rent-market-package",
-  "version": "0.0.1",
+  "name": "rent-market",
+  "version": "2.0.5",
   "description": "The rent market contract package for realbits.",
   "main": "dist/index.js",
   "scripts": {
@@ -11,7 +11,7 @@
     "realbits",
     "rent-market"
   ],
-  "author": "dev210601@gmail.com",
+  "author": "dev.realbits@gmail.com",
   "license": "Apache-2.0",
   "devDependencies": {
     "@babel/cli": "^7.19.3",
@@ -25,9 +25,14 @@
     "@emotion/styled": "^11.10.5",
     "@metamask/detect-provider": "^2.0.0",
     "@metamask/onboarding": "^1.0.1",
+    "@mui/icons-material": "^5.11.0",
     "@mui/material": "^5.11.2",
+    "alchemy-sdk": "^2.3.0",
+    "axios": "^1.2.3",
     "core-js": "^3.27.0",
+    "ethers": "^5.7.2",
     "recoil": "^0.7.6",
-    "utf-8-validate": "^6.0.0"
+    "utf-8-validate": "^6.0.0",
+    "uuid": "^9.0.0"
   }
 }
