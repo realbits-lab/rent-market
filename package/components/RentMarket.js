@@ -163,6 +163,7 @@ class RentMarket {
         this.inputBlockchainNetworkName !== this.currentBlockchainNetworkName
       ) {
         this.onErrorFunc({
+          severity: AlertSeverity.warning,
           message: `Metamask blockchain should be
         ${this.inputBlockchainNetworkName}, but you are using 
         ${this.currentBlockchainNetworkName}.`,
@@ -307,6 +308,7 @@ class RentMarket {
 
     if (accounts.length === 0) {
       this.onErrorFunc({
+        severity: AlertSeverity.warning,
         message: "No account is set in metamask.",
       });
     }
@@ -315,6 +317,7 @@ class RentMarket {
     // console.log("this.signerAddress: ", this.signerAddress);
 
     this.onErrorFunc({
+      severity: AlertSeverity.info,
       message: `Account is changed to ${accounts[0]}`,
     });
 
@@ -332,6 +335,7 @@ class RentMarket {
 
     if (this.inputBlockchainNetworkName === this.currentBlockchainNetworkName) {
       this.onErrorFunc({
+        severity: AlertSeverity.info,
         message: `Metamask blockchain is set to ${getChainName({
           chainId: chainId,
         })}.`,
@@ -340,8 +344,9 @@ class RentMarket {
       await this.initializeData();
     } else {
       this.onErrorFunc({
-        message: `Metamask blockchain is changed and should be
-        ${this.inputBlockchainNetworkName}, but you are using 
+        severity: AlertSeverity.warning,
+        message: `Metamask blockchain is changed, but is not 
+        ${this.inputBlockchainNetworkName}. You are using 
         ${this.currentBlockchainNetworkName}.`,
       });
     }
