@@ -55,6 +55,8 @@ const Metamask = ({ inputBlockchainNetwork }) => {
   // * Initialize useEffect case.
   // * -------------------------------------------------------------------------
   React.useEffect(() => {
+    console.log("call useEffect()");
+
     async function initialize() {
       if (!onboarding.current) {
         onboarding.current = new MetaMaskOnboarding();
@@ -88,14 +90,18 @@ const Metamask = ({ inputBlockchainNetwork }) => {
   // * call initial event for account and chain.
   // * -------------------------------------------------------------------------
   async function getMetamaskEthereumProvider() {
+    console.log("call getMetamaskEthereumProvider()");
+
     metamaskProvider.current = await detectEthereumProvider({
       mustBeMetaMask: true,
     });
 
     // * Open metamask.
     try {
-      await metamaskProvider.current.request({ method: "eth_requestAccounts" });
-      handleAccountsChanged();
+      const accounts = await metamaskProvider.current.request({
+        method: "eth_requestAccounts",
+      });
+      handleAccountsChanged(accounts);
       handleChainChanged();
     } catch (error) {
       console.error(error);
@@ -111,13 +117,17 @@ const Metamask = ({ inputBlockchainNetwork }) => {
   // * Account change case.
   // * -------------------------------------------------------------------------
   async function handleAccountsChanged(accounts) {
-    // console.log("handleAccountsChanged accounts: ", accounts);
+    console.log("call handleAccountsChanged()");
+    console.log("accounts: ", accounts);
+
     if (accounts) {
       if (accounts.length === 0) {
         // console.log("metamaskConnect false");
         setMetamaskLogin(false);
       } else if (accounts[0] !== metamaskAccountAddress) {
-        setMetamaskAccountAddress(accounts[0]);
+        console.log("accounts: ", accounts);
+        console.log("accounts[0]: ", accounts[0]);
+        setMetamaskAccountAddress((prevState) => accounts[0]);
       }
     } else {
       // console.log("metamaskConnect false");
@@ -170,65 +180,56 @@ const Metamask = ({ inputBlockchainNetwork }) => {
 
     // * Get metamask account.
     try {
-      metamaskProvider.current
-        .request({ method: "eth_requestAccounts" })
-        .then(handleAccountsChanged)
-        .catch((error) => {
-          console.error(error);
-          if (error.code === 4001) {
-            // EIP-1193 userRejectedRequest error
-            // showSnackbar("Please connect to MetaMask.");
-            // console.log("Please connect to MetaMask.");
-            setSnackbarValue({
-              snackbarSeverity: AlertSeverity.error,
-              snackbarMessage: "Please connect to Metamask",
-              snackbarTime: new Date(),
-              snackbarOpen: true,
-            });
-          } else {
-            // showSnackbar(error);
-            console.error(error);
-            setSnackbarValue({
-              snackbarSeverity: AlertSeverity.error,
-              snackbarMessage: error.reason,
-              snackbarTime: new Date(),
-              snackbarOpen: true,
-            });
-          }
-        });
-
-      // * Set metamask chain id to the preset blockchain network.
-      let response;
-      console.log("inputBlockchainNetwork: ", inputBlockchainNetwork);
-      if (getChainName({ chainId: inputBlockchainNetwork }) === "localhost") {
-        response = await switchNetworkLocalhost(metamaskProvider.current);
-      } else if (
-        getChainName({ chainId: inputBlockchainNetwork }) === "maticmum"
-      ) {
-        response = await switchNetworkMumbai(metamaskProvider.current);
-      } else {
-        console.error(
-          "No support blockchain network: ",
-          inputBlockchainNetwork
-        );
-        response = "error";
-      }
-
-      if (response === null) {
-        // * Set state variables.
-        setMetamaskChainId(inputBlockchainNetwork);
-        setMetamaskChainName(getChainName({ chainId: inputBlockchainNetwork }));
-
-        // * Set true to login state.
-        // console.log("metamaskConnect true");
-        setMetamaskLogin(true);
-      } else {
-        // console.log("metamaskConnect false");
-        setMetamaskLogin(false);
-      }
+      const accounts = metamaskProvider.current.request({
+        method: "eth_requestAccounts",
+      });
+      handleAccountsChanged(accounts);
     } catch (error) {
-      // console.log("connectMetamask throw error");
+      if (error.code === 4001) {
+        // EIP-1193 userRejectedRequest error
+        // console.log("Please connect to MetaMask.");
+        setSnackbarValue({
+          snackbarSeverity: AlertSeverity.error,
+          snackbarMessage: "Please connect to Metamask",
+          snackbarTime: new Date(),
+          snackbarOpen: true,
+        });
+      } else {
+        setSnackbarValue({
+          snackbarSeverity: AlertSeverity.error,
+          snackbarMessage: error.reason,
+          snackbarTime: new Date(),
+          snackbarOpen: true,
+        });
+      }
       throw error;
+    }
+
+    // * Set metamask chain id to the preset blockchain network.
+    let response;
+    console.log("inputBlockchainNetwork: ", inputBlockchainNetwork);
+    if (getChainName({ chainId: inputBlockchainNetwork }) === "localhost") {
+      response = await switchNetworkLocalhost(metamaskProvider.current);
+    } else if (
+      getChainName({ chainId: inputBlockchainNetwork }) === "maticmum"
+    ) {
+      response = await switchNetworkMumbai(metamaskProvider.current);
+    } else {
+      console.error("No support blockchain network: ", inputBlockchainNetwork);
+      response = "error";
+    }
+
+    if (response === null) {
+      // * Set state variables.
+      setMetamaskChainId(inputBlockchainNetwork);
+      setMetamaskChainName(getChainName({ chainId: inputBlockchainNetwork }));
+
+      // * Set true to login state.
+      // console.log("metamaskConnect true");
+      setMetamaskLogin(true);
+    } else {
+      // console.log("metamaskConnect false");
+      setMetamaskLogin(false);
     }
   }
 
