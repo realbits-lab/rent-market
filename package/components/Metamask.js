@@ -13,7 +13,7 @@ import {
   getChainName,
 } from "./RentMarketUtil";
 
-const Metamask = ({ blockchainNetwork }) => {
+const Metamask = ({ inputBlockchainNetwork }) => {
   // * -------------------------------------------------------------------------
   // * Constant variables.
   // * -------------------------------------------------------------------------
@@ -116,16 +116,8 @@ const Metamask = ({ blockchainNetwork }) => {
       if (accounts.length === 0) {
         // console.log("metamaskConnect false");
         setMetamaskLogin(false);
-
-        // MetaMask is locked or the user has not connected any accounts.
-        // console.log("Please connect to MetaMask.");
-
-        // TODO: No account, send user message to make a new account.
       } else if (accounts[0] !== metamaskAccountAddress) {
         setMetamaskAccountAddress(accounts[0]);
-
-        // console.log("metamaskConnect true");
-        setMetamaskLogin(true);
       }
     } else {
       // console.log("metamaskConnect false");
@@ -150,8 +142,8 @@ const Metamask = ({ blockchainNetwork }) => {
 
     // * Compare blockchain network id case or name case.
     if (
-      chainId === blockchainNetwork ||
-      getChainName({ chainId: chainId }) === blockchainNetwork
+      chainId === inputBlockchainNetwork ||
+      getChainName({ chainId: chainId }) === inputBlockchainNetwork
     ) {
       // console.log("metamaskConnect true");
       setMetamaskLogin(true);
@@ -205,22 +197,27 @@ const Metamask = ({ blockchainNetwork }) => {
           }
         });
 
-      // * Set metamask chain id to mumbai.
+      // * Set metamask chain id to the preset blockchain network.
       let response;
-      console.log("blockchainNetwork: ", blockchainNetwork);
-      if (blockchainNetwork === "0x539") {
+      console.log("inputBlockchainNetwork: ", inputBlockchainNetwork);
+      if (getChainName({ chainId: inputBlockchainNetwork }) === "localhost") {
         response = await switchNetworkLocalhost(metamaskProvider.current);
-      } else if (blockchainNetwork === "0x13881") {
+      } else if (
+        getChainName({ chainId: inputBlockchainNetwork }) === "maticmum"
+      ) {
         response = await switchNetworkMumbai(metamaskProvider.current);
       } else {
-        console.error("No support blockchain network: ", blockchainNetwork);
+        console.error(
+          "No support blockchain network: ",
+          inputBlockchainNetwork
+        );
         response = "error";
       }
 
       if (response === null) {
         // * Set state variables.
-        setMetamaskChainId(blockchainNetwork);
-        setMetamaskChainName(getChainName({ chainId: blockchainNetwork }));
+        setMetamaskChainId(inputBlockchainNetwork);
+        setMetamaskChainName(getChainName({ chainId: inputBlockchainNetwork }));
 
         // * Set true to login state.
         // console.log("metamaskConnect true");
@@ -255,8 +252,7 @@ const Metamask = ({ blockchainNetwork }) => {
       <Button
         aria-describedby={id}
         variant="contained"
-        onMouseLeave={handleClose}
-        onMouseEnter={async (event) => {
+        onClick={async (event) => {
           if (MetaMaskOnboarding.isMetaMaskInstalled()) {
             // console.log("metamaskLogin: ", metamaskLogin);
             if (metamaskLogin === true) {

@@ -162,12 +162,13 @@ class RentMarket {
       if (
         this.inputBlockchainNetworkName !== this.currentBlockchainNetworkName
       ) {
-        this.onErrorFunc({
-          severity: AlertSeverity.warning,
-          message: `Metamask blockchain should be
+        this.onErrorFunc &&
+          this.onErrorFunc({
+            severity: AlertSeverity.warning,
+            message: `Metamask blockchain should be
         ${this.inputBlockchainNetworkName}, but you are using 
         ${this.currentBlockchainNetworkName}.`,
-        });
+          });
       }
     } else {
       // * Get alchemy provider without metamask.
@@ -307,19 +308,21 @@ class RentMarket {
     // console.log("call handleAccountsChanged()");
 
     if (accounts.length === 0) {
-      this.onErrorFunc({
-        severity: AlertSeverity.warning,
-        message: "No account is set in metamask.",
-      });
+      this.onErrorFunc &&
+        this.onErrorFunc({
+          severity: AlertSeverity.warning,
+          message: "No account is set in metamask.",
+        });
     }
 
     this.signerAddress = accounts[0];
     // console.log("this.signerAddress: ", this.signerAddress);
 
-    this.onErrorFunc({
-      severity: AlertSeverity.info,
-      message: `Account is changed to ${accounts[0]}`,
-    });
+    this.onErrorFunc &&
+      this.onErrorFunc({
+        severity: AlertSeverity.info,
+        message: `Account is changed to ${accounts[0]}`,
+      });
 
     // Reset data.
     await this.initializeData();
@@ -334,21 +337,23 @@ class RentMarket {
     // console.log("this.currentBlockchainNetworkName: ", this.currentBlockchainNetworkName);
 
     if (this.inputBlockchainNetworkName === this.currentBlockchainNetworkName) {
-      this.onErrorFunc({
-        severity: AlertSeverity.info,
-        message: `Metamask blockchain is set to ${getChainName({
-          chainId: chainId,
-        })}.`,
-      });
+      this.onErrorFunc &&
+        this.onErrorFunc({
+          severity: AlertSeverity.info,
+          message: `Metamask blockchain is set to ${getChainName({
+            chainId: chainId,
+          })}.`,
+        });
 
       await this.initializeData();
     } else {
-      this.onErrorFunc({
-        severity: AlertSeverity.warning,
-        message: `Metamask blockchain is changed, but is not 
+      this.onErrorFunc &&
+        this.onErrorFunc({
+          severity: AlertSeverity.warning,
+          message: `Metamask blockchain is changed, but is not 
         ${this.inputBlockchainNetworkName}. You are using 
         ${this.currentBlockchainNetworkName}.`,
-      });
+        });
     }
   }
 
@@ -356,9 +361,10 @@ class RentMarket {
     // console.log("-- disconnect event");
     // console.log("handleDisconnect");
 
-    this.onErrorFunc({
-      message: "Metamask is disconnected.",
-    });
+    this.onErrorFunc &&
+      this.onErrorFunc({
+        message: "Metamask is disconnected.",
+      });
   }
 
   async registerEvent() {
@@ -1370,10 +1376,11 @@ class RentMarket {
         const totalCount = response.data["totalCount"];
         const readCount = response.data["totalCount"] - responseCount;
 
-        this.onErrorFunc({
-          severity: AlertSeverity.info,
-          message: `Reading NFT (${readCount}/${totalCount}) is processed.`,
-        });
+        this.onErrorFunc &&
+          this.onErrorFunc({
+            severity: AlertSeverity.info,
+            message: `Reading NFT (${readCount}/${totalCount}) is processed.`,
+          });
 
         // * Update my nft register and unregister data.
         // * Update other component by onEventFunc function.
@@ -1412,10 +1419,11 @@ class RentMarket {
 
     // * Check metamask install.
     if (this.metamaskProvider === null) {
-      this.onErrorFunc({
-        message: "Metamask is not connected.",
-        severity: AlertSeverity.error,
-      });
+      this.onErrorFunc &&
+        this.onErrorFunc({
+          message: "Metamask is not connected.",
+          severity: AlertSeverity.error,
+        });
       return;
     }
 
