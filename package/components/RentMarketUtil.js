@@ -44,9 +44,7 @@ export const humanFileSize = (bytes, si = false, dp = 1) => {
   return bytes.toFixed(dp) + " " + units[u];
 };
 
-//----------------------------------------------------------------------------
-// Switch to localhost network.
-//----------------------------------------------------------------------------
+// * Switch to localhost network.
 export const switchNetworkLocalhost = async (provider) => {
   // console.log("call switchNetworkLocalhost()");
 
@@ -113,9 +111,7 @@ export const switchNetworkLocalhost = async (provider) => {
   }
 };
 
-//----------------------------------------------------------------------------
-// Switch to mumbai network.
-//----------------------------------------------------------------------------
+// * Switch to mumbai network.
 export const switchNetworkMumbai = async (provider) => {
   // console.log("call switchNetworkMumbai()");
   // console.log("Try to wallet_switchEthereumChain");
@@ -179,9 +175,70 @@ export const switchNetworkMumbai = async (provider) => {
   }
 };
 
-//----------------------------------------------------------------------------
-// Change ipfs url to gateway url.
-//----------------------------------------------------------------------------
+// * Switch to polygon network.
+export const switchNetworkPolygon = async (provider) => {
+  // console.log("call switchNetworkPolygon()");
+
+  let response;
+  try {
+    response = await provider.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: "0x89" }],
+    });
+    if (response === null) {
+      // Switch chain success.
+      // console.log("wallet_switchEthereumChain success");
+      return null;
+    } else {
+      return response;
+    }
+  } catch (switchError) {
+    // Switch chain fail.
+    // console.log("wallet_switchEthereumChain fail.");
+    // console.log("wallet_switchEthereumChain response: ", switchError);
+
+    if (switchError.code === 4902 || switchError.code === -32603) {
+      // console.log("Try to wallet_addEthereumChain");
+
+      try {
+        response = await provider.request({
+          method: "wallet_addEthereumChain",
+          params: [
+            {
+              chainId: "0x89",
+              chainName: "Polygon",
+              rpcUrls: ["https://polygon-rpc.com"],
+              nativeCurrency: {
+                // https://etherscan.io/token/0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0#readContract
+                name: "Matic Token",
+                symbol: "MATIC",
+                decimals: 18,
+              },
+              blockExplorerUrls: ["https://www.polygonscan.com"],
+            },
+          ],
+        });
+
+        if (response === null) {
+          // Add chain success.
+          // console.log("wallet_addEthereumChain success");
+          return null;
+        } else {
+          // Add chain fail.
+          // console.log("wallet_addEthereumChain fail");
+          // console.log("wallet_addEthereumChain response: ", response);
+          return response;
+        }
+      } catch (addError) {
+        throw addError;
+      }
+    }
+
+    throw switchError;
+  }
+};
+
+// * Change ipfs url to gateway url.
 export const changeIPFSToGateway = (ipfsUrl) => {
   if (
     typeof ipfsUrl === "string" &&

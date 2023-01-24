@@ -1,12 +1,12 @@
 import React from "react";
 import detectEthereumProvider from "@metamask/detect-provider";
 import MetaMaskOnboarding from "@metamask/onboarding";
-import { Popover, Typography, Button, Portal } from "@mui/material";
+import { Popover, Typography, Button } from "@mui/material";
 import AccountBoxRoundedIcon from "@mui/icons-material/AccountBoxRounded";
 import {
   switchNetworkMumbai,
+  switchNetworkPolygon,
   switchNetworkLocalhost,
-  ConnectStatus,
   RBSnackbar,
   AlertSeverity,
   shortenAddress,
@@ -214,6 +214,8 @@ const Metamask = ({ inputBlockchainNetwork }) => {
       getChainName({ chainId: inputBlockchainNetwork }) === "maticmum"
     ) {
       response = await switchNetworkMumbai(metamaskProvider.current);
+    } else if (getChainName({ chainId: inputBlockchainNetwork }) === "matic") {
+      response = await switchNetworkPolygon(metamaskProvider.current);
     } else {
       console.error("No support blockchain network: ", inputBlockchainNetwork);
       response = "error";
