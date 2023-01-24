@@ -358,13 +358,7 @@ class RentMarket {
   }
 
   async handleDisconnect() {
-    // console.log("-- disconnect event");
-    // console.log("handleDisconnect");
-
-    this.onErrorFunc &&
-      this.onErrorFunc({
-        message: "Metamask is disconnected.",
-      });
+    console.log("call handleDisconnect()");
   }
 
   async registerEvent() {
@@ -1419,11 +1413,14 @@ class RentMarket {
 
     // * Check metamask install.
     if (this.metamaskProvider === null) {
-      this.onErrorFunc &&
+      try {
         this.onErrorFunc({
           message: "Metamask is not connected.",
           severity: AlertSeverity.error,
         });
+      } catch (error) {
+        throw error;
+      }
       return;
     }
 

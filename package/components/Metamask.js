@@ -291,9 +291,6 @@ const Metamask = ({ inputBlockchainNetwork }) => {
       {/* // * Show popover.                                                 */}
       {/* // * --------------------------------------------------------------*/}
       <Popover
-        sx={{
-          pointerEvents: "none",
-        }}
         id={id}
         open={open}
         anchorEl={anchorEl}
