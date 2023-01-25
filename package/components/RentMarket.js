@@ -1197,12 +1197,11 @@ class RentMarket {
     // console.log("typeof rentDuration: ", typeof rentDuration);
     // console.log("rentDuration: ", rentDuration);
 
-    // * Call acceptRegisterNFT function.
     if (provider) {
       const web3Provider = new ethers.providers.Web3Provider(provider);
-      console.log("web3Provider: ", web3Provider);
+      // console.log("web3Provider: ", web3Provider);
       const signer = web3Provider.getSigner();
-      console.log("signer: ", signer);
+      // console.log("signer: ", signer);
 
       // * Get the rent market contract.
       const contract = new ethers.Contract(
@@ -1210,7 +1209,7 @@ class RentMarket {
         rentMarketABI["abi"],
         web3Provider
       );
-      console.log("contract: ", contract);
+      // console.log("contract: ", contract);
 
       try {
         const tx = await contract
@@ -1245,17 +1244,41 @@ class RentMarket {
     }
   }
 
-  async unregisterNFT(element) {
+  async unregisterNFT({ provider, element }) {
     // console.log("element.nftAddress: ", element.nftAddress);
     // console.log("element.tokenId: ", element.tokenId);
 
-    // * Call unregisterNFT function.
-    try {
-      await this.rentMarketContract
-        .connect(this.signer)
-        .unregisterNFT(element.nftAddress, element.tokenId);
-    } catch (error) {
-      throw error;
+    if (provider) {
+      const web3Provider = new ethers.providers.Web3Provider(provider);
+      // console.log("web3Provider: ", web3Provider);
+      const signer = web3Provider.getSigner();
+      // console.log("signer: ", signer);
+
+      // * Get the rent market contract.
+      const contract = new ethers.Contract(
+        this.rentMarketAddress,
+        rentMarketABI["abi"],
+        web3Provider
+      );
+      // console.log("contract: ", contract);
+
+      try {
+        const tx = await contract
+          .connect(signer)
+          .unregisterNFT(element.nftAddress, element.tokenId);
+        console.log("tx: ", tx);
+      } catch (error) {
+        throw error;
+      }
+    } else {
+      // * Call unregisterNFT function.
+      try {
+        await this.rentMarketContract
+          .connect(this.signer)
+          .unregisterNFT(element.nftAddress, element.tokenId);
+      } catch (error) {
+        throw error;
+      }
     }
   }
 
@@ -1446,53 +1469,67 @@ class RentMarket {
     }
   }
 
-  async rentNFT(element, serviceAddress) {
-    // console.log("element: ", element);
-    // console.log("serviceAddress: ", serviceAddress);
+  async rentNFT({ provider, element, serviceAddress }) {
+    console.log("call rentNFT()");
+    console.log("element: ", element);
+    console.log("serviceAddress: ", serviceAddress);
 
-    // * Check metamask install.
-    if (this.metamaskProvider === null) {
+    if (provider) {
+      const web3Provider = new ethers.providers.Web3Provider(provider);
+      console.log("web3Provider: ", web3Provider);
+      const signer = web3Provider.getSigner();
+      console.log("signer: ", signer);
+
+      // * Get the rent market contract.
+      const contract = new ethers.Contract(
+        this.rentMarketAddress,
+        rentMarketABI["abi"],
+        web3Provider
+      );
+      console.log("contract: ", contract);
+
       try {
-        this.onErrorFunc({
-          message: "Metamask is not connected.",
-          severity: AlertSeverity.error,
-        });
+        const tx = await contract
+          .connect(signer)
+          .rentNFT(element.nftAddress, element.tokenId, serviceAddress, {
+            value: element.rentFee,
+          });
+        console.log("tx: ", tx);
       } catch (error) {
         throw error;
       }
-      return;
-    }
+    } else {
+      // * Call rentNFT function.
+      try {
+        await this.rentMarketContract
+          .connect(this.signer)
+          .rentNFT(element.nftAddress, element.tokenId, serviceAddress, {
+            // https://docs.ethers.io/v5/api/utils/display-logic/
+            //
+            // wei	0
+            // kwei	3
+            // mwei	6
+            // gwei	9
+            // szabo	12
+            // finney	15
+            // ether	18
+            //
+            //                                    1 Ether = 1,000,000,000,000,000,000 WEI = 1 (EXA)WEI
+            //               1 (MILLI)ETHER = 0.001 ETHER = 1,000,000,000,000,000 WEI = 1 (PETA)WEI
+            //            1 (MICRO)ETHER = 0.000001 ETHER = 1,000,000,000,000 WEI = 1 (TERA)WEI
+            //          1 (Nano)ETHER = 0.000000001 ETHER = 1,000,000,000 WEI = 1 (GIGA)WEI
+            //       1 (PICO)ETHER = 0.000000000001 ETHER = 1,000,000 WEI = 1 (MEGA)WEI
+            //   1 (FEMTO)ETHER = 0.000000000000001 ETHER = 1,000 WEI = 1 (KILO)WEI
+            // 1 (ATTO)ETHER = 0.000000000000000001 ETHER = 1 WEI
 
-    // * Call rentNFT function.
-    try {
-      await this.rentMarketContract
-        .connect(this.signer)
-        .rentNFT(element.nftAddress, element.tokenId, serviceAddress, {
-          // https://docs.ethers.io/v5/api/utils/display-logic/
-          //
-          // wei	0
-          // kwei	3
-          // mwei	6
-          // gwei	9
-          // szabo	12
-          // finney	15
-          // ether	18
-          //
-          //                                    1 Ether = 1,000,000,000,000,000,000 WEI = 1 (EXA)WEI
-          //               1 (MILLI)ETHER = 0.001 ETHER = 1,000,000,000,000,000 WEI = 1 (PETA)WEI
-          //            1 (MICRO)ETHER = 0.000001 ETHER = 1,000,000,000,000 WEI = 1 (TERA)WEI
-          //          1 (Nano)ETHER = 0.000000001 ETHER = 1,000,000,000 WEI = 1 (GIGA)WEI
-          //       1 (PICO)ETHER = 0.000000000001 ETHER = 1,000,000 WEI = 1 (MEGA)WEI
-          //   1 (FEMTO)ETHER = 0.000000000000001 ETHER = 1,000 WEI = 1 (KILO)WEI
-          // 1 (ATTO)ETHER = 0.000000000000000001 ETHER = 1 WEI
-
-          // value: ethers.utils.parseUnits(element.rentFee, "wei"),
-          value: element.rentFee,
-          // gasPrice: hre.ethers.utils.parseUnits("50", "gwei"),
-          // gasLimit: 500_000,
-        });
-    } catch (error) {
-      throw error;
+            // value: ethers.utils.parseUnits(element.rentFee, "wei"),
+            value: element.rentFee,
+            // gasPrice: hre.ethers.utils.parseUnits("50", "gwei"),
+            // gasLimit: 500_000,
+          });
+      } catch (error) {
+        throw error;
+      }
     }
   }
 
@@ -1507,24 +1544,72 @@ class RentMarket {
     }
   }
 
-  async settleRentData(nftAddress, tokenId) {
+  async settleRentData({ provider, nftAddress, tokenId }) {
     // console.log("call settleRentData");
-    try {
-      await this.rentMarketContract
-        .connect(this.signer)
-        .settleRentData(nftAddress, tokenId);
-    } catch (error) {
-      throw error;
+
+    if (provider) {
+      const web3Provider = new ethers.providers.Web3Provider(provider);
+      // console.log("web3Provider: ", web3Provider);
+      const signer = web3Provider.getSigner();
+      // console.log("signer: ", signer);
+
+      // * Get the rent market contract.
+      const contract = new ethers.Contract(
+        this.rentMarketAddress,
+        rentMarketABI["abi"],
+        web3Provider
+      );
+      // console.log("contract: ", contract);
+
+      try {
+        const tx = await contract
+          .connect(signer)
+          .settleRentData(nftAddress, tokenId);
+        console.log("tx: ", tx);
+      } catch (error) {
+        throw error;
+      }
+    } else {
+      try {
+        await this.rentMarketContract
+          .connect(this.signer)
+          .settleRentData(nftAddress, tokenId);
+      } catch (error) {
+        throw error;
+      }
     }
   }
 
-  async withdrawMyBalance(recipient, tokenAddress) {
-    try {
-      await this.rentMarketContract
-        .connect(this.signer)
-        .withdrawMyBalance(recipient, tokenAddress);
-    } catch (error) {
-      throw error;
+  async withdrawMyBalance({ provider, recipient, tokenAddress }) {
+    if (provider) {
+      const web3Provider = new ethers.providers.Web3Provider(provider);
+      // console.log("web3Provider: ", web3Provider);
+      const signer = web3Provider.getSigner();
+      // console.log("signer: ", signer);
+
+      // * Get the rent market contract.
+      const contract = new ethers.Contract(
+        this.rentMarketAddress,
+        rentMarketABI["abi"],
+        web3Provider
+      );
+      // console.log("contract: ", contract);
+
+      try {
+        const tx = await contract
+          .connect(signer)
+          .withdrawMyBalance(recipient, tokenAddress);
+      } catch (error) {
+        throw error;
+      }
+    } else {
+      try {
+        await this.rentMarketContract
+          .connect(this.signer)
+          .withdrawMyBalance(recipient, tokenAddress);
+      } catch (error) {
+        throw error;
+      }
     }
   }
 
