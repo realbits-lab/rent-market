@@ -33,6 +33,7 @@ class RentMarket {
   // * Constructor function.
   // * -------------------------------------------------------------------------
   constructor({
+    accountAddress,
     rentMarketAddress,
     localNftContractAddress,
     blockchainNetwork,
@@ -108,6 +109,7 @@ class RentMarket {
     // * -----------------------------------------------------------------------
     // * The my data list.
     // * -----------------------------------------------------------------------
+    this.accountAddress = accountAddress;
     this.myRentNFTArray = [];
     this.myRegisteredNFTArray = [];
     this.myUnregisteredNFTArray = [];
@@ -926,7 +928,10 @@ class RentMarket {
   }
 
   async updateMyContentData() {
-    if (this.signerAddress === undefined || this.signerAddress === null) {
+    if (
+      (this.accountAddress === undefined || this.accountAddress === null) &&
+      (this.signerAddress === undefined || this.signerAddress === null)
+    ) {
       return;
     }
 
@@ -1286,8 +1291,15 @@ class RentMarket {
     let response;
     let responseNftArray;
     let loopCount = 0;
+    let ownerAddress;
 
     if (this.signerAddress === undefined || this.signerAddress === null) {
+      ownerAddress = this.accountAddress;
+    } else {
+      ownerAddress = this.signerAddress;
+    }
+    console.log("ownerAddress: ", ownerAddress);
+    if (ownerAddress === undefined || ownerAddress === null) {
       return;
     }
 
@@ -1310,8 +1322,8 @@ class RentMarket {
 
         // * Set alchemy API URL.
         alchemyAPIUrl = pageKey
-          ? `${this.ALCHEMY_BASE_URL}?owner=${this.signerAddress}&pageKey=${pageKey}`
-          : `${this.ALCHEMY_BASE_URL}?owner=${this.signerAddress}`;
+          ? `${this.ALCHEMY_BASE_URL}?owner=${ownerAddress}&pageKey=${pageKey}`
+          : `${this.ALCHEMY_BASE_URL}?owner=${ownerAddress}`;
         alchemyAPIUrl = `${alchemyAPIUrl}${filterString}`;
         // console.log("get alchemyAPIUrl: ", alchemyAPIUrl);
 
@@ -1324,7 +1336,7 @@ class RentMarket {
           console.error(error);
           throw error;
         }
-        // console.log(JSON.stringify(response.data, null, 2));
+        console.log(JSON.stringify(response.data, null, 2));
 
         // * Get response and set variables.
         pageKey = response.data["pageKey"];
