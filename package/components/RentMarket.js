@@ -1298,7 +1298,7 @@ class RentMarket {
     } else {
       ownerAddress = this.signerAddress;
     }
-    console.log("ownerAddress: ", ownerAddress);
+    // console.log("ownerAddress: ", ownerAddress);
     if (ownerAddress === undefined || ownerAddress === null) {
       return;
     }
@@ -1336,7 +1336,7 @@ class RentMarket {
           console.error(error);
           throw error;
         }
-        console.log(JSON.stringify(response.data, null, 2));
+        // console.log(JSON.stringify(response.data, null, 2));
 
         // * Get response and set variables.
         pageKey = response.data["pageKey"];
