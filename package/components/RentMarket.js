@@ -1,4 +1,5 @@
 import { ethers } from "ethers";
+import dynamic from "next/dynamic";
 import axios from "axios";
 import detectEthereumProvider from "@metamask/detect-provider";
 import { Alchemy, Network } from "alchemy-sdk";
@@ -1206,20 +1207,20 @@ class RentMarket {
         rentMarketABI["abi"],
         web3Provider
       );
+      console.log("contract: ", contract);
 
       try {
-        await contract.connect(signer).changeNFT(
-          element.nftAddress,
-          element.tokenId,
-          ethers.utils.parseUnits(rentFee, "ether"),
-          feeTokenAddress,
-          ethers.utils.parseUnits(rentFeeByToken, "ether"),
-          rentDuration
-          // {
-          //   gasPrice: hre.ethers.utils.parseUnits("50", "gwei"),
-          //   gasLimit: 100_000,
-          // }
-        );
+        const tx = await contract
+          .connect(signer)
+          .changeNFT(
+            element.nftAddress,
+            element.tokenId,
+            ethers.utils.parseUnits(rentFee, "ether"),
+            feeTokenAddress,
+            ethers.utils.parseUnits(rentFeeByToken, "ether"),
+            rentDuration
+          );
+        console.log("tx: ", tx);
       } catch (error) {
         throw error;
       }
