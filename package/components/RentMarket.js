@@ -26,8 +26,6 @@ class RentMarket {
   // Alchemy variables.
   //----------------------------------------------------------------------------
   // https://docs.alchemy.com/alchemy/enhanced-apis/nft-api/getnfts
-  ALCHEMY_BASE_URL =
-    "https://polygon-mumbai.g.alchemy.com/nft/v2/LHa8IuNu6lXI6de12LL1Uw7j6HSLCyFl/getNFTs/";
   ALCHEMY_DEFAULT_PAGE_COUNT = 100;
   NFT_MODE = process.env.NEXT_PUBLIC_NFT_MODE;
 
@@ -60,6 +58,7 @@ class RentMarket {
           apiKey: process.env.NEXT_PUBLIC_ALCHEMY_KEY,
           network: Network.MATIC_MAINNET,
         });
+        this.ALCHEMY_BASE_URL = `https://polygon-mainnet.g.alchemy.com/nft/v2/${process.env.NEXT_PUBLIC_ALCHEMY_KEY}/getNFTs/`;
         break;
 
       case "maticmum":
@@ -68,6 +67,7 @@ class RentMarket {
           apiKey: process.env.NEXT_PUBLIC_ALCHEMY_KEY,
           network: Network.MATIC_MUMBAI,
         });
+        this.ALCHEMY_BASE_URL = `https://polygon-mumbai.g.alchemy.com/nft/v2/${process.env.NEXT_PUBLIC_ALCHEMY_KEY}/getNFTs/`;
         break;
     }
 
@@ -142,7 +142,8 @@ class RentMarket {
       try {
         this.signerAddress = await this.signer.getAddress();
       } catch (error) {
-        throw error;
+        console.error(error);
+        // throw error;
       }
 
       // * Get metamask chain id.
@@ -942,6 +943,10 @@ class RentMarket {
   }
 
   async updateMyContentData() {
+    if (this.signerAddress === undefined || this.signerAddress === null) {
+      return;
+    }
+
     // * -----------------------------------------------------------------------
     // * Get all register nft data.
     // * -----------------------------------------------------------------------
@@ -1299,11 +1304,18 @@ class RentMarket {
     let responseNftArray;
     let loopCount = 0;
 
+    if (this.signerAddress === undefined || this.signerAddress === null) {
+      return;
+    }
+
     const filterAddress = this.collectionArray.map(
       (element) => element.collectionAddress
     );
     // console.log("filterAddress: ", filterAddress);
-    // TODO: Chck filterAddress.length is zero.
+
+    if (filterAddress.length === 0) {
+      return;
+    }
     const filterString = `&contractAddresses%5B%5D=${filterAddress}`;
 
     try {
