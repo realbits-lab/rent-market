@@ -116,8 +116,8 @@ class RentMarket {
     this.onErrorFunc = onErrorFunc;
   }
 
-  async initializeMetamask() {
-    // console.log("call initializeMetamask()");
+  async initializeProvider() {
+    // console.log("call initializeProvider()");
 
     // *------------------------------------------------------------------------
     // * Get metamask provider and set this variable.
@@ -278,7 +278,7 @@ class RentMarket {
 
     try {
       // * Get provider and register event and signer, chain ID.
-      await this.initializeMetamask();
+      await this.initializeProvider();
 
       // * Get rentMarket contract and fetch all data from the contract.
       await this.initializeData();
