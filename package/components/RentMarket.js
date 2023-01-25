@@ -200,7 +200,7 @@ class RentMarket {
       rentMarketABI["abi"],
       this.provider
     );
-    // console.log("this.rentMarketContract: ", this.rentMarketContract);
+    console.log("this.rentMarketContract: ", this.rentMarketContract);
 
     // * Get the local nft contract.
     if (this.inputBlockchainNetworkName === "localhost") {
@@ -916,6 +916,8 @@ class RentMarket {
   }
 
   async getMyContentData() {
+    console.log("call getMyContentData()");
+
     // * Get my all minted NFT.
     // console.log(
     //   "this.currentBlockchainNetworkName: ",
@@ -940,7 +942,7 @@ class RentMarket {
     } catch (error) {
       throw error;
     }
-    // console.log("this.allMyNFTArray: ", this.allMyNFTArray);
+    console.log("this.allMyNFTArray: ", this.allMyNFTArray);
 
     // * Update my registered and unregistered NFT data.
     await this.updateMyContentData();
