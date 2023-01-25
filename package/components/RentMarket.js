@@ -631,7 +631,10 @@ class RentMarket {
     // * Set renteeNFT data.
     const myRenteeNFTArray = await Promise.all(
       allRentNFTArray.map(async (element) => {
-        if (element.renteeAddress === this.signerAddress) {
+        if (
+          element.renteeAddress === this.signerAddress ||
+          element.renteeAddress === this.accountAddress
+        ) {
           // console.log("Call addMetadata");
           return this.addMetadata(element);
         }
@@ -1169,13 +1172,17 @@ class RentMarket {
     }
   }
 
-  async changeNFT(
+  async changeNFT({
+    provider,
     element,
     rentFee,
     feeTokenAddress,
     rentFeeByToken,
-    rentDuration
-  ) {
+    rentDuration,
+  }) {
+    console.log("call changeNFT()");
+    console.log("provider: ", provider);
+
     // console.log("element: ", element);
     // console.log("typeof rentFee: ", typeof rentFee);
     // console.log("rentFee: ", rentFee);
@@ -1187,19 +1194,50 @@ class RentMarket {
     // console.log("rentDuration: ", rentDuration);
 
     // * Call acceptRegisterNFT function.
-    try {
-      await this.rentMarketContract
-        .connect(this.signer)
-        .changeNFT(
+    if (provider) {
+      const web3Provider = new ethers.providers.Web3Provider(provider);
+      console.log("web3Provider: ", web3Provider);
+      const signer = web3Provider.getSigner();
+      console.log("signer: ", signer);
+
+      // * Get the rent market contract.
+      const contract = new ethers.Contract(
+        this.rentMarketAddress,
+        rentMarketABI["abi"],
+        web3Provider
+      );
+
+      try {
+        await contract.connect(signer).changeNFT(
           element.nftAddress,
           element.tokenId,
           ethers.utils.parseUnits(rentFee, "ether"),
           feeTokenAddress,
           ethers.utils.parseUnits(rentFeeByToken, "ether"),
           rentDuration
+          // {
+          //   gasPrice: hre.ethers.utils.parseUnits("50", "gwei"),
+          //   gasLimit: 100_000,
+          // }
         );
-    } catch (error) {
-      throw error;
+      } catch (error) {
+        throw error;
+      }
+    } else {
+      try {
+        await this.rentMarketContract
+          .connect(this.signer)
+          .changeNFT(
+            element.nftAddress,
+            element.tokenId,
+            ethers.utils.parseUnits(rentFee, "ether"),
+            feeTokenAddress,
+            ethers.utils.parseUnits(rentFeeByToken, "ether"),
+            rentDuration
+          );
+      } catch (error) {
+        throw error;
+      }
     }
   }
 
