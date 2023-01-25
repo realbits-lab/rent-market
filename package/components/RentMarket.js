@@ -169,34 +169,30 @@ class RentMarket {
         ${this.inputBlockchainNetworkName}, but you are using 
         ${this.currentBlockchainNetworkName}.`,
           });
+
+        this.setAlchemyProvider();
       }
     } else {
-      // * Get alchemy provider without metamask.
-      this.provider = new ethers.providers.AlchemyProvider(
-        this.inputBlockchainNetworkName,
-        process.env.NEXT_PUBLIC_ALCHEMY_KEY
-      );
-      // throw new Error("Metamask in not installed.");
+      this.setAlchemyProvider();
     }
     // console.log("this.provider: ", this.provider);
   }
 
+  setAlchemyProvider() {
+    console.log("call setAlchemyProvider()");
+
+    // * Get alchemy provider without metamask.
+    this.provider = new ethers.providers.AlchemyProvider(
+      this.inputBlockchainNetworkName,
+      process.env.NEXT_PUBLIC_ALCHEMY_KEY
+    );
+  }
+
   async initializeData() {
-    // console.log("call initializeData()");
+    console.log("call initializeData()");
     // console.log("this.currentBlockchainNetworkName: ", this.currentBlockchainNetworkName);
     // console.log("this.rentMarketAddress: ", this.rentMarketAddress);
     // console.log("this.inputBlockchainNetworkName: ", this.inputBlockchainNetworkName);
-
-    // *------------------------------------------------------------------------
-    // * If blockchain is not valid, remove all memory data.
-    // *------------------------------------------------------------------------
-    if (
-      this.metamaskProvider !== null &&
-      this.currentBlockchainNetworkName !== this.inputBlockchainNetworkName
-    ) {
-      this.clearAllData();
-      return;
-    }
 
     // * Get the rent market contract.
     this.rentMarketContract = new ethers.Contract(
