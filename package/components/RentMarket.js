@@ -85,6 +85,7 @@ class RentMarket {
 
     // * -----------------------------------------------------------------------
     // * Define variables.
+    // * Undefined varialbe means loading status.
     // * -----------------------------------------------------------------------
     this.metamaskProvider = undefined;
     this.provider = undefined;
@@ -96,24 +97,26 @@ class RentMarket {
 
     // * -----------------------------------------------------------------------
     // * The rent market data list.
+    // * Undefined varialbe means loading status.
     // * -----------------------------------------------------------------------
-    this.tokenArray = [];
-    this.collectionArray = [];
-    this.serviceArray = [];
-    this.requestNFTArray = [];
-    this.registerNFTArray = [];
-    this.allMyNFTArray = [];
-    this.allRentNFTArray = [];
-    this.pendingRentFeeArray = [];
-    this.accountBalanceArray = [];
+    this.tokenArray;
+    this.collectionArray;
+    this.serviceArray;
+    this.requestNFTArray;
+    this.registerNFTArray;
+    this.allMyNFTArray;
+    this.allRentNFTArray;
+    this.pendingRentFeeArray;
+    this.accountBalanceArray;
 
     // * -----------------------------------------------------------------------
     // * The my data list.
+    // * Undefined varialbe means loading status.
     // * -----------------------------------------------------------------------
     this.accountAddress = accountAddress;
-    this.myRentNFTArray = [];
-    this.myRegisteredNFTArray = [];
-    this.myUnregisteredNFTArray = [];
+    this.myRentNFTArray;
+    this.myRegisteredNFTArray;
+    this.myUnregisteredNFTArray;
 
     this.onEventFunc = onEventFunc;
     this.onErrorFunc = onErrorFunc;
@@ -1422,7 +1425,6 @@ class RentMarket {
 
       // Make await for a fast loop.
       this.updateMyContentData();
-      this.onEventFunc({ message: "Reading NFT data is done." });
 
       // * Return tokenArray.
       return tokenArray;
