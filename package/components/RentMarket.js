@@ -326,7 +326,6 @@ class RentMarket {
   }
 
   async handleChainChanged(chainId) {
-    // console.log("-- chainChanged event");
     // console.log("call handelChainChanged()");
     // console.log("chainId: ", chainId);
 
@@ -334,23 +333,7 @@ class RentMarket {
     // console.log("this.currentBlockchainNetworkName: ", this.currentBlockchainNetworkName);
 
     if (this.inputBlockchainNetworkName === this.currentBlockchainNetworkName) {
-      this.onErrorFunc &&
-        this.onErrorFunc({
-          severity: AlertSeverity.info,
-          message: `Metamask blockchain is set to ${getChainName({
-            chainId: chainId,
-          })}.`,
-        });
-
       await this.initializeData();
-    } else {
-      this.onErrorFunc &&
-        this.onErrorFunc({
-          severity: AlertSeverity.warning,
-          message: `Metamask blockchain is changed, but is not 
-        ${this.inputBlockchainNetworkName}. You are using 
-        ${this.currentBlockchainNetworkName}.`,
-        });
     }
   }
 
