@@ -179,7 +179,7 @@ class RentMarket {
   }
 
   setAlchemyProvider() {
-    console.log("call setAlchemyProvider()");
+    // console.log("call setAlchemyProvider()");
 
     // * Get alchemy provider without metamask.
     this.provider = new ethers.providers.AlchemyProvider(
@@ -189,7 +189,7 @@ class RentMarket {
   }
 
   async initializeData() {
-    console.log("call initializeData()");
+    // console.log("call initializeData()");
     // console.log("this.currentBlockchainNetworkName: ", this.currentBlockchainNetworkName);
     // console.log("this.rentMarketAddress: ", this.rentMarketAddress);
     // console.log("this.inputBlockchainNetworkName: ", this.inputBlockchainNetworkName);
@@ -200,7 +200,7 @@ class RentMarket {
       rentMarketABI["abi"],
       this.provider
     );
-    console.log("this.rentMarketContract: ", this.rentMarketContract);
+    // console.log("this.rentMarketContract: ", this.rentMarketContract);
 
     // * Get the local nft contract.
     if (this.inputBlockchainNetworkName === "localhost") {
@@ -354,11 +354,11 @@ class RentMarket {
   }
 
   async handleDisconnect() {
-    console.log("call handleDisconnect()");
+    // console.log("call handleDisconnect()");
   }
 
   async registerEvent() {
-    console.log("call registerEvent()");
+    // console.log("call registerEvent()");
 
     // * Subscription for Alchemy's pendingTransactions API.
     this.alchemy.ws.on(
@@ -916,7 +916,7 @@ class RentMarket {
   }
 
   async getMyContentData() {
-    console.log("call getMyContentData()");
+    // console.log("call getMyContentData()");
 
     // * Get my all minted NFT.
     // console.log(
@@ -925,24 +925,17 @@ class RentMarket {
     // );
 
     try {
-      if (
-        this.currentBlockchainNetworkName === "matic" ||
-        this.currentBlockchainNetworkName === "maticmum"
-      ) {
-        // Use public node.
-        this.allMyNFTArray = await this.fetchMyNFTData();
-      } else if (this.currentBlockchainNetworkName === "localhost") {
+      if (this.currentBlockchainNetworkName === "localhost") {
         // Use local node.
         this.allMyNFTArray = await this.fetchMyNFTDataOnLocalhost();
       } else {
-        // console.log("network is empty.");
-        return;
+        // Use public node.
+        this.allMyNFTArray = await this.fetchMyNFTData();
       }
-      // console.log("this.allMyNFTArray: ", this.allMyNFTArray);
     } catch (error) {
       throw error;
     }
-    console.log("this.allMyNFTArray: ", this.allMyNFTArray);
+    // console.log("this.allMyNFTArray: ", this.allMyNFTArray);
 
     // * Update my registered and unregistered NFT data.
     await this.updateMyContentData();
