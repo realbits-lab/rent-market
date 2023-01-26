@@ -1,9 +1,8 @@
 import { ethers } from "ethers";
-import dynamic from "next/dynamic";
 import axios from "axios";
 import detectEthereumProvider from "@metamask/detect-provider";
 import { Alchemy, Network } from "alchemy-sdk";
-
+import WalletConnectProvider from "@walletconnect/web3-provider";
 import {
   switchNetworkMumbai,
   switchNetworkLocalhost,
@@ -15,6 +14,8 @@ import {
 import rentMarketABI from "../contracts/rentMarket.json";
 import rentNFTABI from "../contracts/rentNFT.json";
 import promptNFTABI from "../contracts/promptNFT.json";
+
+let thisRentMarket;
 
 // TODO: Set the highest gas limit on every call.
 // TODO: Make the return value type as the same as contract return value.
@@ -47,6 +48,7 @@ class RentMarket {
     // console.log("rentMarketAddress: ", rentMarketAddress);
     // console.log("localNftContractAddress: ", localNftContractAddress);
     // console.log("blockchainNetwork: ", blockchainNetwork);
+    thisRentMarket = this;
 
     // * -----------------------------------------------------------------------
     // * Set blockchain network and alchemy sdk.
@@ -177,15 +179,15 @@ class RentMarket {
         ${this.currentBlockchainNetworkName}.`,
           });
 
-        this.setAlchemyProvider();
+        await this.setAlchemyProvider();
       }
     } else {
-      this.setAlchemyProvider();
+      await this.setAlchemyProvider();
     }
     // console.log("this.provider: ", this.provider);
   }
 
-  setAlchemyProvider() {
+  async setAlchemyProvider() {
     // console.log("call setAlchemyProvider()");
 
     // * Get alchemy provider without metamask.
@@ -196,7 +198,7 @@ class RentMarket {
   }
 
   async initializeData() {
-    // console.log("call initializeData()");
+    console.log("call initializeData()");
     // console.log("this.currentBlockchainNetworkName: ", this.currentBlockchainNetworkName);
     // console.log("this.rentMarketAddress: ", this.rentMarketAddress);
     // console.log("this.inputBlockchainNetworkName: ", this.inputBlockchainNetworkName);
@@ -306,44 +308,48 @@ class RentMarket {
   }
 
   async handleAccountsChanged(accounts) {
-    // console.log("-- accountsChanged event");
-    // console.log("accounts: ", accounts);
-    // console.log("call handleAccountsChanged()");
+  	// * use thisRentMarket instead of this.
+    console.log("call handleAccountsChanged()");
+    console.log("accounts: ", accounts);
 
+    console.log("this: ", this);
     if (accounts.length === 0) {
-      this.onErrorFunc &&
-        this.onErrorFunc({
+      thisRentMarket.onErrorFunc &&
+        thisRentMarket.onErrorFunc({
           severity: AlertSeverity.warning,
           message: "No account is set in metamask.",
         });
     }
 
-    this.signerAddress = accounts[0];
+    thisRentMarket.signerAddress = accounts[0];
     // console.log("this.signerAddress: ", this.signerAddress);
 
-    this.onErrorFunc &&
-      this.onErrorFunc({
+    thisRentMarket.onErrorFunc &&
+      thisRentMarket.onErrorFunc({
         severity: AlertSeverity.info,
         message: `Account is changed to ${accounts[0]}`,
       });
+    console.log("this: ", this);
 
-    // Reset data.
-    await this.initializeData();
+    // * Reset data.
+    await thisRentMarket.initializeData();
   }
 
   async handleChainChanged(chainId) {
+  	// * use thisRentMarket instead of this.
     // console.log("call handelChainChanged()");
     // console.log("chainId: ", chainId);
 
-    this.currentBlockchainNetworkName = getChainName({ chainId: chainId });
+    thisRentMarket.currentBlockchainNetworkName = getChainName({ chainId: chainId });
     // console.log("this.currentBlockchainNetworkName: ", this.currentBlockchainNetworkName);
 
-    if (this.inputBlockchainNetworkName === this.currentBlockchainNetworkName) {
-      await this.initializeData();
+    if (thisRentMarket.inputBlockchainNetworkName === thisRentMarket.currentBlockchainNetworkName) {
+      await thisRentMarket.initializeData();
     }
   }
 
   async handleDisconnect() {
+  	// * use thisRentMarket instead of this.
     // console.log("call handleDisconnect()");
   }
 
