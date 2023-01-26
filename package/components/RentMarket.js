@@ -16,16 +16,13 @@ import promptNFTABI from "../contracts/promptNFT.json";
 
 let thisRentMarket;
 
-// TODO: Set the highest gas limit on every call.
-// TODO: Make the return value type as the same as contract return value.
 class RentMarket {
-  // For alchemy API call max count.
-  // TODO: Handle maximum count.
-  MAX_LOOP_COUNT = 10;
+  // * For alchemy API call max count.
+  MAX_LOOP_COUNT = 100;
 
-  //----------------------------------------------------------------------------
-  // Alchemy variables.
-  //----------------------------------------------------------------------------
+  // * -------------------------------------------------------------------------
+  // * Alchemy variables.
+  // * -------------------------------------------------------------------------
   // https://docs.alchemy.com/alchemy/enhanced-apis/nft-api/getnfts
   ALCHEMY_DEFAULT_PAGE_COUNT = 100;
   NFT_MODE = process.env.NEXT_PUBLIC_NFT_MODE;
@@ -253,7 +250,7 @@ class RentMarket {
       this.onEventFunc();
 
       // * Register contract event.
-      // await this.registerEvent();
+      await this.registerEvent();
     } catch (error) {
       throw error;
     }
@@ -307,7 +304,7 @@ class RentMarket {
   }
 
   async handleAccountsChanged(accounts) {
-  	// * use thisRentMarket instead of this.
+    // * use thisRentMarket instead of this.
     // console.log("call handleAccountsChanged()");
     // console.log("accounts: ", accounts);
 
@@ -333,240 +330,330 @@ class RentMarket {
   }
 
   async handleChainChanged(chainId) {
-  	// * use thisRentMarket instead of this.
+    // * use thisRentMarket instead of this.
     // console.log("call handelChainChanged()");
     // console.log("chainId: ", chainId);
 
-    thisRentMarket.currentBlockchainNetworkName = getChainName({ chainId: chainId });
+    thisRentMarket.currentBlockchainNetworkName = getChainName({
+      chainId: chainId,
+    });
     // console.log("this.currentBlockchainNetworkName: ", this.currentBlockchainNetworkName);
 
-    if (thisRentMarket.inputBlockchainNetworkName === thisRentMarket.currentBlockchainNetworkName) {
+    if (
+      thisRentMarket.inputBlockchainNetworkName ===
+      thisRentMarket.currentBlockchainNetworkName
+    ) {
       await thisRentMarket.initializeData();
     }
   }
 
   async handleDisconnect() {
-  	// * use thisRentMarket instead of this.
+    // * use thisRentMarket instead of this.
     // console.log("call handleDisconnect()");
   }
 
   async registerEvent() {
     // console.log("call registerEvent()");
 
-    // * Subscription for Alchemy's pendingTransactions API.
-    this.alchemy.ws.on(
-      {
-        method: "alchemy_pendingTransactions",
-        toAddress: this.rentMarketAddress,
-      },
-      function (tx) {
-        console.log("tx: ", tx);
-      }
-    );
+    let eventHash;
+    let topicHash;
 
-    return;
+    // * Subscription to RegisterToken event.
+    if (this.metamaskProvider !== null) {
+      this.rentMarketContract.on(
+        "RegisterToken",
+        async function (tokenAddress, name) {
+          // console.log("-- RegisterToken event");
+          await this.fetchCollection();
+          this.onEventFunc();
+        }
+      );
+    } else {
+      eventHash = keccak256("RegisterToken(address,string)");
+      this.alchemy.ws.on(
+        {
+          toAddress: this.rentMarketAddress,
+          topics: [`0x${Buffer.from(eventHash).toString("hex")}`],
+        },
+        async function (tx) {
+          console.log("tx: ", tx);
+          // console.log("-- RegisterToken event");
+          await this.fetchCollection();
+          this.onEventFunc();
+        }
+      );
+    }
 
-    this.rentMarketContract.on(
-      "RegisterToken",
-      async function (tokenAddress, name) {
-        // console.log("-- RegisterToken event");
-        await this.fetchCollection();
-        this.onEventFunc();
-      }
-    );
+    // * Subscription to UnregisterToken event.
+    if (this.metamaskProvider !== null) {
+      this.rentMarketContract.on(
+        "UnregisterToken",
+        async function (tokenAddress, name) {
+          // console.log("-- UnregisterToken event");
+          await this.fetchCollection();
+          this.onEventFunc();
+        }
+      );
+    }
 
-    this.rentMarketContract.on(
-      "UnregisterToken",
-      async function (tokenAddress, name) {
-        // console.log("-- UnregisterToken event");
-        await this.fetchCollection();
-        this.onEventFunc();
-      }
-    );
+    // * Subscription to RegisterCollection event.
+    if (this.metamaskProvider !== null) {
+      this.rentMarketContract.on(
+        "RegisterCollection",
+        async function (collectionAddress, uri) {
+          // console.log("-- RegisterCollection event");
+          await this.fetchCollection();
+          this.onEventFunc();
+        }
+      );
+    }
 
-    this.rentMarketContract.on(
-      "RegisterCollection",
-      async function (collectionAddress, uri) {
-        // console.log("-- RegisterCollection event");
-        await this.fetchCollection();
-        this.onEventFunc();
-      }
-    );
+    // * Subscription to UnregisterCollection event.
+    if (this.metamaskProvider !== null) {
+      this.rentMarketContract.on(
+        "UnregisterCollection",
+        async function (collectionAddress, uri) {
+          // console.log("-- UnregisterCollection event");
+          await this.fetchCollection();
+          this.onEventFunc();
+        }
+      );
+    }
 
-    this.rentMarketContract.on(
-      "UnregisterCollection",
-      async function (collectionAddress, uri) {
-        // console.log("-- UnregisterCollection event");
-        await this.fetchCollection();
-        this.onEventFunc();
-      }
-    );
+    // * Subscription to RegisterService event.
+    if (this.metamaskProvider !== null) {
+      this.rentMarketContract.on(
+        "RegisterService",
+        async function (serviceAddress, uri) {
+          // console.log("-- RegisterService event");
+          // console.log("serviceAddress: ", serviceAddress);
+          // Update request service data.
+          await this.fetchService();
+          this.onEventFunc();
+        }
+      );
+    }
 
-    this.rentMarketContract.on(
-      "RegisterService",
-      async function (serviceAddress, uri) {
-        // console.log("-- RegisterService event");
-        // console.log("serviceAddress: ", serviceAddress);
-        // Update request service data.
-        await this.fetchService();
-        this.onEventFunc();
-      }
-    );
+    // * Subscription to UnregisterService event.
+    if (this.metamaskProvider !== null) {
+      this.rentMarketContract.on(
+        "UnregisterService",
+        async function (serviceAddress, uri) {
+          // console.log("-- UnregisterService event");
+          // console.log("serviceAddress: ", serviceAddress);
+          // Update register data.
+          await this.fetchService();
+          this.onEventFunc();
+        }
+      );
+    }
 
-    this.rentMarketContract.on(
-      "UnregisterService",
-      async function (serviceAddress, uri) {
-        // console.log("-- UnregisterService event");
-        // console.log("serviceAddress: ", serviceAddress);
-        // Update register data.
-        await this.fetchService();
-        this.onEventFunc();
-      }
-    );
+    // * Subscription to RegisterNFT event.
+    if (this.metamaskProvider !== null) {
+      this.rentMarketContract.on(
+        "RegisterNFT",
+        async function (
+          nftAddress,
+          tokenId,
+          rentFee,
+          rentDuration,
+          NFTOwnerAddress
+        ) {
+          // console.log("-- RegisterNFT event");
+          // console.log("tokenId: ", tokenId.toString());
+          // Update request data.
+          // await this.fetchRequestData();
+          await this.getMyContentData();
+          this.onEventFunc();
+        }
+      );
+    }
 
-    this.rentMarketContract.on(
-      "RegisterNFT",
-      async function (
-        nftAddress,
-        tokenId,
-        rentFee,
-        rentDuration,
-        NFTOwnerAddress
-      ) {
-        // console.log("-- RegisterNFT event");
-        // console.log("tokenId: ", tokenId.toString());
-        // Update request data.
-        // await this.fetchRequestData();
-        await this.getMyContentData();
-        this.onEventFunc();
-      }
-    );
+    // * Subscription to ChangeNFT event.
+    if (this.metamaskProvider !== null) {
+      // this.rentMarketContract.on(
+      //   "ChangeNFT",
+      //   async function (
+      //     nftAddress,
+      //     tokenId,
+      //     rentFee,
+      //     feeTokenAddress,
+      //     rentFeeByToken,
+      //     rentDuration,
+      //     NFTOwnerAddress,
+      //     changerAddress
+      //   ) {
+      //     // console.log("-- ChangeNFT event");
+      //     // console.log("tokenId: ", tokenId.toString());
+      //     // Update register data.
+      //     await thisRentMarket.fetchRegisterData();
+      //     await thisRentMarket.getMyContentData();
+      //     thisRentMarket.onEventFunc();
+      //   }
+      // );
+      eventHash = keccak256(
+        "ChangeNFT(address,uint256,uint256,address,uint256,uint256,address,address)"
+      );
+      this.alchemy.ws.on(
+        {
+          toAddress: this.rentMarketAddress,
+          topics: [`0x${Buffer.from(eventHash).toString("hex")}`],
+        },
+        async function (tx) {
+          console.log("-- ChangeNFT event");
+          await thisRentMarket.fetchRegisterData();
+          await thisRentMarket.getMyContentData();
+          thisRentMarket.onEventFunc();
+        }
+      );
+    } else {
+      eventHash = keccak256(
+        "ChangeNFT(address,uint256,uint256,address,uint256,uint256,address,address)"
+      );
+      this.alchemy.ws.on(
+        {
+          toAddress: this.rentMarketAddress,
+          topics: [`0x${Buffer.from(eventHash).toString("hex")}`],
+        },
+        async function (tx) {
+          console.log("-- ChangeNFT event");
+          console.log("tx: ", tx);
+        }
+      );
+    }
 
-    this.rentMarketContract.on(
-      "ChangeNFT",
-      async function (
-        nftAddress,
-        tokenId,
-        rentFee,
-        feeTokenAddress,
-        rentFeeByToken,
-        rentDuration,
-        NFTOwnerAddress,
-        changerAddress
-      ) {
-        // console.log("-- ChangeNFT event");
-        // console.log("tokenId: ", tokenId.toString());
-        // Update register data.
-        await this.fetchRegisterData();
-        await this.getMyContentData();
-        this.onEventFunc();
-      }
-    );
+    // * Subscription to UnregisterNFT event.
+    if (this.metamaskProvider !== null) {
+      this.rentMarketContract.on(
+        "UnregisterNFT",
+        async function (
+          nftAddress,
+          tokenId,
+          rentFee,
+          feeTokenAddress,
+          rentFeeByToken,
+          rentDuration,
+          NFTOwnerAddress,
+          UnregisterAddress
+        ) {
+          // console.log("-- UnregisterNFT event");
+          // console.log("tokenId: ", tokenId.toString());
+          // Update register data.
+          await this.fetchRegisterData();
+          await this.getMyContentData();
+          this.onEventFunc();
+        }
+      );
+    }
 
-    this.rentMarketContract.on(
-      "UnregisterNFT",
-      async function (
-        nftAddress,
-        tokenId,
-        rentFee,
-        feeTokenAddress,
-        rentFeeByToken,
-        rentDuration,
-        NFTOwnerAddress,
-        UnregisterAddress
-      ) {
-        // console.log("-- UnregisterNFT event");
-        // console.log("tokenId: ", tokenId.toString());
-        // Update register data.
-        await this.fetchRegisterData();
-        await this.getMyContentData();
-        this.onEventFunc();
-      }
-    );
+    // * Subscription to RentNFT event.
+    if (this.metamaskProvider !== null) {
+      this.rentMarketContract.on(
+        "RentNFT",
+        async function (
+          nftAddress,
+          tokenId,
+          rentFee,
+          feeTokenAddress,
+          rentFeeByToken,
+          isRentByToken,
+          rentDuration,
+          renterAddress,
+          renteeAddress,
+          serviceAddress,
+          rentStartTimestamp
+        ) {
+          // console.log("-- RentNFT event");
+          // console.log("tokenId: ", tokenId.toString());
+          // Update register and rente data and interconnect them.
+          await this.fetchRegisterData();
+          await this.fetchPendingRentFee();
+          this.onEventFunc();
+        }
+      );
+    } else {
+      eventHash = keccak256(
+        "RentNFT(address,uint256,uint256,address,uint256,bool,uint256,address,address,address,uint256)"
+      );
+      this.alchemy.ws.on(
+        {
+          toAddress: this.rentMarketAddress,
+          topics: [`0x${Buffer.from(eventHash).toString("hex")}`],
+        },
+        function (tx) {
+          console.log("tx: ", tx);
+        }
+      );
+    }
 
-    this.rentMarketContract.on(
-      "RentNFT",
-      async function (
-        nftAddress,
-        tokenId,
-        rentFee,
-        feeTokenAddress,
-        rentFeeByToken,
-        isRentByToken,
-        rentDuration,
-        renterAddress,
-        renteeAddress,
-        serviceAddress,
-        rentStartTimestamp
-      ) {
-        // console.log("-- RentNFT event");
-        // console.log("tokenId: ", tokenId.toString());
-        // Update register and rente data and interconnect them.
-        await this.fetchRegisterData();
-        await this.fetchPendingRentFee();
-        this.onEventFunc();
-      }
-    );
+    // * Subscription to UnrentNFT event.
+    if (this.metamaskProvider !== null) {
+      this.rentMarketContract.on(
+        "UnrentNFT",
+        async function (
+          nftAddress,
+          tokenId,
+          rentFee,
+          feeTokenAddress,
+          rentFeeByToken,
+          isRentByToken,
+          rentDuration,
+          renterAddress,
+          renteeAddress,
+          serviceAddress,
+          rentStartTimestamp
+        ) {
+          // console.log("-- UnrentNFT event");
+          // console.log("tokenId: ", tokenId.toString());
+          // Update register and rente data and interconnect them.
+          await this.fetchRegisterData();
+          await this.fetchPendingRentFee();
+          await this.fetchAccountBalance();
+          this.onEventFunc();
+        }
+      );
+    }
 
-    this.rentMarketContract.on(
-      "UnrentNFT",
-      async function (
-        nftAddress,
-        tokenId,
-        rentFee,
-        feeTokenAddress,
-        rentFeeByToken,
-        isRentByToken,
-        rentDuration,
-        renterAddress,
-        renteeAddress,
-        serviceAddress,
-        rentStartTimestamp
-      ) {
-        // console.log("-- UnrentNFT event");
-        // console.log("tokenId: ", tokenId.toString());
-        // Update register and rente data and interconnect them.
-        await this.fetchRegisterData();
-        await this.fetchPendingRentFee();
-        await this.fetchAccountBalance();
-        this.onEventFunc();
-      }
-    );
+    // * Subscription to SettleRentData event.
+    if (this.metamaskProvider !== null) {
+      this.rentMarketContract.on(
+        "SettleRentData",
+        async function (
+          nftAddress,
+          tokenId,
+          rentFee,
+          feeTokenAddress,
+          rentFeeByToken,
+          isRentByToken,
+          rentDuration,
+          renterAddress,
+          renteeAddress,
+          serviceAddress,
+          rentStartTimestamp
+        ) {
+          // console.log("-- SettleRentData event");
+          // console.log("tokenId: ", tokenId.toString());
+          // Update register data.
+          await this.fetchRegisterData();
+          await this.fetchPendingRentFee();
+          await this.fetchAccountBalance();
+          this.onEventFunc();
+        }
+      );
+    }
 
-    this.rentMarketContract.on(
-      "SettleRentData",
-      async function (
-        nftAddress,
-        tokenId,
-        rentFee,
-        feeTokenAddress,
-        rentFeeByToken,
-        isRentByToken,
-        rentDuration,
-        renterAddress,
-        renteeAddress,
-        serviceAddress,
-        rentStartTimestamp
-      ) {
-        // console.log("-- SettleRentData event");
-        // console.log("tokenId: ", tokenId.toString());
-        // Update register data.
-        await this.fetchRegisterData();
-        await this.fetchPendingRentFee();
-        await this.fetchAccountBalance();
-        this.onEventFunc();
-      }
-    );
-
-    this.rentMarketContract.on(
-      "WithdrawMyBalance",
-      async function (recipient, tokenAddress, amount) {
-        // console.log("-- WithdrawMyBalance event");
-        // Update account data.
-        await this.fetchAccountBalance();
-        this.onEventFunc();
-      }
-    );
+    // * Subscription to WithdrawMyBalance event.
+    if (this.metamaskProvider !== null) {
+      this.rentMarketContract.on(
+        "WithdrawMyBalance",
+        async function (recipient, tokenAddress, amount) {
+          // console.log("-- WithdrawMyBalance event");
+          // Update account data.
+          await this.fetchAccountBalance();
+          this.onEventFunc();
+        }
+      );
+    }
   }
 
   async fetchToken() {
@@ -1015,13 +1102,13 @@ class RentMarket {
   }
 
   async addMetadata(element) {
-    // 1. Check pre-existed metadata.
+    // * Check pre-existed metadata.
     // console.log("element: ", element);
     if (element.metadata !== undefined) {
       return element;
     }
 
-    // 2. Set default tokenURI function ABI based on OpenZeppelin code.
+    // * Set default tokenURI function ABI based on OpenZeppelin code.
     const tokenURIAbi = [
       {
         inputs: [
