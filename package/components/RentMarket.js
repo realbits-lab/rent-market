@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import axios from "axios";
 import detectEthereumProvider from "@metamask/detect-provider";
-import { Alchemy, Network } from "alchemy-sdk";
+import { Alchemy, Network, AlchemySubscription } from "alchemy-sdk";
 import {
   switchNetworkMumbai,
   switchNetworkLocalhost,
@@ -356,7 +356,6 @@ class RentMarket {
     // console.log("call registerEvent()");
 
     let eventHash;
-    let topicHash;
 
     // * Subscription to RegisterToken event.
     if (this.metamaskProvider !== null) {
@@ -364,8 +363,8 @@ class RentMarket {
         "RegisterToken",
         async function (tokenAddress, name) {
           // console.log("-- RegisterToken event");
-          await this.fetchCollection();
-          this.onEventFunc();
+          await thisRentMarket.fetchToken();
+          thisRentMarket.onEventFunc();
         }
       );
     } else {
@@ -376,10 +375,10 @@ class RentMarket {
           topics: [`0x${Buffer.from(eventHash).toString("hex")}`],
         },
         async function (tx) {
-          console.log("tx: ", tx);
+          // console.log("tx: ", tx);
           // console.log("-- RegisterToken event");
-          await this.fetchCollection();
-          this.onEventFunc();
+          await thisRentMarket.fetchToken();
+          thisRentMarket.onEventFunc();
         }
       );
     }
@@ -390,8 +389,22 @@ class RentMarket {
         "UnregisterToken",
         async function (tokenAddress, name) {
           // console.log("-- UnregisterToken event");
-          await this.fetchCollection();
-          this.onEventFunc();
+          await thisRentMarket.fetchToken();
+          thisRentMarket.onEventFunc();
+        }
+      );
+    } else {
+      eventHash = keccak256("UnregisterToken(address,string)");
+      this.alchemy.ws.on(
+        {
+          toAddress: this.rentMarketAddress,
+          topics: [`0x${Buffer.from(eventHash).toString("hex")}`],
+        },
+        async function (tx) {
+          // console.log("tx: ", tx);
+          // console.log("-- UnregisterToken event");
+          await thisRentMarket.fetchToken();
+          thisRentMarket.onEventFunc();
         }
       );
     }
@@ -402,8 +415,22 @@ class RentMarket {
         "RegisterCollection",
         async function (collectionAddress, uri) {
           // console.log("-- RegisterCollection event");
-          await this.fetchCollection();
-          this.onEventFunc();
+          await thisRentMarket.fetchCollection();
+          thisRentMarket.onEventFunc();
+        }
+      );
+    } else {
+      eventHash = keccak256("RegisterCollection(address,string)");
+      this.alchemy.ws.on(
+        {
+          toAddress: this.rentMarketAddress,
+          topics: [`0x${Buffer.from(eventHash).toString("hex")}`],
+        },
+        async function (tx) {
+          // console.log("tx: ", tx);
+          // console.log("-- RegisterCollection event");
+          await thisRentMarket.fetchCollection();
+          thisRentMarket.onEventFunc();
         }
       );
     }
@@ -414,8 +441,22 @@ class RentMarket {
         "UnregisterCollection",
         async function (collectionAddress, uri) {
           // console.log("-- UnregisterCollection event");
-          await this.fetchCollection();
-          this.onEventFunc();
+          await thisRentMarket.fetchCollection();
+          thisRentMarket.onEventFunc();
+        }
+      );
+    } else {
+      eventHash = keccak256("UnregisterCollection(address,string)");
+      this.alchemy.ws.on(
+        {
+          toAddress: this.rentMarketAddress,
+          topics: [`0x${Buffer.from(eventHash).toString("hex")}`],
+        },
+        async function (tx) {
+          // console.log("tx: ", tx);
+          // console.log("-- UnregisterCollection event");
+          await thisRentMarket.fetchCollection();
+          thisRentMarket.onEventFunc();
         }
       );
     }
@@ -428,8 +469,22 @@ class RentMarket {
           // console.log("-- RegisterService event");
           // console.log("serviceAddress: ", serviceAddress);
           // Update request service data.
-          await this.fetchService();
-          this.onEventFunc();
+          await thisRentMarket.fetchService();
+          thisRentMarket.onEventFunc();
+        }
+      );
+    } else {
+      eventHash = keccak256("RegisterService(address,string)");
+      this.alchemy.ws.on(
+        {
+          toAddress: this.rentMarketAddress,
+          topics: [`0x${Buffer.from(eventHash).toString("hex")}`],
+        },
+        async function (tx) {
+          // console.log("tx: ", tx);
+          // console.log("-- RegisterService event");
+          await thisRentMarket.fetchService();
+          thisRentMarket.onEventFunc();
         }
       );
     }
@@ -442,8 +497,22 @@ class RentMarket {
           // console.log("-- UnregisterService event");
           // console.log("serviceAddress: ", serviceAddress);
           // Update register data.
-          await this.fetchService();
-          this.onEventFunc();
+          await thisRentMarket.fetchService();
+          thisRentMarket.onEventFunc();
+        }
+      );
+    } else {
+      eventHash = keccak256("UnregisterService(address,string)");
+      this.alchemy.ws.on(
+        {
+          toAddress: this.rentMarketAddress,
+          topics: [`0x${Buffer.from(eventHash).toString("hex")}`],
+        },
+        async function (tx) {
+          // console.log("tx: ", tx);
+          // console.log("-- UnregisterService event");
+          await thisRentMarket.fetchService();
+          thisRentMarket.onEventFunc();
         }
       );
     }
@@ -463,36 +532,13 @@ class RentMarket {
           // console.log("tokenId: ", tokenId.toString());
           // Update request data.
           // await this.fetchRequestData();
-          await this.getMyContentData();
-          this.onEventFunc();
+          await thisRentMarket.getMyContentData();
+          thisRentMarket.onEventFunc();
         }
       );
-    }
-
-    // * Subscription to ChangeNFT event.
-    if (this.metamaskProvider !== null) {
-      // this.rentMarketContract.on(
-      //   "ChangeNFT",
-      //   async function (
-      //     nftAddress,
-      //     tokenId,
-      //     rentFee,
-      //     feeTokenAddress,
-      //     rentFeeByToken,
-      //     rentDuration,
-      //     NFTOwnerAddress,
-      //     changerAddress
-      //   ) {
-      //     // console.log("-- ChangeNFT event");
-      //     // console.log("tokenId: ", tokenId.toString());
-      //     // Update register data.
-      //     await thisRentMarket.fetchRegisterData();
-      //     await thisRentMarket.getMyContentData();
-      //     thisRentMarket.onEventFunc();
-      //   }
-      // );
+    } else {
       eventHash = keccak256(
-        "ChangeNFT(address,uint256,uint256,address,uint256,uint256,address,address)"
+        "RegisterNFT(address,uint256,uint256,uint256,address)"
       );
       this.alchemy.ws.on(
         {
@@ -500,7 +546,31 @@ class RentMarket {
           topics: [`0x${Buffer.from(eventHash).toString("hex")}`],
         },
         async function (tx) {
-          console.log("-- ChangeNFT event");
+          // console.log("tx: ", tx);
+          // console.log("-- RegisterNFT event");
+          await thisRentMarket.getMyContentData();
+          thisRentMarket.onEventFunc();
+        }
+      );
+    }
+
+    // * Subscription to ChangeNFT event.
+    if (this.metamaskProvider !== null) {
+      this.rentMarketContract.on(
+        "ChangeNFT",
+        async function (
+          nftAddress,
+          tokenId,
+          rentFee,
+          feeTokenAddress,
+          rentFeeByToken,
+          rentDuration,
+          NFTOwnerAddress,
+          changerAddress
+        ) {
+          // console.log("-- ChangeNFT event");
+          // console.log("tokenId: ", tokenId);
+          // Update register data.
           await thisRentMarket.fetchRegisterData();
           await thisRentMarket.getMyContentData();
           thisRentMarket.onEventFunc();
@@ -516,8 +586,11 @@ class RentMarket {
           topics: [`0x${Buffer.from(eventHash).toString("hex")}`],
         },
         async function (tx) {
-          console.log("-- ChangeNFT event");
-          console.log("tx: ", tx);
+          // console.log("-- ChangeNFT event");
+          // console.log("tx: ", tx);
+          await thisRentMarket.fetchRegisterData();
+          await thisRentMarket.getMyContentData();
+          thisRentMarket.onEventFunc();
         }
       );
     }
@@ -539,9 +612,26 @@ class RentMarket {
           // console.log("-- UnregisterNFT event");
           // console.log("tokenId: ", tokenId.toString());
           // Update register data.
-          await this.fetchRegisterData();
-          await this.getMyContentData();
-          this.onEventFunc();
+          await thisRentMarket.fetchRegisterData();
+          await thisRentMarket.getMyContentData();
+          thisRentMarket.onEventFunc();
+        }
+      );
+    } else {
+      eventHash = keccak256(
+        "UnregisterNFT(address,uint256,uint256,address,uint256,uint256,address,address)"
+      );
+      this.alchemy.ws.on(
+        {
+          toAddress: this.rentMarketAddress,
+          topics: [`0x${Buffer.from(eventHash).toString("hex")}`],
+        },
+        async function (tx) {
+          // console.log("tx: ", tx);
+          // console.log("-- UnregisterNFT event");
+          await thisRentMarket.fetchRegisterData();
+          await thisRentMarket.getMyContentData();
+          thisRentMarket.onEventFunc();
         }
       );
     }
@@ -566,9 +656,9 @@ class RentMarket {
           // console.log("-- RentNFT event");
           // console.log("tokenId: ", tokenId.toString());
           // Update register and rente data and interconnect them.
-          await this.fetchRegisterData();
-          await this.fetchPendingRentFee();
-          this.onEventFunc();
+          await thisRentMarket.fetchRegisterData();
+          await thisRentMarket.fetchPendingRentFee();
+          thisRentMarket.onEventFunc();
         }
       );
     } else {
@@ -580,8 +670,11 @@ class RentMarket {
           toAddress: this.rentMarketAddress,
           topics: [`0x${Buffer.from(eventHash).toString("hex")}`],
         },
-        function (tx) {
-          console.log("tx: ", tx);
+        async function (tx) {
+          // console.log("tx: ", tx);
+          await thisRentMarket.fetchRegisterData();
+          await thisRentMarket.fetchPendingRentFee();
+          thisRentMarket.onEventFunc();
         }
       );
     }
@@ -606,10 +699,27 @@ class RentMarket {
           // console.log("-- UnrentNFT event");
           // console.log("tokenId: ", tokenId.toString());
           // Update register and rente data and interconnect them.
-          await this.fetchRegisterData();
-          await this.fetchPendingRentFee();
-          await this.fetchAccountBalance();
-          this.onEventFunc();
+          await thisRentMarket.fetchRegisterData();
+          await thisRentMarket.fetchPendingRentFee();
+          await thisRentMarket.fetchAccountBalance();
+          thisRentMarket.onEventFunc();
+        }
+      );
+    } else {
+      eventHash = keccak256(
+        "UnrentNFT(address,uint256,uint256,address,uint256,bool,uint256,address,address,address,uint256)"
+      );
+      this.alchemy.ws.on(
+        {
+          toAddress: this.rentMarketAddress,
+          topics: [`0x${Buffer.from(eventHash).toString("hex")}`],
+        },
+        async function (tx) {
+          // console.log("tx: ", tx);
+          await thisRentMarket.fetchRegisterData();
+          await thisRentMarket.fetchPendingRentFee();
+          await thisRentMarket.fetchAccountBalance();
+          thisRentMarket.onEventFunc();
         }
       );
     }
@@ -634,10 +744,27 @@ class RentMarket {
           // console.log("-- SettleRentData event");
           // console.log("tokenId: ", tokenId.toString());
           // Update register data.
-          await this.fetchRegisterData();
-          await this.fetchPendingRentFee();
-          await this.fetchAccountBalance();
-          this.onEventFunc();
+          await thisRentMarket.fetchRegisterData();
+          await thisRentMarket.fetchPendingRentFee();
+          await thisRentMarket.fetchAccountBalance();
+          thisRentMarket.onEventFunc();
+        }
+      );
+    } else {
+      eventHash = keccak256(
+        "SettleRentData(address,uint256,uint256,address,uint256,bool,uint256,address,address,address,uint256)"
+      );
+      this.alchemy.ws.on(
+        {
+          toAddress: this.rentMarketAddress,
+          topics: [`0x${Buffer.from(eventHash).toString("hex")}`],
+        },
+        async function (tx) {
+          // console.log("tx: ", tx);
+          await thisRentMarket.fetchRegisterData();
+          await thisRentMarket.fetchPendingRentFee();
+          await thisRentMarket.fetchAccountBalance();
+          thisRentMarket.onEventFunc();
         }
       );
     }
@@ -649,8 +776,21 @@ class RentMarket {
         async function (recipient, tokenAddress, amount) {
           // console.log("-- WithdrawMyBalance event");
           // Update account data.
-          await this.fetchAccountBalance();
-          this.onEventFunc();
+          await thisRentMarket.fetchAccountBalance();
+          thisRentMarket.onEventFunc();
+        }
+      );
+    } else {
+      eventHash = keccak256("WithdrawMyBalance(address,address,uint256)");
+      this.alchemy.ws.on(
+        {
+          toAddress: this.rentMarketAddress,
+          topics: [`0x${Buffer.from(eventHash).toString("hex")}`],
+        },
+        async function (tx) {
+          // console.log("tx: ", tx);
+          await thisRentMarket.fetchAccountBalance();
+          thisRentMarket.onEventFunc();
         }
       );
     }
@@ -852,26 +992,8 @@ class RentMarket {
     const response = await this.rentMarketContract.getAllRegisterData();
     // console.log("getAllRegisterData response: ", response);
 
-    // * Get register data from smart contract.
     let registerData = [];
     response.forEach(function (element) {
-      // * Use a raw format instead of string.
-      // * Remove key.
-      // registerData.push({
-      //   key: element.nftAddress + element.tokenId.toString(),
-      //   nftAddress: element.nftAddress,
-      //   tokenId: element.tokenId.toString(),
-      //   rentFee: element.rentFee.toString(),
-      //   feeTokenAddress: element.feeTokenAddress,
-      //   rentFeeByToken: element.rentFeeByToken.toString(),
-      //   isRentByToken: element.isRentByToken,
-      //   rentDuration: element.rentDuration.toString(),
-      //   // For intersection with rentData, fill the rest with default value.
-      //   renterAddress: "0",
-      //   renteeAddress: "0",
-      //   serviceAddress: "0",
-      //   rentStartTimestamp: "0",
-      // });
       registerData.push({
         nftAddress: element.nftAddress,
         tokenId: element.tokenId,
