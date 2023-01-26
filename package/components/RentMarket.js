@@ -198,7 +198,7 @@ class RentMarket {
   }
 
   async initializeData() {
-    console.log("call initializeData()");
+    // console.log("call initializeData()");
     // console.log("this.currentBlockchainNetworkName: ", this.currentBlockchainNetworkName);
     // console.log("this.rentMarketAddress: ", this.rentMarketAddress);
     // console.log("this.inputBlockchainNetworkName: ", this.inputBlockchainNetworkName);
@@ -309,10 +309,9 @@ class RentMarket {
 
   async handleAccountsChanged(accounts) {
   	// * use thisRentMarket instead of this.
-    console.log("call handleAccountsChanged()");
-    console.log("accounts: ", accounts);
+    // console.log("call handleAccountsChanged()");
+    // console.log("accounts: ", accounts);
 
-    console.log("this: ", this);
     if (accounts.length === 0) {
       thisRentMarket.onErrorFunc &&
         thisRentMarket.onErrorFunc({
@@ -329,7 +328,6 @@ class RentMarket {
         severity: AlertSeverity.info,
         message: `Account is changed to ${accounts[0]}`,
       });
-    console.log("this: ", this);
 
     // * Reset data.
     await thisRentMarket.initializeData();
@@ -1190,8 +1188,8 @@ class RentMarket {
     rentFeeByToken,
     rentDuration,
   }) {
-    console.log("call changeNFT()");
-    console.log("provider: ", provider);
+    // console.log("call changeNFT()");
+    // console.log("provider: ", provider);
 
     // console.log("element: ", element);
     // console.log("typeof rentFee: ", typeof rentFee);
@@ -1228,7 +1226,7 @@ class RentMarket {
             ethers.utils.parseUnits(rentFeeByToken, "ether"),
             rentDuration
           );
-        console.log("tx: ", tx);
+        // console.log("tx: ", tx);
       } catch (error) {
         throw error;
       }
@@ -1272,7 +1270,7 @@ class RentMarket {
         const tx = await contract
           .connect(signer)
           .unregisterNFT(element.nftAddress, element.tokenId);
-        console.log("tx: ", tx);
+        // console.log("tx: ", tx);
       } catch (error) {
         throw error;
       }
@@ -1476,15 +1474,15 @@ class RentMarket {
   }
 
   async rentNFT({ provider, element, serviceAddress }) {
-    console.log("call rentNFT()");
-    console.log("element: ", element);
-    console.log("serviceAddress: ", serviceAddress);
+    // console.log("call rentNFT()");
+    // console.log("element: ", element);
+    // console.log("serviceAddress: ", serviceAddress);
 
     if (provider) {
       const web3Provider = new ethers.providers.Web3Provider(provider);
-      console.log("web3Provider: ", web3Provider);
+      // console.log("web3Provider: ", web3Provider);
       const signer = web3Provider.getSigner();
-      console.log("signer: ", signer);
+      // console.log("signer: ", signer);
 
       // * Get the rent market contract.
       const contract = new ethers.Contract(
@@ -1492,7 +1490,7 @@ class RentMarket {
         rentMarketABI["abi"],
         web3Provider
       );
-      console.log("contract: ", contract);
+      // console.log("contract: ", contract);
 
       try {
         const tx = await contract
@@ -1500,7 +1498,7 @@ class RentMarket {
           .rentNFT(element.nftAddress, element.tokenId, serviceAddress, {
             value: element.rentFee,
           });
-        console.log("tx: ", tx);
+        // console.log("tx: ", tx);
       } catch (error) {
         throw error;
       }
@@ -1571,7 +1569,7 @@ class RentMarket {
         const tx = await contract
           .connect(signer)
           .settleRentData(nftAddress, tokenId);
-        console.log("tx: ", tx);
+        // console.log("tx: ", tx);
       } catch (error) {
         throw error;
       }
