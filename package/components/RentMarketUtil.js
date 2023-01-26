@@ -44,11 +44,9 @@ export const humanFileSize = (bytes, si = false, dp = 1) => {
   return bytes.toFixed(dp) + " " + units[u];
 };
 
-//----------------------------------------------------------------------------
-// Switch to localhost network.
-//----------------------------------------------------------------------------
+// * Switch to localhost network.
 export const switchNetworkLocalhost = async (provider) => {
-  console.log("call switchNetworkLocalhost()");
+  // console.log("call switchNetworkLocalhost()");
 
   let response;
   // TODO: Why localhost can't be changed in metamask?
@@ -58,24 +56,24 @@ export const switchNetworkLocalhost = async (provider) => {
       // 1337 decimal.
       params: [{ chainId: "0x539" }],
     });
-    console.log("response: ", response);
+    // console.log("response: ", response);
 
     if (response === null) {
       // Switch chain success.
-      console.log("wallet_switchEthereumChain success");
+      // console.log("wallet_switchEthereumChain success");
       return null;
     } else {
       return response;
     }
   } catch (switchError) {
     // Switch chain fail.
-    console.log("wallet_switchEthereumChain fail");
-    console.log("wallet_switchEthereumChain response: ", response);
-    console.log("wallet_switchEthereumChain switchError: ", switchError);
+    // console.log("wallet_switchEthereumChain fail");
+    // console.log("wallet_switchEthereumChain response: ", response);
+    // console.log("wallet_switchEthereumChain switchError: ", switchError);
 
     // https://github.com/MetaMask/metamask-mobile/issues/2944
     if (switchError.code === 4902 || switchError.code === -32603) {
-      console.log("Try to wallet_addEthereumChain");
+      // console.log("Try to wallet_addEthereumChain");
 
       try {
         response = await provider.request({
@@ -96,12 +94,12 @@ export const switchNetworkLocalhost = async (provider) => {
 
         if (response === null) {
           // Add chain success.
-          console.log("wallet_addEthereumChain success");
+          // console.log("wallet_addEthereumChain success");
           return null;
         } else {
           // Add chain fail.
-          console.log("wallet_addEthereumChain fail");
-          console.log("wallet_addEthereumChain response: ", response);
+          // console.log("wallet_addEthereumChain fail");
+          // console.log("wallet_addEthereumChain response: ", response);
           return response;
         }
       } catch (addError) {
@@ -113,12 +111,10 @@ export const switchNetworkLocalhost = async (provider) => {
   }
 };
 
-//----------------------------------------------------------------------------
-// Switch to mumbai network.
-//----------------------------------------------------------------------------
+// * Switch to mumbai network.
 export const switchNetworkMumbai = async (provider) => {
-  console.log("switchNetworkMumbai");
-  console.log("Try to wallet_switchEthereumChain");
+  // console.log("call switchNetworkMumbai()");
+  // console.log("Try to wallet_switchEthereumChain");
 
   let response;
   try {
@@ -128,18 +124,18 @@ export const switchNetworkMumbai = async (provider) => {
     });
     if (response === null) {
       // Switch chain success.
-      console.log("wallet_switchEthereumChain success");
+      // console.log("wallet_switchEthereumChain success");
       return null;
     } else {
       return response;
     }
   } catch (switchError) {
     // Switch chain fail.
-    console.log("wallet_switchEthereumChain fail.");
-    console.log("wallet_switchEthereumChain response: ", switchError);
+    // console.log("wallet_switchEthereumChain fail.");
+    // console.log("wallet_switchEthereumChain response: ", switchError);
 
     if (switchError.code === 4902 || switchError.code === -32603) {
-      console.log("Try to wallet_addEthereumChain");
+      // console.log("Try to wallet_addEthereumChain");
 
       try {
         response = await provider.request({
@@ -162,12 +158,12 @@ export const switchNetworkMumbai = async (provider) => {
 
         if (response === null) {
           // Add chain success.
-          console.log("wallet_addEthereumChain success");
+          // console.log("wallet_addEthereumChain success");
           return null;
         } else {
           // Add chain fail.
-          console.log("wallet_addEthereumChain fail");
-          console.log("wallet_addEthereumChain response: ", response);
+          // console.log("wallet_addEthereumChain fail");
+          // console.log("wallet_addEthereumChain response: ", response);
           return response;
         }
       } catch (addError) {
@@ -179,9 +175,70 @@ export const switchNetworkMumbai = async (provider) => {
   }
 };
 
-//----------------------------------------------------------------------------
-// Change ipfs url to gateway url.
-//----------------------------------------------------------------------------
+// * Switch to polygon network.
+export const switchNetworkPolygon = async (provider) => {
+  // console.log("call switchNetworkPolygon()");
+
+  let response;
+  try {
+    response = await provider.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: "0x89" }],
+    });
+    if (response === null) {
+      // Switch chain success.
+      // console.log("wallet_switchEthereumChain success");
+      return null;
+    } else {
+      return response;
+    }
+  } catch (switchError) {
+    // Switch chain fail.
+    // console.log("wallet_switchEthereumChain fail.");
+    // console.log("wallet_switchEthereumChain response: ", switchError);
+
+    if (switchError.code === 4902 || switchError.code === -32603) {
+      // console.log("Try to wallet_addEthereumChain");
+
+      try {
+        response = await provider.request({
+          method: "wallet_addEthereumChain",
+          params: [
+            {
+              chainId: "0x89",
+              chainName: "Polygon",
+              rpcUrls: ["https://polygon-rpc.com"],
+              nativeCurrency: {
+                // https://etherscan.io/token/0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0#readContract
+                name: "Matic Token",
+                symbol: "MATIC",
+                decimals: 18,
+              },
+              blockExplorerUrls: ["https://www.polygonscan.com"],
+            },
+          ],
+        });
+
+        if (response === null) {
+          // Add chain success.
+          // console.log("wallet_addEthereumChain success");
+          return null;
+        } else {
+          // Add chain fail.
+          // console.log("wallet_addEthereumChain fail");
+          // console.log("wallet_addEthereumChain response: ", response);
+          return response;
+        }
+      } catch (addError) {
+        throw addError;
+      }
+    }
+
+    throw switchError;
+  }
+};
+
+// * Change ipfs url to gateway url.
 export const changeIPFSToGateway = (ipfsUrl) => {
   if (
     typeof ipfsUrl === "string" &&
@@ -361,6 +418,8 @@ export const getErrorDescription = ({ errorString }) => {
 };
 
 export const getChainName = ({ chainId }) => {
+  // console.log("-- chainId: ", chainId);
+
   // https://github.com/DefiLlama/chainlist/blob/main/constants/chainIds.js
   const chainIds = {
     0: "kardia",
@@ -391,7 +450,7 @@ export const getChainName = ({ chainId }) => {
     108: "thundercore",
     122: "fuse",
     128: "heco",
-    137: "polygon",
+    137: "matic",
     200: "xdaiarb",
     246: "energyweb",
     250: "fantom",
@@ -430,7 +489,7 @@ export const getChainName = ({ chainId }) => {
     47805: "rei",
     55555: "reichain",
     71402: "godwoken",
-    80001: "mumbai",
+    80001: "maticmum",
     333999: "polis",
     888888: "vision",
     1313161554: "aurora",
@@ -439,9 +498,12 @@ export const getChainName = ({ chainId }) => {
     836542336838601: "curio",
   };
 
-  // console.log("chainId: ", chainId);
   if (typeof chainId === "string" || chainId instanceof String) {
-    return chainIds[Number(chainId)];
+    if (chainId.startsWith("0x") === true) {
+      return chainIds[Number(chainId)];
+    } else {
+      return chainId;
+    }
   } else if (isInt(chainId) === true) {
     return chainIds[chainId];
   }

@@ -1,28 +1,29 @@
 import React from "react";
 import detectEthereumProvider from "@metamask/detect-provider";
 import MetaMaskOnboarding from "@metamask/onboarding";
-import { Popover, Typography, Button, Portal } from "@mui/material";
+import { Popover, Typography, Button } from "@mui/material";
+import AccountBoxRoundedIcon from "@mui/icons-material/AccountBoxRounded";
 import {
   switchNetworkMumbai,
+  switchNetworkPolygon,
   switchNetworkLocalhost,
-  ConnectStatus,
   RBSnackbar,
   AlertSeverity,
   shortenAddress,
   getChainName,
 } from "./RentMarketUtil";
 
-const Metamask = ({ blockchainNetwork }) => {
-  //----------------------------------------------------------------------------
-  // Constant variables.
-  //----------------------------------------------------------------------------
+const Metamask = ({ inputBlockchainNetwork }) => {
+  // * -------------------------------------------------------------------------
+  // * Constant variables.
+  // * -------------------------------------------------------------------------
   const ONBOARD_TEXT = "Click here to install MetaMask!";
   const CONNECT_TEXT = "Connect";
   const CONNECTED_TEXT = "Connected";
 
-  //----------------------------------------------------------------------------
-  // Metamask variables.
-  //----------------------------------------------------------------------------
+  // * -------------------------------------------------------------------------
+  // * Metamask variables.
+  // * -------------------------------------------------------------------------
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
@@ -32,9 +33,9 @@ const Metamask = ({ blockchainNetwork }) => {
   const [metamaskChainId, setMetamaskChainId] = React.useState("");
   const [metamaskChainName, setMetamaskChainName] = React.useState("n/a");
 
-  //----------------------------------------------------------------------------
-  // Handle toast mesage.
-  //----------------------------------------------------------------------------
+  // * -------------------------------------------------------------------------
+  // * Handle toast mesage.
+  // * -------------------------------------------------------------------------
   const [snackbarValue, setSnackbarValue] = React.useState({
     snackbarSeverity: AlertSeverity.info,
     snackbarMessage: "",
@@ -44,97 +45,100 @@ const Metamask = ({ blockchainNetwork }) => {
   const { snackbarSeverity, snackbarMessage, snackbarTime, snackbarOpen } =
     snackbarValue;
 
-  //----------------------------------------------------------------------------
-  // Metamask provider variables.
-  //----------------------------------------------------------------------------
+  // * -------------------------------------------------------------------------
+  // * Metamask provider variables.
+  // * -------------------------------------------------------------------------
   const metamaskProvider = React.useRef();
   const onboarding = React.useRef();
 
-  //----------------------------------------------------------------------------
-  // Initialize useEffect case.
-  //----------------------------------------------------------------------------
+  // * -------------------------------------------------------------------------
+  // * Initialize useEffect case.
+  // * -------------------------------------------------------------------------
   React.useEffect(() => {
-    if (!onboarding.current) {
-      onboarding.current = new MetaMaskOnboarding();
-    }
+    // console.log("call useEffect()");
 
-    if (MetaMaskOnboarding.isMetaMaskInstalled()) {
-      getMetamaskEthereumProvider();
+    async function initialize() {
+      if (!onboarding.current) {
+        onboarding.current = new MetaMaskOnboarding();
+      }
 
-      return () => {
-        // TODO: Remove event listener.
-        // metamaskProvider.current.removeListener(
-        //   "accountsChanged",
-        //   handleAccountsChanged
-        // );
-        // metamaskProvider.current.removeListener(
-        //   "chainChanged",
-        //   handleChainChanged
-        // );
-        // metamaskProvider.current.removeListener("disconnect", handleDisconnect);
-      };
-    } else {
-      // console.log("metamaskConnect false");
-      setMetamaskLogin(false);
+      if (MetaMaskOnboarding.isMetaMaskInstalled()) {
+        await getMetamaskEthereumProvider();
+
+        return () => {
+          // TODO: Remove event listener.
+          // metamaskProvider.current.removeListener(
+          //   "accountsChanged",
+          //   handleAccountsChanged
+          // );
+          // metamaskProvider.current.removeListener(
+          //   "chainChanged",
+          //   handleChainChanged
+          // );
+          // metamaskProvider.current.removeListener("disconnect", handleDisconnect);
+        };
+      } else {
+        // console.log("metamaskConnect false");
+        setMetamaskLogin(false);
+      }
     }
+    initialize();
   }, [metamaskProvider.current]);
 
-  //----------------------------------------------------------------------------
-  // Get metamask provider and set event listener and
-  // call initial event for account and chain.
-  //----------------------------------------------------------------------------
-  const getMetamaskEthereumProvider = async () => {
+  // * -------------------------------------------------------------------------
+  // * Get metamask provider and set event listener and
+  // * call initial event for account and chain.
+  // * -------------------------------------------------------------------------
+  async function getMetamaskEthereumProvider() {
+    // console.log("call getMetamaskEthereumProvider()");
+
     metamaskProvider.current = await detectEthereumProvider({
       mustBeMetaMask: true,
     });
 
-    // Open metamask.
-    metamaskProvider.current
-      .request({ method: "eth_requestAccounts" })
-      .then(handleAccountsChanged)
-      .catch((error) => {
-        console.error(error);
+    // * Open metamask.
+    try {
+      const accounts = await metamaskProvider.current.request({
+        method: "eth_requestAccounts",
       });
+      handleAccountsChanged(accounts);
+      handleChainChanged();
+    } catch (error) {
+      console.error(error);
+    }
 
-    // Add event listener.
+    // * Add event listener.
     metamaskProvider.current.on("accountsChanged", handleAccountsChanged);
     metamaskProvider.current.on("chainChanged", handleChainChanged);
     // metamaskProvider.current.on("disconnect", handleDisconnect);
+  }
 
-    handleAccountsChanged();
-    handleChainChanged();
-  };
+  // * -------------------------------------------------------------------------
+  // * Account change case.
+  // * -------------------------------------------------------------------------
+  async function handleAccountsChanged(accounts) {
+    // console.log("call handleAccountsChanged()");
+    // console.log("accounts: ", accounts);
 
-  //----------------------------------------------------------------------------
-  // Account change case.
-  //----------------------------------------------------------------------------
-  const handleAccountsChanged = async (accounts) => {
-    // console.log("handleAccountsChanged accounts: ", accounts);
     if (accounts) {
       if (accounts.length === 0) {
         // console.log("metamaskConnect false");
         setMetamaskLogin(false);
-
-        // MetaMask is locked or the user has not connected any accounts.
-        // console.log("Please connect to MetaMask.");
-
-        // TODO: No account, send user message to make a new account.
       } else if (accounts[0] !== metamaskAccountAddress) {
-        setMetamaskAccountAddress(accounts[0]);
-
-        // console.log("metamaskConnect true");
-        setMetamaskLogin(true);
+        // console.log("accounts: ", accounts);
+        // console.log("accounts[0]: ", accounts[0]);
+        setMetamaskAccountAddress((prevState) => accounts[0]);
       }
     } else {
       // console.log("metamaskConnect false");
       setMetamaskLogin(false);
     }
-  };
+  }
 
-  //----------------------------------------------------------------------------
-  // Chain network change case.
-  //----------------------------------------------------------------------------
-  const handleChainChanged = async () => {
+  // * -------------------------------------------------------------------------
+  // * Chain network change case.
+  // * -------------------------------------------------------------------------
+  async function handleChainChanged() {
     // console.log("handleChainChanged");
     const chainId = await metamaskProvider.current.request({
       method: "eth_chainId",
@@ -146,106 +150,108 @@ const Metamask = ({ blockchainNetwork }) => {
       setMetamaskChainName(getChainName({ chainId }));
     }
 
-    if (chainId === blockchainNetwork) {
+    // * Compare blockchain network id case or name case.
+    if (
+      chainId === inputBlockchainNetwork ||
+      getChainName({ chainId: chainId }) === inputBlockchainNetwork
+    ) {
       // console.log("metamaskConnect true");
       setMetamaskLogin(true);
     } else {
       // console.log("metamaskConnect false");
       setMetamaskLogin(false);
     }
-  };
+  }
 
-  //----------------------------------------------------------------------------
-  // Disconnect network change case.
-  //----------------------------------------------------------------------------
-  const handleDisconnect = async () => {
+  // * -------------------------------------------------------------------------
+  // * Disconnect network change case.
+  // * -------------------------------------------------------------------------
+  async function handleDisconnect() {
     // console.log("handleDisconnect");
     // console.log("metamaskConnect false");
     setMetamaskLogin(false);
-  };
+  }
 
-  //----------------------------------------------------------------------------
-  // Connect network change case.
-  //----------------------------------------------------------------------------
-  const connectMetamask = async () => {
-    console.log("call connectMetamask()");
+  // * -------------------------------------------------------------------------
+  // * Connect network change case.
+  // * -------------------------------------------------------------------------
+  async function connectMetamask() {
+    // console.log("call connectMetamask()");
 
-    // 1. Get metamask account.
+    // * Get metamask account.
     try {
-      metamaskProvider.current
-        .request({ method: "eth_requestAccounts" })
-        .then(handleAccountsChanged)
-        .catch((error) => {
-          console.error(error);
-          if (error.code === 4001) {
-            // EIP-1193 userRejectedRequest error
-            // showSnackbar("Please connect to MetaMask.");
-            // console.log("Please connect to MetaMask.");
-            setSnackbarValue({
-              snackbarSeverity: AlertSeverity.error,
-              snackbarMessage: "Please connect to Metamask",
-              snackbarTime: new Date(),
-              snackbarOpen: true,
-            });
-          } else {
-            // showSnackbar(error);
-            console.error(error);
-            setSnackbarValue({
-              snackbarSeverity: AlertSeverity.error,
-              snackbarMessage: error.reason,
-              snackbarTime: new Date(),
-              snackbarOpen: true,
-            });
-          }
-        });
-
-      // 2. Set metamask chain id to mumbai.
-      let response;
-      console.log("blockchainNetwork: ", blockchainNetwork);
-      if (blockchainNetwork === "0x539") {
-        response = await switchNetworkLocalhost(metamaskProvider.current);
-      } else if (blockchainNetwork === "0x13881") {
-        response = await switchNetworkMumbai(metamaskProvider.current);
-      } else {
-        console.error("No support blockchain network: ", blockchainNetwork);
-        response = "error";
-      }
-
-      if (response === null) {
-        // 3. Set state variables.
-        setMetamaskChainId(blockchainNetwork);
-        setMetamaskChainName(getChainName({ chainId: blockchainNetwork }));
-
-        // 4. Set true to login state.
-        // console.log("metamaskConnect true");
-        setMetamaskLogin(true);
-      } else {
-        // console.log("metamaskConnect false");
-        setMetamaskLogin(false);
-      }
+      const accounts = metamaskProvider.current.request({
+        method: "eth_requestAccounts",
+      });
+      handleAccountsChanged(accounts);
     } catch (error) {
-      // console.log("connectMetamask throw error");
+      if (error.code === 4001) {
+        // EIP-1193 userRejectedRequest error
+        // console.log("Please connect to MetaMask.");
+        setSnackbarValue({
+          snackbarSeverity: AlertSeverity.error,
+          snackbarMessage: "Please connect to Metamask",
+          snackbarTime: new Date(),
+          snackbarOpen: true,
+        });
+      } else {
+        setSnackbarValue({
+          snackbarSeverity: AlertSeverity.error,
+          snackbarMessage: error.reason,
+          snackbarTime: new Date(),
+          snackbarOpen: true,
+        });
+      }
       throw error;
     }
-  };
 
-  //----------------------------------------------------------------------------
-  // Metamask related functions.
-  //----------------------------------------------------------------------------
-  const handleMetamaskButtonClick = (event) => {
+    // * Set metamask chain id to the preset blockchain network.
+    let response;
+    // console.log("inputBlockchainNetwork: ", inputBlockchainNetwork);
+    if (getChainName({ chainId: inputBlockchainNetwork }) === "localhost") {
+      response = await switchNetworkLocalhost(metamaskProvider.current);
+    } else if (
+      getChainName({ chainId: inputBlockchainNetwork }) === "maticmum"
+    ) {
+      response = await switchNetworkMumbai(metamaskProvider.current);
+    } else if (getChainName({ chainId: inputBlockchainNetwork }) === "matic") {
+      response = await switchNetworkPolygon(metamaskProvider.current);
+    } else {
+      console.error("No support blockchain network: ", inputBlockchainNetwork);
+      response = "error";
+    }
+
+    if (response === null) {
+      // * Set state variables.
+      setMetamaskChainId(inputBlockchainNetwork);
+      setMetamaskChainName(getChainName({ chainId: inputBlockchainNetwork }));
+
+      // * Set true to login state.
+      // console.log("metamaskConnect true");
+      setMetamaskLogin(true);
+    } else {
+      // console.log("metamaskConnect false");
+      setMetamaskLogin(false);
+    }
+  }
+
+  // * -------------------------------------------------------------------------
+  // * Metamask related functions.
+  // * -------------------------------------------------------------------------
+  function handleMetamaskButtonClick(event) {
     // console.log("event: ", event);
     setAnchorEl(event.currentTarget);
-  };
+  }
 
-  const handleClose = () => {
+  function handleClose() {
     setAnchorEl(null);
-  };
+  }
 
   return (
     <div>
-      {/*--------------------------------------------------------------------*/}
-      {/* Show metamask button.                                              */}
-      {/*--------------------------------------------------------------------*/}
+      {/* // * --------------------------------------------------------------*/}
+      {/* // * Show metamask button.                                         */}
+      {/* // * --------------------------------------------------------------*/}
       <Button
         aria-describedby={id}
         variant="contained"
@@ -275,6 +281,7 @@ const Metamask = ({ blockchainNetwork }) => {
           }
         }}
         color={metamaskLogin ? "success" : "error"}
+        endIcon={metamaskLogin ? <AccountBoxRoundedIcon /> : <></>}
       >
         {metamaskLogin
           ? CONNECTED_TEXT
@@ -283,9 +290,9 @@ const Metamask = ({ blockchainNetwork }) => {
           : ONBOARD_TEXT}
       </Button>
 
-      {/*--------------------------------------------------------------------*/}
-      {/* Show popover.                                                      */}
-      {/*--------------------------------------------------------------------*/}
+      {/* // * --------------------------------------------------------------*/}
+      {/* // * Show popover.                                                 */}
+      {/* // * --------------------------------------------------------------*/}
       <Popover
         id={id}
         open={open}
@@ -295,6 +302,7 @@ const Metamask = ({ blockchainNetwork }) => {
           vertical: "bottom",
           horizontal: "left",
         }}
+        disableRestoreFocus
       >
         <Typography sx={{ p: 2 }}>
           Account : {shortenAddress(metamaskAccountAddress, 20)} <br /> Chain :{" "}
@@ -302,9 +310,9 @@ const Metamask = ({ blockchainNetwork }) => {
         </Typography>
       </Popover>
 
-      {/*--------------------------------------------------------------------*/}
-      {/* Snackbar component.                                                */}
-      {/*--------------------------------------------------------------------*/}
+      {/* // * --------------------------------------------------------------*/}
+      {/* // * Snackbar component.                                           */}
+      {/* // * --------------------------------------------------------------*/}
       <RBSnackbar
         open={snackbarOpen}
         message={snackbarMessage}

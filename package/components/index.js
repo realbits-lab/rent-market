@@ -14,7 +14,6 @@ import {
   RBSnackbar,
   getUniqueKey,
   getChainName,
-  LOCAL_CHAIN_ID,
 } from "./RentMarketUtil";
 import RentMarket from "./RentMarket";
 
@@ -35,5 +34,4 @@ export {
   RBSnackbar,
   getUniqueKey,
   getChainName,
-  LOCAL_CHAIN_ID,
 };
