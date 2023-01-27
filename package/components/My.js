@@ -180,92 +180,93 @@ const My = ({
 
     return (
       <TableBody key={getUniqueKey()}>
-        {elementArray
-          .slice(
-            tablePage * tableRowsPerPage,
-            tablePage * tableRowsPerPage + tableRowsPerPage
-          )
-          .map((element) => {
-            const rentStartTimestamp = element.rentStartTimestamp
-              ? element.rentStartTimestamp.toNumber()
-              : 0;
+        {elementArray &&
+          elementArray
+            .slice(
+              tablePage * tableRowsPerPage,
+              tablePage * tableRowsPerPage + tableRowsPerPage
+            )
+            .map((element) => {
+              const rentStartTimestamp = element.rentStartTimestamp
+                ? element.rentStartTimestamp.toNumber()
+                : 0;
 
-            // * Get rent duration display string for own case.
-            const durationTimestampDisplay = `${moment
-              .unix(element.rentDuration.toNumber())
-              .diff(0, "days", true)} day`;
-            // console.log("durationTimestampDisplay: ", durationTimestampDisplay);
+              // * Get rent duration display string for own case.
+              const durationTimestampDisplay = `${moment
+                .unix(element.rentDuration.toNumber())
+                .diff(0, "days", true)} day`;
+              // console.log("durationTimestampDisplay: ", durationTimestampDisplay);
 
-            // * Get end rent time display string for rent case.
-            const endRentTimestamp =
-              rentStartTimestamp + element.rentDuration.toNumber();
-            // console.log("endRentTimestamp: ", endRentTimestamp);
-            const currentTimestamp = new Date().getTime() / 1000;
-            let endRentTimestampDisplay;
-            if (currentTimestamp >= endRentTimestamp) {
-              endRentTimestampDisplay = "finished";
-            } else {
-              endRentTimestampDisplay = moment
-                .unix(endRentTimestamp)
-                .fromNow(true);
-            }
-            // console.log("currentTimestamp: ", currentTimestamp);
-            // console.log("endRentTimestampDisplay: ", endRentTimestampDisplay);
+              // * Get end rent time display string for rent case.
+              const endRentTimestamp =
+                rentStartTimestamp + element.rentDuration.toNumber();
+              // console.log("endRentTimestamp: ", endRentTimestamp);
+              const currentTimestamp = new Date().getTime() / 1000;
+              let endRentTimestampDisplay;
+              if (currentTimestamp >= endRentTimestamp) {
+                endRentTimestampDisplay = "finished";
+              } else {
+                endRentTimestampDisplay = moment
+                  .unix(endRentTimestamp)
+                  .fromNow(true);
+              }
+              // console.log("currentTimestamp: ", currentTimestamp);
+              // console.log("endRentTimestampDisplay: ", endRentTimestampDisplay);
 
-            return (
-              <TableRow
-                key={getUniqueKey()}
-                onClick={(event) => {
-                  if (selectAvatarFunc) {
-                    selectAvatarFunc(element);
-                  }
-
-                  setWriteToastMessage({
-                    snackbarSeverity: AlertSeverity.info,
-                    snackbarMessage: `You select ${
-                      element.metadata ? element.metadata.name : "..."
-                    } avatar.`,
-                    snackbarTime: new Date(),
-                    snackbarOpen: true,
-                  });
-                }}
-                sx={{
-                  "&:hover": {
-                    backgroundColor: theme.palette.success.light,
-                  },
-                  "&:hover .MuiTableCell-root": {
-                    color: "white",
-                  },
-                }}
-                style={{
-                  cursor: "pointer",
-                }}
-              >
-                <TableCell align="center" style={{ borderColor: "#FFF7ED" }}>
-                  <Avatar
-                    alt="image"
-                    src={
-                      element.metadata
-                        ? changeIPFSToGateway(element.metadata.image)
-                        : ""
+              return (
+                <TableRow
+                  key={getUniqueKey()}
+                  onClick={(event) => {
+                    if (selectAvatarFunc) {
+                      selectAvatarFunc(element);
                     }
-                    sx={{ width: RBSize.big, height: RBSize.big }}
-                  />
-                </TableCell>
-                <TableCell align="center" style={{ borderColor: "#FFF7ED" }}>
-                  {element.metadata ? element.metadata.name : "N/A"}
-                </TableCell>
-                <TableCell align="center" style={{ borderColor: "#FFF7ED" }}>
-                  {element.rentFee / Math.pow(10, 18)}
-                </TableCell>
-                <TableCell align="center" style={{ borderColor: "#FFF7ED" }}>
-                  {type === MyMenu.own
-                    ? durationTimestampDisplay
-                    : endRentTimestampDisplay}
-                </TableCell>
-              </TableRow>
-            );
-          })}
+
+                    setWriteToastMessage({
+                      snackbarSeverity: AlertSeverity.info,
+                      snackbarMessage: `You select ${
+                        element.metadata ? element.metadata.name : "..."
+                      } avatar.`,
+                      snackbarTime: new Date(),
+                      snackbarOpen: true,
+                    });
+                  }}
+                  sx={{
+                    "&:hover": {
+                      backgroundColor: theme.palette.success.light,
+                    },
+                    "&:hover .MuiTableCell-root": {
+                      color: "white",
+                    },
+                  }}
+                  style={{
+                    cursor: "pointer",
+                  }}
+                >
+                  <TableCell align="center" style={{ borderColor: "#FFF7ED" }}>
+                    <Avatar
+                      alt="image"
+                      src={
+                        element.metadata
+                          ? changeIPFSToGateway(element.metadata.image)
+                          : ""
+                      }
+                      sx={{ width: RBSize.big, height: RBSize.big }}
+                    />
+                  </TableCell>
+                  <TableCell align="center" style={{ borderColor: "#FFF7ED" }}>
+                    {element.metadata ? element.metadata.name : "N/A"}
+                  </TableCell>
+                  <TableCell align="center" style={{ borderColor: "#FFF7ED" }}>
+                    {element.rentFee / Math.pow(10, 18)}
+                  </TableCell>
+                  <TableCell align="center" style={{ borderColor: "#FFF7ED" }}>
+                    {type === MyMenu.own
+                      ? durationTimestampDisplay
+                      : endRentTimestampDisplay}
+                  </TableCell>
+                </TableRow>
+              );
+            })}
       </TableBody>
     );
   }
@@ -372,7 +373,7 @@ const My = ({
                 <TablePagination
                   key={getUniqueKey()}
                   rowsPerPageOptions={[5, 10, 20]}
-                  count={elementArray.length}
+                  count={elementArray ? elementArray.length : 0}
                   page={tablePage}
                   rowsPerPage={tableRowsPerPage}
                   labelRowsPerPage={""}
@@ -606,16 +607,20 @@ const My = ({
           let type = MyMenu.own;
 
           if (selectedItem === MyMenu.own) {
-            elementArray = inputMyRegisteredNFTArray.filter(
-              (nftElement) =>
-                nftElement.nftAddress === element.collectionAddress
-            );
+            elementArray =
+              inputMyRegisteredNFTArray &&
+              inputMyRegisteredNFTArray.filter(
+                (nftElement) =>
+                  nftElement.nftAddress === element.collectionAddress
+              );
             type = MyMenu.own;
           } else {
-            elementArray = myRentNFTArray.filter(
-              (nftElement) =>
-                nftElement.nftAddress === element.collectionAddress
-            );
+            elementArray =
+              myRentNFTArray &&
+              myRentNFTArray.filter(
+                (nftElement) =>
+                  nftElement.nftAddress === element.collectionAddress
+              );
             type = MyMenu.rent;
           }
 
