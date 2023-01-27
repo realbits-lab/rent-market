@@ -16,6 +16,7 @@ import {
   RBSnackbar,
   getUniqueKey,
   getChainName,
+  isUserAllowed,
 } from "./RentMarketUtil";
 import RentMarket from "./RentMarket";
 
@@ -38,4 +39,5 @@ export {
   RBSnackbar,
   getUniqueKey,
   getChainName,
+  isUserAllowed,
 };

@@ -413,8 +413,8 @@ export function RBSnackbar({ open, message, severity, currentTime }) {
 }
 
 export async function isUserAllowed({ rentMarket }) {
-  // console.log("call isUserAllowed()");
-  // console.log("rentMarket: ", rentMarket);
+  console.log("call isUserAllowed()");
+  console.log("rentMarket: ", rentMarket);
 
   if (rentMarket === undefined) {
     return false;
@@ -426,8 +426,7 @@ export async function isUserAllowed({ rentMarket }) {
   try {
     response = await rentMarket.isOwnerOrRenter(rentMarket.signerAddress);
   } catch (error) {
-    console.error(error);
-    return false;
+    throw error;
   }
 
   // console.log("response: ", response);
