@@ -1,3 +1,5 @@
+import My from "./My";
+import Market from "./Market";
 import Metamask from "./Metamask";
 import {
   humanFileSize,
@@ -18,6 +20,8 @@ import {
 import RentMarket from "./RentMarket";
 
 export {
+  My,
+  Market,
   Metamask,
   humanFileSize,
   switchNetworkLocalhost,

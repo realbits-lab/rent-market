@@ -1,13 +1,6 @@
 import React from "react";
 import { Link, Portal, Snackbar, Alert as MuiAlert } from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
-import {
-  RecoilRoot,
-  atom,
-  selector,
-  useRecoilState,
-  useRecoilValue,
-} from "recoil";
 
 /**
  * Format bytes as human-readable text.
@@ -272,11 +265,30 @@ export const checkMobile = () => {
   return check;
 };
 
-export const shortenAddress = (address, number = 4, withLink = true) => {
-  const POLYGON_SCAN_URL = "https://mumbai.polygonscan.com/address/";
-  const polygonScanUrl = `${POLYGON_SCAN_URL}${address}`;
+export const shortenAddress = ({ address, number = 4, withLink = "" }) => {
+  // console.log("address: ", address);
+  // console.log("withLink: ", withLink);
+
+  const POLYGON_MATICMUM_SCAN_URL = "https://mumbai.polygonscan.com/address/";
+  const POLYGON_MATIC_SCAN_URL = "https://polygonscan.com/address/";
+  const OPENSEA_MATIC_URL = "https://opensea.io/assets?search[query]=";
+  const OPENSEA_MATICMUM_URL =
+    "https://testnets.opensea.io/assets?search[query]=";
   let stringLength = 0;
   let middleString = "";
+
+  let openseaUrl;
+  let polygonScanUrl;
+  if (process.env.NEXT_PUBLIC_BLOCKCHAIN_NETWORK === "matic") {
+    openseaUrl = OPENSEA_MATIC_URL;
+    polygonScanUrl = `${POLYGON_MATIC_SCAN_URL}${address}`;
+  } else if (process.env.NEXT_PUBLIC_BLOCKCHAIN_NETWORK === "maticmum") {
+    openseaUrl = OPENSEA_MATICMUM_URL;
+    polygonScanUrl = `${POLYGON_MATICMUM_SCAN_URL}${address}`;
+  } else {
+    openseaUrl = "";
+    polygonScanUrl = "";
+  }
 
   // Check number maximum.
   if (number > 19 || number < 1) {
@@ -291,20 +303,35 @@ export const shortenAddress = (address, number = 4, withLink = true) => {
     (typeof address === "string" || address instanceof String) &&
     address.length > 0
   ) {
-    if (withLink === true) {
-      return (
-        <Link href={polygonScanUrl} target="_blank">
-          {`${address.substring(
-            0,
-            number + 2
-          )}${middleString}${address.substring(address.length - number)}`}
-        </Link>
-      );
-    } else {
-      return `${address.substring(
-        0,
-        number + 2
-      )}${middleString}${address.substring(address.length - number)}`;
+    switch (withLink) {
+      case "maticscan":
+      case "scan":
+        return (
+          <Link href={polygonScanUrl} target="_blank">
+            {`${address.substring(
+              0,
+              number + 2
+            )}${middleString}${address.substring(address.length - number)}`}
+          </Link>
+        );
+
+      case "opensea_matic":
+      case "opensea_maticmum":
+      case "opensea":
+        return (
+          <Link href={`${openseaUrl}${address}`} target="_blank">
+            {`${address.substring(
+              0,
+              number + 2
+            )}${middleString}${address.substring(address.length - number)}`}
+          </Link>
+        );
+
+      default:
+        return `${address.substring(
+          0,
+          number + 2
+        )}${middleString}${address.substring(address.length - number)}`;
     }
   } else {
     return "";
@@ -517,5 +544,3 @@ export const isInt = (value) => {
   const x = parseFloat(value);
   return !isNaN(value) && (x | 0) === x;
 };
-
-export const LOCAL_CHAIN_ID = "0x539";
