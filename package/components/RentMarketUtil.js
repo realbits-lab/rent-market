@@ -13,7 +13,7 @@ import { v4 as uuidv4 } from "uuid";
  * @return Formatted string.
  */
 // https://stackoverflow.com/questions/10420352/converting-file-size-in-bytes-to-human-readable-string
-export const humanFileSize = (bytes, si = false, dp = 1) => {
+export function humanFileSize(bytes, si = false, dp = 1) {
   const thresh = si ? 1000 : 1024;
 
   if (Math.abs(bytes) < thresh) {
@@ -35,10 +35,10 @@ export const humanFileSize = (bytes, si = false, dp = 1) => {
   );
 
   return bytes.toFixed(dp) + " " + units[u];
-};
+}
 
 // * Switch to localhost network.
-export const switchNetworkLocalhost = async (provider) => {
+export async function switchNetworkLocalhost(provider) {
   // console.log("call switchNetworkLocalhost()");
 
   let response;
@@ -102,10 +102,10 @@ export const switchNetworkLocalhost = async (provider) => {
 
     throw switchError;
   }
-};
+}
 
 // * Switch to mumbai network.
-export const switchNetworkMumbai = async (provider) => {
+export async function switchNetworkMumbai(provider) {
   // console.log("call switchNetworkMumbai()");
   // console.log("Try to wallet_switchEthereumChain");
 
@@ -166,10 +166,10 @@ export const switchNetworkMumbai = async (provider) => {
 
     throw switchError;
   }
-};
+}
 
 // * Switch to polygon network.
-export const switchNetworkPolygon = async (provider) => {
+export async function switchNetworkPolygon(provider) {
   // console.log("call switchNetworkPolygon()");
 
   let response;
@@ -229,10 +229,10 @@ export const switchNetworkPolygon = async (provider) => {
 
     throw switchError;
   }
-};
+}
 
 // * Change ipfs url to gateway url.
-export const changeIPFSToGateway = (ipfsUrl) => {
+export function changeIPFSToGateway(ipfsUrl) {
   if (
     typeof ipfsUrl === "string" &&
     ipfsUrl.length > 6 &&
@@ -247,9 +247,9 @@ export const changeIPFSToGateway = (ipfsUrl) => {
   } else {
     return ipfsUrl;
   }
-};
+}
 
-export const checkMobile = () => {
+export function checkMobile() {
   let check = false;
   (function (a) {
     if (
@@ -263,9 +263,9 @@ export const checkMobile = () => {
       check = true;
   })(navigator.userAgent || navigator.vendor);
   return check;
-};
+}
 
-export const shortenAddress = ({ address, number = 4, withLink = "" }) => {
+export function shortenAddress({ address, number = 4, withLink = "" }) {
   // console.log("address: ", address);
   // console.log("withLink: ", withLink);
 
@@ -336,7 +336,7 @@ export const shortenAddress = ({ address, number = 4, withLink = "" }) => {
   } else {
     return "";
   }
-};
+}
 
 export const ConnectStatus = {
   connect: "connect",
@@ -412,7 +412,7 @@ export function RBSnackbar({ open, message, severity, currentTime }) {
   );
 }
 
-export const isUserAllowed = async ({ rentMarket }) => {
+export async function isUserAllowed({ rentMarket }) {
   // console.log("call isUserAllowed()");
   // console.log("rentMarket: ", rentMarket);
 
@@ -433,14 +433,14 @@ export const isUserAllowed = async ({ rentMarket }) => {
   // console.log("response: ", response);
   // * response type is bool (success or failure).
   return response;
-};
+}
 
-export const getUniqueKey = () => {
+export function getUniqueKey() {
   // return Math.random().toString(16).slice(2);
   return uuidv4();
-};
+}
 
-export const getErrorDescription = ({ errorString }) => {
+export function getErrorDescription({ errorString }) {
   const errorCode = {
     RM1: "The same element is already request.",
     RM2: "The same element is already register.",
@@ -465,9 +465,9 @@ export const getErrorDescription = ({ errorString }) => {
   };
 
   return errorCode[errorString];
-};
+}
 
-export const getChainName = ({ chainId }) => {
+export function getChainName({ chainId }) {
   // console.log("-- chainId: ", chainId);
 
   // https://github.com/DefiLlama/chainlist/blob/main/constants/chainIds.js
@@ -557,13 +557,15 @@ export const getChainName = ({ chainId }) => {
   } else if (isInt(chainId) === true) {
     return chainIds[chainId];
   }
-};
+}
 
 // https://levelup.gitconnected.com/how-to-check-for-an-object-in-javascript-object-null-check-3b2632330296
-export const isObject = (value) => typeof value === "object" && value !== null;
+export function isObject(value) {
+  return typeof value === "object" && value !== null;
+}
 
 // https://stackoverflow.com/questions/14636536/how-to-check-if-a-variable-is-an-integer-in-javascript
-export const isInt = (value) => {
+export function isInt(value) {
   const x = parseFloat(value);
   return !isNaN(value) && (x | 0) === x;
-};
+}
