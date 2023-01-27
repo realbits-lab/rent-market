@@ -412,6 +412,29 @@ export function RBSnackbar({ open, message, severity, currentTime }) {
   );
 }
 
+export const isUserAllowed = async ({ rentMarket }) => {
+  // console.log("call isUserAllowed()");
+  // console.log("rentMarket: ", rentMarket);
+
+  if (rentMarket === undefined) {
+    return false;
+  }
+
+  // console.log("rentMarket.signerAddress: ", rentMarket.signerAddress);
+  let response;
+
+  try {
+    response = await rentMarket.isOwnerOrRenter(rentMarket.signerAddress);
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+
+  // console.log("response: ", response);
+  // * response type is bool (success or failure).
+  return response;
+};
+
 export const getUniqueKey = () => {
   // return Math.random().toString(16).slice(2);
   return uuidv4();

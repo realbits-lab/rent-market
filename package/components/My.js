@@ -97,7 +97,7 @@ const My = ({
   // * Initialize data.
   // * -------------------------------------------------------------------------
   React.useEffect(() => {
-    console.log("call React.useEffect()");
+    // console.log("call React.useEffect()");
     // console.log("inputRentMarket: ", inputRentMarket);
     // console.log("inputCollectionArray: ", inputCollectionArray);
     // console.log("inputServiceAddress: ", inputServiceAddress);
@@ -566,7 +566,7 @@ const My = ({
         selectedItem === MyMenu.own &&
         inputMyRegisteredNFTArray === undefined
       ) {
-        console.log("own loading...");
+        // console.log("own loading...");
         return (
           <Box
             sx={{
@@ -582,7 +582,7 @@ const My = ({
           </Box>
         );
       } else if (selectedItem === MyMenu.rent && myRentNFTArray === undefined) {
-        console.log("rent loading...");
+        // console.log("rent loading...");
         return (
           <Box
             sx={{
