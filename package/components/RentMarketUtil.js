@@ -412,9 +412,30 @@ export function RBSnackbar({ open, message, severity, currentTime }) {
   );
 }
 
+export async function signMessage({ rentMarket, message }) {
+  // console.log("call signMessage()");
+  // console.log("rentMarket: ", rentMarket);
+  // console.log("message: ", message);
+
+  if (rentMarket === undefined) {
+    return false;
+  }
+
+  // console.log("rentMarket.signer: ", rentMarket.signer);
+  let response;
+  try {
+    response = await rentMarket.signer.signMessage(message || "");
+  } catch (error) {
+    throw error;
+  }
+  // console.log("response: ", response);
+
+  return response;
+}
+
 export async function isUserAllowed({ rentMarket }) {
-  console.log("call isUserAllowed()");
-  console.log("rentMarket: ", rentMarket);
+  // console.log("call isUserAllowed()");
+  // console.log("rentMarket: ", rentMarket);
 
   if (rentMarket === undefined) {
     return false;
@@ -422,14 +443,13 @@ export async function isUserAllowed({ rentMarket }) {
 
   // console.log("rentMarket.signerAddress: ", rentMarket.signerAddress);
   let response;
-
   try {
     response = await rentMarket.isOwnerOrRenter(rentMarket.signerAddress);
   } catch (error) {
     throw error;
   }
-
   // console.log("response: ", response);
+
   // * response type is bool (success or failure).
   return response;
 }

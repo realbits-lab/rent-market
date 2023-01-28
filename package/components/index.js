@@ -17,6 +17,7 @@ import {
   getUniqueKey,
   getChainName,
   isUserAllowed,
+  signMessage,
 } from "./RentMarketUtil";
 import RentMarket from "./RentMarket";
 
@@ -40,4 +41,5 @@ export {
   getUniqueKey,
   getChainName,
   isUserAllowed,
+  signMessage,
 };
