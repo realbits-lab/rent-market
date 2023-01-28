@@ -2,7 +2,6 @@ import { ethers } from "ethers";
 import axios from "axios";
 import detectEthereumProvider from "@metamask/detect-provider";
 import { Alchemy, Network } from "alchemy-sdk";
-import WalletConnectProvider from "@walletconnect/web3-provider";
 import {
   switchNetworkMumbai,
   switchNetworkLocalhost,

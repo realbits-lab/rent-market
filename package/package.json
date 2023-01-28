@@ -1,6 +1,6 @@
 {
   "name": "rent-market",
-  "version": "2.0.7",
+  "version": "2.0.8",
   "description": "The rent market contract package for realbits.",
   "main": "dist/index.js",
   "scripts": {
@@ -35,7 +35,6 @@
     "ethers": "^5.7.2",
     "moment": "^2.29.4",
     "react-device-detect": "^2.2.2",
-    "recoil": "^0.7.6",
     "utf-8-validate": "^6.0.0",
     "uuid": "^9.0.0",
     "wagmi": "^0.10.15"
