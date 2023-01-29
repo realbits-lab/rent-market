@@ -448,12 +448,14 @@ export async function isUserAllowed({ rentMarket, address }) {
   } else {
     checkAddress = rentMarket.signerAddress;
   }
+  console.log("checkAddress: ", checkAddress);
 
   // console.log("rentMarket.signerAddress: ", rentMarket.signerAddress);
   let response;
   try {
     response = await rentMarket.isOwnerOrRenter(checkAddress);
   } catch (error) {
+    console.error(error);
     throw error;
   }
   console.log("response: ", response);
