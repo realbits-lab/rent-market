@@ -33,6 +33,7 @@
     "axios": "^1.2.3",
     "core-js": "^3.27.0",
     "ethers": "^5.7.2",
+    "keccak256": "^1.0.6",
     "moment": "^2.29.4",
     "react-device-detect": "^2.2.2",
     "utf-8-validate": "^6.0.0",

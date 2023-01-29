@@ -104,6 +104,8 @@ const My = ({
     // console.log("inputMyRegisteredNFTArray: ", inputMyRegisteredNFTArray);
     // console.log("inputMyRentNFTArray: ", inputMyRentNFTArray);
     // console.log("inputBlockchainNetwork: ", inputBlockchainNetwork);
+    // console.log("web3modalSelectedChain: ", web3modalSelectedChain);
+    // console.log("wagmiIsConnected: ", wagmiIsConnected);
 
     if (inputRentMarket) {
       setMyRentNFTArray(inputMyRentNFTArray);
@@ -216,20 +218,6 @@ const My = ({
               return (
                 <TableRow
                   key={getUniqueKey()}
-                  onClick={(event) => {
-                    if (selectAvatarFunc) {
-                      selectAvatarFunc(element);
-                    }
-
-                    setWriteToastMessage({
-                      snackbarSeverity: AlertSeverity.info,
-                      snackbarMessage: `You select ${
-                        element.metadata ? element.metadata.name : "..."
-                      } avatar.`,
-                      snackbarTime: new Date(),
-                      snackbarOpen: true,
-                    });
-                  }}
                   sx={{
                     "&:hover": {
                       backgroundColor: theme.palette.success.light,
@@ -259,10 +247,32 @@ const My = ({
                   <TableCell align="center" style={{ borderColor: "#FFF7ED" }}>
                     {element.rentFee / Math.pow(10, 18)}
                   </TableCell>
-                  <TableCell align="center" style={{ borderColor: "#FFF7ED" }}>
+                  {/* <TableCell align="center" style={{ borderColor: "#FFF7ED" }}>
                     {type === MyMenu.own
                       ? durationTimestampDisplay
                       : endRentTimestampDisplay}
+                  </TableCell> */}
+                  <TableCell align="center" style={{ borderColor: "#FFF7ED" }}>
+                    <Button
+                      color="primary"
+                      variant="contained"
+                      onClick={function (event) {
+                        if (selectAvatarFunc) {
+                          selectAvatarFunc(element);
+                        }
+
+                        setWriteToastMessage({
+                          snackbarSeverity: AlertSeverity.info,
+                          snackbarMessage: `You select ${
+                            element.metadata ? element.metadata.name : "..."
+                          } avatar.`,
+                          snackbarTime: new Date(),
+                          snackbarOpen: true,
+                        });
+                      }}
+                    >
+                      SELECT
+                    </Button>
                   </TableCell>
                 </TableRow>
               );
@@ -278,7 +288,8 @@ const My = ({
           <TableCell align="center">Avatar</TableCell>
           <TableCell align="center">Name</TableCell>
           <TableCell align="center">Fee</TableCell>
-          <TableCell align="center">Duration</TableCell>
+          {/* <TableCell align="center">Duration</TableCell> */}
+          <TableCell align="center">Select</TableCell>
         </TableRow>
       </TableHead>
     );
@@ -537,12 +548,23 @@ const My = ({
     // console.log("collectionArray: ", collectionArray);
     // console.log("inputMyRegisteredNFTArray: ", inputMyRegisteredNFTArray);
     // console.log("myRentNFTArray: ", myRentNFTArray);
+    // console.log("web3modalSelectedChain: ", web3modalSelectedChain);
+    // console.log(
+    //   "web3modalSelectedChain.network: ",
+    //   web3modalSelectedChain.network
+    // );
     // console.log(
     //   "getChainName({ chainId: inputBlockchainNetwork }): ",
     //   getChainName({ chainId: inputBlockchainNetwork })
     // );
+    // console.log("wagmiIsConnected: ", wagmiIsConnected);
 
-    if (wagmiIsConnected === false) {
+    if (
+      wagmiIsConnected === false ||
+      web3modalSelectedChain === undefined ||
+      getChainName({ chainId: web3modalSelectedChain.id }) !==
+        getChainName({ chainId: inputBlockchainNetwork })
+    ) {
       return (
         <Box
           sx={{
@@ -558,8 +580,9 @@ const My = ({
     }
 
     if (
+      wagmiIsConnected === true &&
       web3modalSelectedChain &&
-      web3modalSelectedChain.network ===
+      getChainName({ chainId: web3modalSelectedChain.id }) ===
         getChainName({ chainId: inputBlockchainNetwork })
     ) {
       if (
@@ -572,7 +595,7 @@ const My = ({
             sx={{
               marginTop: "20px",
               display: "flex",
-              width: "100vw",
+              width: "90vw",
               height: "100vh",
               flexDirection: "row",
               justifyContent: "center",
@@ -588,7 +611,7 @@ const My = ({
             sx={{
               marginTop: "20px",
               display: "flex",
-              width: "100vw",
+              width: "90vw",
               height: "100vh",
               flexDirection: "row",
               justifyContent: "center",
