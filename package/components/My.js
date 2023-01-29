@@ -548,12 +548,23 @@ const My = ({
     // console.log("collectionArray: ", collectionArray);
     // console.log("inputMyRegisteredNFTArray: ", inputMyRegisteredNFTArray);
     // console.log("myRentNFTArray: ", myRentNFTArray);
+    // console.log("web3modalSelectedChain: ", web3modalSelectedChain);
+    // console.log(
+    //   "web3modalSelectedChain.network: ",
+    //   web3modalSelectedChain.network
+    // );
     // console.log(
     //   "getChainName({ chainId: inputBlockchainNetwork }): ",
     //   getChainName({ chainId: inputBlockchainNetwork })
     // );
+    // console.log("wagmiIsConnected: ", wagmiIsConnected);
 
-    if (wagmiIsConnected === false) {
+    if (
+      wagmiIsConnected === false ||
+      web3modalSelectedChain === undefined ||
+      getChainName({ chainId: web3modalSelectedChain.id }) !==
+        getChainName({ chainId: inputBlockchainNetwork })
+    ) {
       return (
         <Box
           sx={{
@@ -571,7 +582,7 @@ const My = ({
     if (
       wagmiIsConnected === true &&
       web3modalSelectedChain &&
-      web3modalSelectedChain.network ===
+      getChainName({ chainId: web3modalSelectedChain.id }) ===
         getChainName({ chainId: inputBlockchainNetwork })
     ) {
       if (
