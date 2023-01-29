@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "build:production": "rm -rf dist && NODE_ENV=production babel components --out-dir dist --copy-files",
-    "build:development": "babel components --watch --out-dir dist --copy-files"
+    "build:development": "babel components --watch --out-dir dist --copy-files",
+    "check-types": "rm -rf components/*.d.ts && tsc"
   },
   "keywords": [
     "realbits",

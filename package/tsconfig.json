@@ -1,0 +1,9 @@
+{
+  "include": ["./components"],
+  "compilerOptions": {
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "allowJs": true,
+    "isolatedModules": true
+  }
+}
