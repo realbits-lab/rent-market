@@ -1827,14 +1827,12 @@ class RentMarket {
   }
 
   async isOwnerOrRenter(account) {
-    // console.log("this.rentMarketContract: ", this.rentMarketContract);
+    // console.log("call isOwnerOrRenter()");
 
     let response;
 
     try {
-      response = await this.rentMarketContract
-        .connect(this.signer)
-        .isOwnerOrRenter(account);
+      response = await this.rentMarketContract.isOwnerOrRenter(account);
     } catch (error) {
       throw error;
     }

@@ -438,9 +438,9 @@ export async function isUserAllowed({ rentMarket, address }) {
   console.log("rentMarket: ", rentMarket);
   console.log("address: ", address);
 
-  if (rentMarket === undefined) {
-    return false;
-  }
+  // if (rentMarket === undefined || address === undefined) {
+  //   return false;
+  // }
 
   let checkAddress;
   if (address) {
@@ -453,7 +453,10 @@ export async function isUserAllowed({ rentMarket, address }) {
   // console.log("rentMarket.signerAddress: ", rentMarket.signerAddress);
   let response;
   try {
-    response = await rentMarket.isOwnerOrRenter(checkAddress);
+    // response = await rentMarket.isOwnerOrRenter(checkAddress);
+    response = await rentMarket.isOwnerOrRenter(
+      "0x3851dacd8fA9F3eB64D69151A3597F33E5960A2F"
+    );
   } catch (error) {
     console.error(error);
     throw error;
