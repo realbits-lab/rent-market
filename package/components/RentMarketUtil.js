@@ -433,22 +433,30 @@ export async function signMessage({ rentMarket, message }) {
   return response;
 }
 
-export async function isUserAllowed({ rentMarket }) {
-  // console.log("call isUserAllowed()");
-  // console.log("rentMarket: ", rentMarket);
+export async function isUserAllowed({ rentMarket, address }) {
+  console.log("call isUserAllowed()");
+  console.log("rentMarket: ", rentMarket);
+  console.log("address: ", address);
 
   if (rentMarket === undefined) {
     return false;
   }
 
+  let checkAddress;
+  if (address) {
+    checkAddress = address;
+  } else {
+    checkAddress = rentMarket.signerAddress;
+  }
+
   // console.log("rentMarket.signerAddress: ", rentMarket.signerAddress);
   let response;
   try {
-    response = await rentMarket.isOwnerOrRenter(rentMarket.signerAddress);
+    response = await rentMarket.isOwnerOrRenter(checkAddress);
   } catch (error) {
     throw error;
   }
-  // console.log("response: ", response);
+  console.log("response: ", response);
 
   // * response type is bool (success or failure).
   return response;

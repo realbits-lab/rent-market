@@ -583,7 +583,7 @@ const My = ({
             sx={{
               marginTop: "20px",
               display: "flex",
-              width: "100vw",
+              width: "90vw",
               height: "100vh",
               flexDirection: "row",
               justifyContent: "center",
@@ -599,7 +599,7 @@ const My = ({
             sx={{
               marginTop: "20px",
               display: "flex",
-              width: "100vw",
+              width: "90vw",
               height: "100vh",
               flexDirection: "row",
               justifyContent: "center",
