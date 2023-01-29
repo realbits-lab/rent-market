@@ -569,6 +569,7 @@ const My = ({
     }
 
     if (
+      wagmiIsConnected === true &&
       web3modalSelectedChain &&
       web3modalSelectedChain.network ===
         getChainName({ chainId: inputBlockchainNetwork })
