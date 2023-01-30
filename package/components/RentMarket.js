@@ -827,12 +827,11 @@ class RentMarket {
   }
 
   async fetchRegisterData() {
-    // console.log("call fetchRegisterData()");
+    console.log("call fetchRegisterData()");
 
     // * Get registerNFT data array with renter, rentee address and start block number.
     const allRegisterNFTArray = await this.getAllRegisterData();
-    // console.log("rentMarketAddress: ", rentMarketAddress);
-    // console.log("allRegisterNFTArray: ", allRegisterNFTArray);
+    console.log("allRegisterNFTArray: ", allRegisterNFTArray);
 
     // * Get rentNFT data array.
     const allRentNFTArray = await this.getAllRentData();
@@ -989,9 +988,11 @@ class RentMarket {
   }
 
   async getAllRegisterData() {
+    console.log("call getAllRegisterData()");
+
     // * Call rentMarket getAllRegisterData function.
     const response = await this.rentMarketContract.getAllRegisterData();
-    // console.log("getAllRegisterData response: ", response);
+    console.log("response: ", response);
 
     let registerData = [];
     response.forEach(function (element) {

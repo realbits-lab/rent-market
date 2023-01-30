@@ -92,11 +92,11 @@ const Market = ({
   // * Initialize data.
   // * -------------------------------------------------------------------------
   React.useEffect(() => {
-    // console.log("call React.useEffect()");
+    console.log("call React.useEffect()");
     // console.log("inputRentMarketClass: ", inputRentMarketClass);
-    // console.log("inputCollectionArray: ", inputCollectionArray);
+    console.log("inputCollectionArray: ", inputCollectionArray);
     // console.log("inputServiceAddress: ", inputServiceAddress);
-    // console.log("inputRegisterNFTArray: ", inputRegisterNFTArray);
+    console.log("inputRegisterNFTArray: ", inputRegisterNFTArray);
     // console.log("inputBlockchainNetwork: ", inputBlockchainNetwork);
 
     if (inputRentMarketClass) {
