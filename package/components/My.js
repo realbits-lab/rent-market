@@ -97,7 +97,7 @@ const My = ({
   // * Initialize data.
   // * -------------------------------------------------------------------------
   React.useEffect(() => {
-    // console.log("call React.useEffect()");
+    console.log("call React.useEffect()");
     // console.log("inputRentMarket: ", inputRentMarket);
     // console.log("inputCollectionArray: ", inputCollectionArray);
     // console.log("inputServiceAddress: ", inputServiceAddress);
@@ -595,7 +595,6 @@ const My = ({
             sx={{
               marginTop: "20px",
               display: "flex",
-              width: "90vw",
               height: "100vh",
               flexDirection: "row",
               justifyContent: "center",
@@ -611,7 +610,6 @@ const My = ({
             sx={{
               marginTop: "20px",
               display: "flex",
-              width: "90vw",
               height: "100vh",
               flexDirection: "row",
               justifyContent: "center",
@@ -624,89 +622,101 @@ const My = ({
     }
 
     return (
-      <Table>
-        {collectionArray.map((element) => {
-          let elementArray = [];
-          let type = MyMenu.own;
+      <Box
+        sx={{
+          marginTop: "20px",
+        }}
+      >
+        <Table>
+          {collectionArray.map((element) => {
+            let elementArray = [];
+            let type = MyMenu.own;
 
-          if (selectedItem === MyMenu.own) {
-            elementArray =
-              inputMyRegisteredNFTArray &&
-              inputMyRegisteredNFTArray.filter(
-                (nftElement) =>
-                  nftElement.nftAddress === element.collectionAddress
-              );
-            type = MyMenu.own;
-          } else {
-            elementArray =
-              myRentNFTArray &&
-              myRentNFTArray.filter(
-                (nftElement) =>
-                  nftElement.nftAddress === element.collectionAddress
-              );
-            type = MyMenu.rent;
-          }
+            if (selectedItem === MyMenu.own) {
+              elementArray =
+                inputMyRegisteredNFTArray &&
+                inputMyRegisteredNFTArray.filter(
+                  (nftElement) =>
+                    nftElement.nftAddress === element.collectionAddress
+                );
+              type = MyMenu.own;
+            } else {
+              elementArray =
+                myRentNFTArray &&
+                myRentNFTArray.filter(
+                  (nftElement) =>
+                    nftElement.nftAddress === element.collectionAddress
+                );
+              type = MyMenu.rent;
+            }
 
-          return buildMyTable({
-            collection: element,
-            elementArray: elementArray,
-            type: type,
-          });
-        })}
-      </Table>
+            return buildMyTable({
+              collection: element,
+              elementArray: elementArray,
+              type: type,
+            });
+          })}
+        </Table>
+      </Box>
     );
   }
 
   function buildTopMenu() {
     return (
-      <List
+      <Box
         sx={{
-          // * Selected and (selected + hover) state.
-          "&& .Mui-selected, && .Mui-selected:hover": {
-            bgcolor: "green",
-            "&, & .MuiListItemIcon-root": {
-              color: "white",
-            },
-          },
-          // * Normal state.
-          "& .MuiListItemButton-root": {
-            bgcolor: "lightgrey",
-            "&, & .MuiListItemIcon-root": {
-              color: "darkgrey",
-            },
-          },
-          // * Hover state.
-          "& .MuiListItemButton-root:hover": {
-            bgcolor: "orange",
-            "&, & .MuiListItemIcon-root": {
-              color: "yellow",
-            },
-          },
-          display: "flex",
-          flexDirection: "row",
+          marginTop: "20px",
         }}
       >
-        <ListItem key="own" disablePadding>
-          <ListItemButton
-            selected={selectedItem === MyMenu.own}
-            onClick={(event) => handleListItemClick(event, MyMenu.own)}
-          >
-            <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-              Own
-            </Typography>
-          </ListItemButton>
-        </ListItem>
-        <ListItem key="rent" disablePadding>
-          <ListItemButton
-            selected={selectedItem === MyMenu.rent}
-            onClick={(event) => handleListItemClick(event, MyMenu.rent)}
-          >
-            <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-              Rent
-            </Typography>
-          </ListItemButton>
-        </ListItem>
-      </List>
+        <List
+          sx={{
+            // * Selected and (selected + hover) state.
+            "&& .Mui-selected, && .Mui-selected:hover": {
+              bgcolor: "green",
+              "&, & .MuiListItemIcon-root": {
+                color: "white",
+              },
+            },
+            // * Normal state.
+            "& .MuiListItemButton-root": {
+              bgcolor: "lightgrey",
+              "&, & .MuiListItemIcon-root": {
+                color: "darkgrey",
+              },
+            },
+            // * Hover state.
+            "& .MuiListItemButton-root:hover": {
+              bgcolor: "orange",
+              "&, & .MuiListItemIcon-root": {
+                color: "yellow",
+              },
+            },
+            display: "flex",
+            flexDirection: "row",
+          }}
+        >
+          <ListItem key="own" disablePadding>
+            <ListItemButton
+              selected={selectedItem === MyMenu.own}
+              onClick={(event) => handleListItemClick(event, MyMenu.own)}
+            >
+              <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                OWN
+              </Typography>
+            </ListItemButton>
+          </ListItem>
+          <ListItem key="rent" disablePadding>
+            <ListItemButton
+              selected={selectedItem === MyMenu.rent}
+              onClick={(event) => handleListItemClick(event, MyMenu.rent)}
+            >
+              <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                RENT
+              </Typography>
+            </ListItemButton>
+          </ListItem>
+        </List>
+      </Box>
     );
   }
 
@@ -715,7 +725,12 @@ const My = ({
       <Grid
         container
         spacing={2}
-        sx={{ display: "flex", flexDirection: "column" }}
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "flex-start",
+          alignItems: "flex-start",
+        }}
       >
         <Grid item>{buildTopMenu()}</Grid>
         <Grid item>{buildNftTable()}</Grid>
