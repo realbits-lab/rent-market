@@ -705,7 +705,7 @@ const My = ({
               onClick={(event) => handleListItemClick(event, MyMenu.own)}
             >
               <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                Test
+                OWN
               </Typography>
             </ListItemButton>
           </ListItem>
@@ -715,7 +715,7 @@ const My = ({
               onClick={(event) => handleListItemClick(event, MyMenu.rent)}
             >
               <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                Rent
+                RENT
               </Typography>
             </ListItemButton>
           </ListItem>
