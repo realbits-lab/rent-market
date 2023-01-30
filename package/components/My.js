@@ -595,7 +595,6 @@ const My = ({
             sx={{
               marginTop: "20px",
               display: "flex",
-              width: "90vw",
               height: "100vh",
               flexDirection: "row",
               justifyContent: "center",
@@ -611,7 +610,6 @@ const My = ({
             sx={{
               marginTop: "20px",
               display: "flex",
-              width: "90vw",
               height: "100vh",
               flexDirection: "row",
               justifyContent: "center",
@@ -627,7 +625,6 @@ const My = ({
       <Box
         sx={{
           marginTop: "20px",
-          width: "95vw",
         }}
       >
         <Table>
@@ -669,7 +666,6 @@ const My = ({
       <Box
         sx={{
           marginTop: "20px",
-          width: "95vw",
         }}
       >
         <List
