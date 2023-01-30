@@ -729,7 +729,6 @@ const My = ({
           display: "flex",
           flexDirection: "column",
           justifyContent: "flex-start",
-          alignItems: "flex-start",
         }}
       >
         <Grid item>{buildTopMenu()}</Grid>
