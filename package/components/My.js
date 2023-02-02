@@ -97,7 +97,7 @@ const My = ({
   // * Initialize data.
   // * -------------------------------------------------------------------------
   React.useEffect(() => {
-    console.log("call React.useEffect()");
+    // console.log("call React.useEffect()");
     // console.log("inputRentMarket: ", inputRentMarket);
     // console.log("inputCollectionArray: ", inputCollectionArray);
     // console.log("inputServiceAddress: ", inputServiceAddress);
@@ -729,7 +729,6 @@ const My = ({
           display: "flex",
           flexDirection: "column",
           justifyContent: "flex-start",
-          alignItems: "flex-start",
         }}
       >
         <Grid item>{buildTopMenu()}</Grid>

@@ -92,8 +92,8 @@ const Market = ({
   // * Initialize data.
   // * -------------------------------------------------------------------------
   React.useEffect(() => {
-    // console.log("call React.useEffect()");
-    // console.log("inputRentMarketClass: ", inputRentMarketClass);
+    console.log("call React.useEffect()");
+    console.log("inputRentMarketClass: ", inputRentMarketClass);
     // console.log("inputCollectionArray: ", inputCollectionArray);
     // console.log("inputServiceAddress: ", inputServiceAddress);
     // console.log("inputRegisterNFTArray: ", inputRegisterNFTArray);
@@ -170,7 +170,7 @@ const Market = ({
             color="primary"
             variant="contained"
             onClick={async () => {
-              // console.log("call onClick()");
+              console.log("call onClick()");
               // console.log(
               //   "rentMarketClassRef.current: ",
               //   rentMarketClassRef.current
@@ -189,8 +189,8 @@ const Market = ({
 
                 // * Enable session (triggers QR Code modal).
                 await provider.enable();
-                // console.log("provider: ", provider);
               }
+              console.log("provider: ", provider);
 
               try {
                 await rentMarketClassRef.current.rentNFT({
