@@ -1684,7 +1684,8 @@ class RentMarket {
   }
 
   async rentNFT({ provider, element, serviceAddress }) {
-    // console.log("call rentNFT()");
+    console.log("call rentNFT()");
+    console.log("provider: ", provider);
     // console.log("element: ", element);
     // console.log("serviceAddress: ", serviceAddress);
 
@@ -1714,6 +1715,8 @@ class RentMarket {
       }
     } else {
       // * Call rentNFT function.
+      console.log("this.rentMarketContract: ", this.rentMarketContract);
+      console.log("this.signer: ", this.signer);
       try {
         await this.rentMarketContract
           .connect(this.signer)
