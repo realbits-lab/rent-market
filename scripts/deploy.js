@@ -174,7 +174,6 @@ task("deployPromptNftContract", "Deploys the promptNFT contract")
   .addParam("contract", "The contract name to be deployed.")
   .addParam("name", "The contract name to be deployed.")
   .addParam("symbol", "The contract name to be deployed.")
-  .addParam("uri", "The base uri of nft.")
   .addParam("address", "The address of rentMarket contract.")
   .setAction(async function (taskArguments, hre) {
     const contractFactory = await hre.ethers.getContractFactory(
@@ -184,7 +183,6 @@ task("deployPromptNftContract", "Deploys the promptNFT contract")
     const response = await contractFactory.deploy(
       taskArguments.name,
       taskArguments.symbol,
-      taskArguments.uri,
       taskArguments.address,
       {
         // gasPrice: hre.ethers.utils.parseUnits("50", "gwei"),
