@@ -15,9 +15,9 @@ const {
 } = require("./utility-function");
 
 describe("test promptNFT true case.", function () {
-  // * -------------------------------------------------------------------------
-  // * Define variables.
-  // * -------------------------------------------------------------------------
+  //* -------------------------------------------------------------------------
+  //* Define variables.
+  //* -------------------------------------------------------------------------
   let // Signer values.
     promptNFTContractOwnerSigner,
     userSigner,
@@ -27,15 +27,15 @@ describe("test promptNFT true case.", function () {
     promptNFTContract;
 
   beforeEach(async function () {
-    // * -----------------------------------------------------------------------
-    // * Initialize contract and data.
-    // * Deploy smart contract with fixture and mint NFT.
-    // * -----------------------------------------------------------------------
+    //* -----------------------------------------------------------------------
+    //* Initialize contract and data.
+    //* Deploy smart contract with fixture and mint NFT.
+    //* -----------------------------------------------------------------------
     const response = await initializeBeforeEach();
 
-    // * -----------------------------------------------------------------------
-    // * Set each returned value.
-    // * -----------------------------------------------------------------------
+    //* -----------------------------------------------------------------------
+    //* Set each returned value.
+    //* -----------------------------------------------------------------------
     ({
       // Signer values.
       promptNFTContractOwnerSigner,
@@ -48,9 +48,9 @@ describe("test promptNFT true case.", function () {
   });
 
   it("test NFT deploy and check name and symbol.", async function () {
-    // * -----------------------------------------------------------------------
-    // * Define variables.
-    // * -----------------------------------------------------------------------
+    //* -----------------------------------------------------------------------
+    //* Define variables.
+    //* -----------------------------------------------------------------------
     const name = await promptNFTContract.connect(userSigner).name();
     const symbol = await promptNFTContract.connect(userSigner).symbol();
 
@@ -59,9 +59,9 @@ describe("test promptNFT true case.", function () {
   });
 
   it("test to mint NFT and check an encrypted prompt.", async function () {
-    // * -----------------------------------------------------------------------
-    // * Define variables.
-    // * -----------------------------------------------------------------------
+    //* -----------------------------------------------------------------------
+    //* Define variables.
+    //* -----------------------------------------------------------------------
     const startTokenId = 1;
     const endTokenId = 1;
     const version = "x25519-xsalsa20-poly1305";
@@ -69,9 +69,9 @@ describe("test promptNFT true case.", function () {
     let encryptedPrompt;
     const NFT_URI = "https://js-nft.s3.ap-northeast-2.amazonaws.com/json";
 
-    // * -----------------------------------------------------------------------
-    // * Encrypt prompt.
-    // * -----------------------------------------------------------------------
+    //* -----------------------------------------------------------------------
+    //* Encrypt prompt.
+    //* -----------------------------------------------------------------------
     const accounts = config.networks.hardhat.accounts;
     const index = 0;
 
@@ -184,9 +184,9 @@ describe("test promptNFT true case.", function () {
   });
 
   it("test to mint NFT and check token URI.", async function () {
-    // * -----------------------------------------------------------------------
-    // * Define variables.
-    // * -----------------------------------------------------------------------
+    //* -----------------------------------------------------------------------
+    //* Define variables.
+    //* -----------------------------------------------------------------------
     const startTokenId = 1;
     const endTokenId = 5;
     const encryptedPromptData = {
@@ -197,9 +197,9 @@ describe("test promptNFT true case.", function () {
     };
     const NFT_URI = "https://js-nft.s3.ap-northeast-2.amazonaws.com/json";
 
-    // * -----------------------------------------------------------------------
-    // * Mint 5 NFTs.
-    // * -----------------------------------------------------------------------
+    //* -----------------------------------------------------------------------
+    //* Mint 5 NFTs.
+    //* -----------------------------------------------------------------------
     let originalTokenURIArray = [];
     let txArray = [];
     for (let i = startTokenId; i <= endTokenId; i++) {
@@ -219,9 +219,9 @@ describe("test promptNFT true case.", function () {
     await Promise.all(txArray);
     // console.log("originalTokenURIArray: ", originalTokenURIArray);
 
-    // * -----------------------------------------------------------------------
-    // * Get all minted NFT data.
-    // * -----------------------------------------------------------------------
+    //* -----------------------------------------------------------------------
+    //* Get all minted NFT data.
+    //* -----------------------------------------------------------------------
     const totalSupply = await promptNFTContract
       .connect(userSigner)
       .totalSupply();
@@ -239,9 +239,9 @@ describe("test promptNFT true case.", function () {
     }
     // console.log("tokenURIArray: ", tokenURIArray);
 
-    // * -----------------------------------------------------------------------
-    // * Compare the output data with input data.
-    // * -----------------------------------------------------------------------
+    //* -----------------------------------------------------------------------
+    //* Compare the output data with input data.
+    //* -----------------------------------------------------------------------
     expect(tokenURIArray).to.deep.equal(originalTokenURIArray);
   });
 });
