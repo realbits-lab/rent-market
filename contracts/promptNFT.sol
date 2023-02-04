@@ -42,15 +42,19 @@ contract promptNFT is
     /// @dev PAUSER_ROLE
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
 
+    /// @notice CHANGER_ROLE constant variable
+    /// @dev CHANGER_ROLE constant variable
+    bytes32 public constant CHANGER_ROLE = keccak256("CHANGER_ROLE");
+
     /// @notice PROMPTER_ROLE constant variable
     /// @dev PROMPTER_ROLE constant variable
     bytes32 public constant PROMPTER_ROLE = keccak256("PROMPTER_ROLE");
 
+    /// @notice Constructor function
+    /// @dev Set each role of DEFAULT_ADMIN_ROLE, PAUSER_ROLE, and PROMPTER_ROLE
+    /// @param name_ NFT token name
+    /// @param symbol_ NFT token symbol
     constructor(
-        /// @notice Constructor function
-        /// @dev Set each role of DEFAULT_ADMIN_ROLE, PAUSER_ROLE, and PROMPTER_ROLE
-        /// @param name_ NFT token name
-        /// @param symbol_ NFT token symbol
         string memory name_,
         string memory symbol_,
         address payable rentMarketContractAddress_
@@ -60,6 +64,15 @@ contract promptNFT is
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(PAUSER_ROLE, msg.sender);
         _grantRole(PROMPTER_ROLE, msg.sender);
+    }
+
+    /// @notice Change rent market contract with input address
+    /// @dev With input rent market contract address, newly set rent market contract variable.
+    /// @param rentMarketContractAddress_ input rent market contract address
+    function changeRentMarketContract(
+        address payable rentMarketContractAddress_
+    ) public onlyRole(CHANGER_ROLE) {
+        rentMarketContract = rentMarket(rentMarketContractAddress_);
     }
 
     /// @notice Pause this NFT
