@@ -3,7 +3,7 @@ require("@nomiclabs/hardhat-ethers");
 require("@nomiclabs/hardhat-etherscan");
 require("@nomiclabs/hardhat-waffle");
 require("solidity-docgen");
-require("hardhat-ethernal");
+// require("hardhat-ethernal");
 
 require("./scripts/deploy.js");
 require("./scripts/nft.js");
@@ -31,10 +31,10 @@ module.exports = {
       },
     },
   },
-  ethernal: {
-    email: process.env.ETHERNAL_EMAIL,
-    password: process.env.ETHERNAL_PASSWORD,
-  },
+  // ethernal: {
+  //   email: process.env.ETHERNAL_EMAIL,
+  //   password: process.env.ETHERNAL_PASSWORD,
+  // },
   docgen: {
     root: process.cwd(),
     sourcesDir: "contracts",
