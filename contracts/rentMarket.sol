@@ -952,6 +952,7 @@ contract rentMarket is Ownable, Pausable {
         require(rentDataItMap.contains(nftAddress, tokenId) == true, "RM10");
 
         // Check msg.sender is same as renteeAddress.
+        //* TODO: Enable by only owner.
         require(
             rentDataItMap.getByNFT(nftAddress, tokenId).renteeAddress ==
                 msg.sender ||
