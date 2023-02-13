@@ -12,7 +12,10 @@
 //*   - After new table is finished to be saved, change table.
 
 import { ethers } from "ethers";
+import * as dotenv from "dotenv"; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
+import axios from "axios";
 import rentMarketABI from "../artifacts/contracts/rentMarket.sol/rentMarket.json" assert { type: "json" };
+dotenv.config();
 
 async function getAllRegisterData({ provider, rentMarketContract }) {
   console.log("call getAllRegisterData()");
@@ -59,8 +62,8 @@ async function addMetadata({
     },
   ];
 
-  const allRegisterDatayArrayWithMetadata = allRegisterDataArray.map(
-    async function (registerData) {
+  const allRegisterDatayArrayWithMetadata = await Promise.all(
+    allRegisterDataArray.map(async function (registerData) {
       const nftContract = new ethers.Contract(
         registerData.nftAddress,
         tokenUriAbi,
@@ -73,7 +76,7 @@ async function addMetadata({
         ...registerData,
         metadata,
       };
-    }
+    })
   );
   console.log(
     "allRegisterDatayArrayWithMetadata: ",
@@ -88,6 +91,10 @@ async function fetchMetadata() {
     process.env.NETWORK,
     process.env.ALCHEMY_KEY_MUMBAI
   );
+  // console.log(
+  //   "process.env.RENTMARKET_CONTRACT_ADDRESS: ",
+  //   process.env.RENTMARKET_CONTRACT_ADDRESS
+  // );
   const rentMarketContract = new ethers.Contract(
     process.env.RENTMARKET_CONTRACT_ADDRESS,
     rentMarketABI["abi"],
