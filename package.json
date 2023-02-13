@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@metamask/eth-sig-util": "^5.0.2",
+    "@prisma/client": "^4.10.1",
     "hardhat-ethernal": "^3.1.0",
     "solc-typed-ast": "^11.0.2",
     "solidity-docgen": "^0.6.0-beta.34"

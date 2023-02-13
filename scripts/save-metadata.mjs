@@ -12,24 +12,25 @@
 //*   - After new table is finished to be saved, change table.
 
 import { ethers } from "ethers";
-import * as dotenv from "dotenv"; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
+import * as dotenv from "dotenv";
+import { PrismaClient } from "@prisma/client";
 import axios from "axios";
 import rentMarketABI from "../artifacts/contracts/rentMarket.sol/rentMarket.json" assert { type: "json" };
 dotenv.config();
 
 async function getAllRegisterData({ provider, rentMarketContract }) {
-  console.log("call getAllRegisterData()");
+  // console.log("call getAllRegisterData()");
 
   const allRegisterDataArray = await rentMarketContract.getAllRegisterData();
-  console.log("allRegisterDataArray: ", allRegisterDataArray);
+  // console.log("allRegisterDataArray: ", allRegisterDataArray);
   return allRegisterDataArray;
 }
 
 async function getAllCollection({ provider, rentMarketContract }) {
-  console.log("call getAllCollection()");
+  // console.log("call getAllCollection()");
 
   const allCollectionArray = await rentMarketContract.getAllCollection();
-  console.log("allCollectionArray: ", allCollectionArray);
+  // console.log("allCollectionArray: ", allCollectionArray);
   return allCollectionArray;
 }
 
@@ -78,10 +79,10 @@ async function addMetadata({
       };
     })
   );
-  console.log(
-    "allRegisterDatayArrayWithMetadata: ",
-    allRegisterDatayArrayWithMetadata
-  );
+  // console.log(
+  //   "allRegisterDatayArrayWithMetadata: ",
+  //   allRegisterDatayArrayWithMetadata
+  // );
   return allRegisterDatayArrayWithMetadata;
 }
 
@@ -138,7 +139,124 @@ async function fetchMetadata() {
   return allRegisterDataArray;
 }
 
-async function saveMetadata({ metadataArray }) {}
+async function saveMetadata({ metadataArray }) {
+  const prisma = new PrismaClient();
+
+  //* Make nftAddress to lowercase for unity.
+  await Promise.all(
+    metadataArray.map(async function (data) {
+      // console.log("data: ", data);
+      // console.log("data.metadata.attributes: ", data.metadata.attributes);
+
+      //* Get each data.
+      const nftAddress = data.nftAddress.toLowerCase();
+      const tokenId = data.tokenId.toNumber();
+      const name = data.metadata.name || "none";
+      const symbol = data.metadata.symbol || "none";
+      const description = data.metadata.description || "none";
+      const imageUrl = data.metadata.image || "none";
+      const gltUrl = data.metadata.realbits.glb_url || "none";
+      const vrmUrl = data.metadata.realbits.vrm_url || "none";
+
+      let hair,
+        face,
+        top,
+        middle,
+        side,
+        bottom,
+        body,
+        body_top,
+        body_bottom,
+        background;
+
+      data.metadata.attributes.map(function (attribute) {
+        console.log("attribute: ", attribute);
+
+        switch (attribute.trait_type) {
+          case "Hair":
+            hair = attribute.value || "none";
+            break;
+          case "Face":
+            face = attribute.value || "none";
+            break;
+          case "Top":
+            top = attribute.value || "none";
+            break;
+          case "Middle":
+            middle = attribute.value || "none";
+            break;
+          case "Side":
+            side = attribute.value || "none";
+            break;
+          case "Bottom":
+            bottom = attribute.value || "none";
+            break;
+          case "Body":
+            body = attribute.value || "none";
+            break;
+          case "Body_Top":
+            body_top = attribute.value || "none";
+            break;
+          case "Body_Bottom":
+            body_bottom = attribute.value || "none";
+            break;
+          case "Background":
+            background = attribute.value || "none";
+            break;
+        }
+      });
+      const nftAddressWithTokenId = `${nftAddress}/${tokenId}`;
+
+      //* Update or insert data.
+      const upsertAvatar = await prisma.avatar.upsert({
+        where: {
+          nftAddressWithTokenId: nftAddressWithTokenId,
+        },
+        update: {
+          name: name,
+          symbol: symbol,
+          description: description,
+          imageUrl: imageUrl,
+          gltUrl: gltUrl,
+          vrmUrl: vrmUrl,
+          hair: hair,
+          face: face,
+          top: top,
+          middle: middle,
+          side: side,
+          bottom: bottom,
+          body: body,
+          body_top: body_top,
+          body_bottom: body_bottom,
+          background: background,
+        },
+        create: {
+          nftAddressWithTokenId: nftAddressWithTokenId,
+          nftAddress: nftAddress,
+          tokenId: tokenId,
+          name: data.metadata.name,
+          symbol: data.metadata.symbol,
+          description: data.metadata.description,
+          imageUrl: data.metadata.image,
+          gltUrl: data.metadata.realbits.glb_url,
+          vrmUrl: data.metadata.realbits.vrm_url,
+          hair: hair,
+          face: face,
+          top: top,
+          middle: middle,
+          side: side,
+          bottom: bottom,
+          body: body,
+          body_top: body_top,
+          body_bottom: body_bottom,
+          background: background,
+        },
+      });
+    })
+  );
+
+  console.log("Saving metadata is finished.");
+}
 
 async function main() {
   const metadataArray = await fetchMetadata();
