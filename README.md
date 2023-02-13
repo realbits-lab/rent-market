@@ -33,10 +33,3 @@ foo@bar:~$ npm run build:development
 foo@bar:~$ cd package
 foo@bar:~$ npm run build:production
 ```
-
-# Prisma
-
-- https://www.prisma.io/docs/getting-started/quickstart
-- npx prisma generate
-- npx prisma migrate dev --name init 
-

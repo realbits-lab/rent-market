@@ -142,6 +142,10 @@ async function fetchMetadata() {
 async function saveMetadata({ metadataArray }) {
   const prisma = new PrismaClient();
 
+  //* Delete all avatar data.
+  const deleteAvatars = await prisma.avatar.deleteMany({});
+  console.log("deleteAvatars: ", deleteAvatars);
+
   //* Make nftAddress to lowercase for unity.
   await Promise.all(
     metadataArray.map(async function (data) {
@@ -208,29 +212,8 @@ async function saveMetadata({ metadataArray }) {
       const nftAddressWithTokenId = `${nftAddress}/${tokenId}`;
 
       //* Update or insert data.
-      const upsertAvatar = await prisma.avatar.upsert({
-        where: {
-          nftAddressWithTokenId: nftAddressWithTokenId,
-        },
-        update: {
-          name: name,
-          symbol: symbol,
-          description: description,
-          imageUrl: imageUrl,
-          gltUrl: gltUrl,
-          vrmUrl: vrmUrl,
-          hair: hair,
-          face: face,
-          top: top,
-          middle: middle,
-          side: side,
-          bottom: bottom,
-          body: body,
-          body_top: body_top,
-          body_bottom: body_bottom,
-          background: background,
-        },
-        create: {
+      const createAvatar = await prisma.avatar.create({
+        data: {
           nftAddressWithTokenId: nftAddressWithTokenId,
           nftAddress: nftAddress,
           tokenId: tokenId,
@@ -252,6 +235,7 @@ async function saveMetadata({ metadataArray }) {
           background: background,
         },
       });
+      console.log("createAvatar: ", createAvatar);
     })
   );
 
