@@ -2,6 +2,7 @@
   "name": "rent-market",
   "version": "0.0.1",
   "private": true,
+  "type": "module",
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.2.1",
     "@nomiclabs/hardhat-etherscan": "^3.1.4",
