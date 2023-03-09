@@ -36,7 +36,11 @@ contract promptNFT is
 
     mapping(uint256 => encryptData) nftTokenOwnerEncryptedPromptMap;
 
+    mapping(uint256 => encryptData) nftTokenOwnerEncryptedNegativePromptMap;
+
     mapping(uint256 => encryptData) nftContractOwnerEncryptedPromptMap;
+
+    mapping(uint256 => encryptData) nftContractOwnerEncryptedNegativePromptMap;
 
     /// @notice PAUSER_ROLE
     /// @dev PAUSER_ROLE
@@ -91,13 +95,17 @@ contract promptNFT is
     /// @dev After increasing token ID, call _safeMint function in ERC721.sol
     /// @param to_ Receiver address who will receive minted NFT
     /// @param uri_ Receiver address who will receive minted NFT
-    /// @param tokenOwnerEncryptData_ Encrypt data by token owner.
-    /// @param contractOwnerEncryptData_ Encrypt data by contract owner.
+    /// @param tokenOwnerEncryptPromptData_ Encrypt prompt data by token owner.
+    /// @param tokenOwnerEncryptNegativePromptData_ Encrypt negative prompt data by token owner.
+    /// @param contractOwnerEncryptPromptData_ Encrypt prompt data by contract owner.
+    /// @param contractOwnerEncryptNegativePromptData_ Encrypt negative prompt data by contract owner.
     function safeMint(
         address to_,
         string memory uri_,
-        encryptData memory tokenOwnerEncryptData_,
-        encryptData memory contractOwnerEncryptData_
+        encryptData memory tokenOwnerEncryptPromptData_,
+        encryptData memory tokenOwnerEncryptNegativePromptData_,
+        encryptData memory contractOwnerEncryptPromptData_,
+        encryptData memory contractOwnerEncryptNegativePromptData_
     ) public returns (uint256) {
         //* Make token id start from 1.
         _tokenIdCounter.increment();
@@ -106,8 +114,16 @@ contract promptNFT is
         _setTokenURI(tokenId, uri_);
 
         //* Map prompt to token owner and contract owner as to tokenId.
-        nftTokenOwnerEncryptedPromptMap[tokenId] = tokenOwnerEncryptData_;
-        nftContractOwnerEncryptedPromptMap[tokenId] = contractOwnerEncryptData_;
+        nftTokenOwnerEncryptedPromptMap[tokenId] = tokenOwnerEncryptPromptData_;
+        nftTokenOwnerEncryptedNegativePromptMap[
+            tokenId
+        ] = tokenOwnerEncryptNegativePromptData_;
+        nftContractOwnerEncryptedPromptMap[
+            tokenId
+        ] = contractOwnerEncryptPromptData_;
+        nftContractOwnerEncryptedNegativePromptMap[
+            tokenId
+        ] = contractOwnerEncryptNegativePromptData_;
 
         //* Call registerNFT of rentMarket contract.
         bool response = rentMarketContract.registerNFT(address(this), tokenId);
@@ -125,51 +141,66 @@ contract promptNFT is
     /// @dev Return contract encrypted prompt data.
     /// @param tokenId The token Id of which data is returned.
     /// @return Encrypted data by contract.
-    function getContractOwnerPrompt(uint256 tokenId)
+    function getContractOwnerPrompt(
+        uint256 tokenId
+    )
         public
         view
         onlyRole(PROMPTER_ROLE)
-        returns (encryptData memory)
+        returns (encryptData memory, encryptData memory)
     {
-        return nftContractOwnerEncryptedPromptMap[tokenId];
+        return (
+            nftContractOwnerEncryptedPromptMap[tokenId],
+            nftContractOwnerEncryptedNegativePromptMap[tokenId]
+        );
     }
 
     /// @notice Set encrypted prompt of prompter.
     /// @dev Set a new encrypted prompt data by prompter.
     /// @param tokenId The token Id of which data is set to encrypted data.
-    /// @param contractOwnerEncryptData The new encrypted data.
+    /// @param contractOwnerEncryptPromptData The new encrypted prompt data.
+    /// @param contractOwnerEncryptNegativePromptData The new encrypted negative prompt data.
     function claimContractOwnerPrompt(
         uint256 tokenId,
-        encryptData memory contractOwnerEncryptData
+        encryptData memory contractOwnerEncryptPromptData,
+        encryptData memory contractOwnerEncryptNegativePromptData
     ) public onlyRole(PROMPTER_ROLE) {
         //* Map prompt to token owner as to tokenId.
-        nftContractOwnerEncryptedPromptMap[tokenId] = contractOwnerEncryptData;
+        nftContractOwnerEncryptedPromptMap[
+            tokenId
+        ] = contractOwnerEncryptPromptData;
+        nftContractOwnerEncryptedNegativePromptMap[
+            tokenId
+        ] = contractOwnerEncryptNegativePromptData;
     }
 
     /// @notice Get encrypted prompt of token owner.
     /// @dev Return token owner encrypted prompt data.
     /// @param tokenId The token Id of which data is returned.
     /// @return Encrypted data by token owner.
-    function getTokenOwnerPrompt(uint256 tokenId)
-        public
-        view
-        returns (encryptData memory)
-    {
+    function getTokenOwnerPrompt(
+        uint256 tokenId
+    ) public view returns (encryptData memory, encryptData memory) {
         require(
             _isApprovedOrOwner(_msgSender(), tokenId),
             "ERC721: getTokenOwnerPrompt caller is not owner nor approved"
         );
 
-        return nftTokenOwnerEncryptedPromptMap[tokenId];
+        return (
+            nftTokenOwnerEncryptedPromptMap[tokenId],
+            nftTokenOwnerEncryptedNegativePromptMap[tokenId]
+        );
     }
 
     /// @notice Set encrypted prompt of token owner.
     /// @dev Set a new encrypted prompt data by token owner.
     /// @param tokenId The token Id of which data is set to encrypted data.
-    /// @param tokenOwnerEncryptData The new encrypted data.
+    /// @param tokenOwnerEncryptPromptData The new encrypted prompt data.
+    /// @param tokenOwnerEncryptNegativePromptData The new encrypted negative promopt data.
     function claimTokenOwnerPrompt(
         uint256 tokenId,
-        encryptData memory tokenOwnerEncryptData
+        encryptData memory tokenOwnerEncryptPromptData,
+        encryptData memory tokenOwnerEncryptNegativePromptData
     ) public {
         require(
             _isApprovedOrOwner(_msgSender(), tokenId),
@@ -177,16 +208,16 @@ contract promptNFT is
         );
 
         //* Map prompt to token owner as to tokenId.
-        nftTokenOwnerEncryptedPromptMap[tokenId] = tokenOwnerEncryptData;
+        nftTokenOwnerEncryptedPromptMap[tokenId] = tokenOwnerEncryptPromptData;
+        nftTokenOwnerEncryptedNegativePromptMap[
+            tokenId
+        ] = tokenOwnerEncryptNegativePromptData;
     }
 
     // The following functions are overrides required by Solidity.
-    function tokenURI(uint256 tokenId)
-        public
-        view
-        override(ERC721, ERC721URIStorage)
-        returns (string memory)
-    {
+    function tokenURI(
+        uint256 tokenId
+    ) public view override(ERC721, ERC721URIStorage) returns (string memory) {
         return super.tokenURI(tokenId);
     }
 
@@ -212,10 +243,9 @@ contract promptNFT is
         super._beforeTokenTransfer(from, to, tokenId, batchSize);
     }
 
-    function _burn(uint256 tokenId)
-        internal
-        override(ERC721, ERC721URIStorage)
-    {
+    function _burn(
+        uint256 tokenId
+    ) internal override(ERC721, ERC721URIStorage) {
         super._burn(tokenId);
 
         // Remove encrypted prompt map from token owner.
@@ -225,7 +255,9 @@ contract promptNFT is
         delete nftContractOwnerEncryptedPromptMap[tokenId];
     }
 
-    function supportsInterface(bytes4 interfaceId)
+    function supportsInterface(
+        bytes4 interfaceId
+    )
         public
         view
         override(ERC721, ERC721Enumerable, AccessControl)
