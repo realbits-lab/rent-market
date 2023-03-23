@@ -34,12 +34,19 @@ contract promptNFT is
         string ciphertext;
     }
 
+    //* token ID => model name.
+    mapping(uint256 => string) modelName;
+
+    //* token ID => encrypted prompt of token owner.
     mapping(uint256 => encryptData) nftTokenOwnerEncryptedPromptMap;
 
+    //* token ID => encrypted negative prompt of token owner.
     mapping(uint256 => encryptData) nftTokenOwnerEncryptedNegativePromptMap;
 
+    //* token ID => encrypted prompt of contract owner.
     mapping(uint256 => encryptData) nftContractOwnerEncryptedPromptMap;
 
+    //* token ID => encrypted negative prompt of contract owner.
     mapping(uint256 => encryptData) nftContractOwnerEncryptedNegativePromptMap;
 
     /// @notice PAUSER_ROLE
@@ -85,16 +92,17 @@ contract promptNFT is
         _pause();
     }
 
-    /// @notice Unpause this NFT
-    /// @dev Call _unpause function in Pausible. Only sender who has PAUSER_ROLE can pause
+    /// @notice Unpause this NFT.
+    /// @dev Call _unpause function in Pausible. Only sender who has PAUSER_ROLE can pause.
     function unpause() public onlyRole(PAUSER_ROLE) {
         _unpause();
     }
 
-    /// @notice Mint NFT with auto incremented token ID
-    /// @dev After increasing token ID, call _safeMint function in ERC721.sol
-    /// @param to_ Receiver address who will receive minted NFT
-    /// @param uri_ Receiver address who will receive minted NFT
+    /// @notice Mint NFT with auto incremented token ID.
+    /// @dev After increasing token ID, call _safeMint function in ERC721.sol.
+    /// @param to_ Receiver address who will receive minted NFT.
+    /// @param uri_ Receiver address who will receive minted NFT.
+    /// @param modelName_ image generative model name.
     /// @param tokenOwnerEncryptPromptData_ Encrypt prompt data by token owner.
     /// @param tokenOwnerEncryptNegativePromptData_ Encrypt negative prompt data by token owner.
     /// @param contractOwnerEncryptPromptData_ Encrypt prompt data by contract owner.
@@ -102,6 +110,7 @@ contract promptNFT is
     function safeMint(
         address to_,
         string memory uri_,
+        string memory modelName_,
         encryptData memory tokenOwnerEncryptPromptData_,
         encryptData memory tokenOwnerEncryptNegativePromptData_,
         encryptData memory contractOwnerEncryptPromptData_,
@@ -114,6 +123,7 @@ contract promptNFT is
         _setTokenURI(tokenId, uri_);
 
         //* Map prompt to token owner and contract owner as to tokenId.
+        modelName[tokenId] = modelName_;
         nftTokenOwnerEncryptedPromptMap[tokenId] = tokenOwnerEncryptPromptData_;
         nftTokenOwnerEncryptedNegativePromptMap[
             tokenId
@@ -135,6 +145,14 @@ contract promptNFT is
         }
 
         return tokenId;
+    }
+
+    /// @notice Get model name of token id.
+    /// @dev Return model name of token id.
+    /// @param tokenId The token Id of which data is returned.
+    /// @return model name.
+    function getModelName(uint256 tokenId) public view returns (string memory) {
+        return modelName[tokenId];
     }
 
     /// @notice Get encrypted prompt of contract.
@@ -214,7 +232,7 @@ contract promptNFT is
         ] = tokenOwnerEncryptNegativePromptData;
     }
 
-    // The following functions are overrides required by Solidity.
+    //* The following functions are overrides required by Solidity.
     function tokenURI(
         uint256 tokenId
     ) public view override(ERC721, ERC721URIStorage) returns (string memory) {
@@ -229,8 +247,8 @@ contract promptNFT is
     ) internal override(ERC721) whenNotPaused {
         super._afterTokenTransfer(from, to, tokenId, batchSize);
 
-        // Remove encrypted prompt map from token owner.
-        // Keep encrypted prompt map for contract owner.
+        //* Remove encrypted prompt map from token owner.
+        //* Keep encrypted prompt map for contract owner.
         delete nftTokenOwnerEncryptedPromptMap[tokenId];
     }
 
