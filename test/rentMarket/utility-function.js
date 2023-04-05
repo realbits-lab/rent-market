@@ -209,12 +209,12 @@ const removeAllData = async ({
   // * -------------------------------------------------------------------------
   txArray = [];
   const allTokenArray = await rentMarketContract.getAllToken();
-  allTokenArray.forEach(async (element) => {
+  for (element of allTokenArray) {
     tx = await rentMarketContract
       .connect(rentMarketContractOwnerSigner)
       .unregisterToken(element.tokenAddress);
     txArray.push(tx.wait());
-  });
+  }
   await Promise.all(txArray);
 
   // * -------------------------------------------------------------------------
@@ -222,12 +222,12 @@ const removeAllData = async ({
   // * -------------------------------------------------------------------------
   txArray = [];
   const allCollectionArray = await rentMarketContract.getAllCollection();
-  allCollectionArray.forEach(async (element) => {
+  for (element of allCollectionArray) {
     tx = await rentMarketContract
       .connect(rentMarketContractOwnerSigner)
       .unregisterCollection(element.collectionAddress);
     txArray.push(tx.wait());
-  });
+  }
   await Promise.all(txArray);
 
   // * -------------------------------------------------------------------------
@@ -235,12 +235,12 @@ const removeAllData = async ({
   // * -------------------------------------------------------------------------
   txArray = [];
   const allServiceArray = await rentMarketContract.getAllService();
-  allServiceArray.forEach(async (element) => {
+  for (element of allServiceArray) {
     tx = await rentMarketContract
       .connect(rentMarketContractOwnerSigner)
       .unregisterService(element.serviceAddress);
     txArray.push(tx.wait());
-  });
+  }
   await Promise.all(txArray);
 
   // * -------------------------------------------------------------------------
@@ -248,13 +248,13 @@ const removeAllData = async ({
   // * -------------------------------------------------------------------------
   txArray = [];
   const allRegisterArray = await rentMarketContract.getAllRegisterData();
-  allRegisterArray.forEach(async (element) => {
+  for (element of allRegisterArray) {
     tx = await rentMarketContract.unregisterNFT(
       element.nftAddress,
       element.tokenId
     );
     txArray.push(tx.wait());
-  });
+  }
   await Promise.all(txArray);
 
   // * -------------------------------------------------------------------------
@@ -262,13 +262,13 @@ const removeAllData = async ({
   // * -------------------------------------------------------------------------
   txArray = [];
   let allRentArray = await rentMarketContract.getAllRentData();
-  allRentArray.forEach(async (element) => {
+  for (element of allRentArray) {
     tx = await rentMarketContract.unrentNFT(
       element.nftAddress,
       element.tokenId
     );
     txArray.push(tx.wait());
-  });
+  }
   await Promise.all(txArray);
 
   tx = await rentMarketContract.setMarketShareAddress(
@@ -282,7 +282,7 @@ const removeAllData = async ({
   // * -------------------------------------------------------------------------
   txArray = [];
   allRentArray = await rentMarketContract.getAllRentData();
-  allRentArray.forEach(async (element) => {
+  for (element of allRentArray) {
     const latestBlock = await ethers.provider.getBlock("latest");
     if (
       latestBlock.timestamp.gt(
@@ -295,7 +295,7 @@ const removeAllData = async ({
       );
       txArray.push(tx.wait());
     }
-  });
+  }
   await Promise.all(txArray);
 
   // * -------------------------------------------------------------------------
