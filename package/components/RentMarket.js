@@ -809,8 +809,15 @@ class RentMarket {
   }
 
   async fetchCollection() {
+    // console.log("call fetchCollection()");
+
     // * Get request collection array.
-    const allCollectionArray = await this.getAllCollection();
+    let allCollectionArray;
+    try {
+      allCollectionArray = await this.getAllCollection();
+    } catch (error) {
+      throw error;
+    }
     // console.log("allCollectionArray: ", allCollectionArray);
 
     // * Set request collection data array.
@@ -931,28 +938,36 @@ class RentMarket {
 
     // * Get register data from smart contract.
     let tokenArray = [];
-    response.forEach(function (element) {
+    for (element of response) {
       tokenArray.push({
         key: element.tokenAddress,
         tokenAddress: element.tokenAddress,
         name: element.name,
       });
-    });
+    }
 
     // * Return token data.
     return tokenArray;
   }
 
   async getAllCollection() {
+    // console.log("call getAllCollection()");
+
     // * Call rentMarket getAllCollection function.
     // console.log("this.rentMarketContract: ", this.rentMarketContract);
-    const response = await this.rentMarketContract.getAllCollection();
-    // console.log("getAllCollection response: ", response);
+    const collectionList = await this.rentMarketContract.getAllCollection();
+    // console.log("collectionList: ", collectionList);
 
     // * Get register data from smart contract.
     let collectionArray = [];
-    response.forEach(async (element) => {
-      const response = await axios.get(element.uri);
+    for (element of collectionList) {
+      let response;
+      try {
+        response = await axios.get(element.uri);
+      } catch (error) {
+        console.error(error);
+        throw error;
+      }
       const metadata = response.data;
       // console.log("collection metadata: ", metadata);
       collectionArray.push({
@@ -961,7 +976,7 @@ class RentMarket {
         uri: element.uri,
         metadata: metadata,
       });
-    });
+    }
 
     // * Return collection data.
     return collectionArray;
@@ -975,13 +990,13 @@ class RentMarket {
 
     // * Get register data from smart contract.
     let serviceArray = [];
-    response.forEach(function (element) {
+    for (element of response) {
       serviceArray.push({
         key: element.serviceAddress,
         serviceAddress: element.serviceAddress,
         uri: element.uri,
       });
-    });
+    }
 
     // * Return service data.
     return serviceArray;
@@ -995,7 +1010,7 @@ class RentMarket {
     // console.log("response: ", response);
 
     let registerData = [];
-    response.forEach(function (element) {
+    for (element of response) {
       registerData.push({
         nftAddress: element.nftAddress,
         tokenId: element.tokenId,
@@ -1010,7 +1025,7 @@ class RentMarket {
         serviceAddress: "0",
         rentStartTimestamp: "0",
       });
-    });
+    }
 
     // * Return register data.
     return registerData;
@@ -1036,21 +1051,8 @@ class RentMarket {
     // }
     // * Get rent data from smart contract.
     let rentData = [];
-    response.forEach(function (e) {
+    for (e of response) {
       // * Use a raw format.
-      // rentData.push({
-      //   nftAddress: e.nftAddress,
-      //   tokenId: e.tokenId.toString(),
-      //   rentFee: e.rentFee.toString(),
-      //   feeTokenAddress: e.feeTokenAddress,
-      //   rentFeeByToken: e.rentFeeByToken.toString(),
-      //   isRentByToken: e.isRentByToken,
-      //   rentDuration: e.rentDuration.toString(),
-      //   renterAddress: e.renterAddress,
-      //   renteeAddress: e.renteeAddress,
-      //   serviceAddress: e.serviceAddress,
-      //   rentStartTimestamp: e.rentStartTimestamp,
-      // });
       rentData.push({
         nftAddress: e.nftAddress,
         tokenId: e.tokenId,
@@ -1064,7 +1066,7 @@ class RentMarket {
         serviceAddress: e.serviceAddress,
         rentStartTimestamp: e.rentStartTimestamp,
       });
-    });
+    }
 
     // * Return register data.
     return rentData;
@@ -1084,14 +1086,14 @@ class RentMarket {
     //     uint256 amount;
     // }
     let pendingRentFeeArray = [];
-    response.forEach(function (element) {
+    for (element of response) {
       pendingRentFeeArray.push({
         renterAddress: element.renterAddress,
         serviceAddress: element.serviceAddress,
         feeTokenAddress: element.feeTokenAddress,
         amount: element.amount,
       });
-    });
+    }
 
     // * Return pending rent fee array.
     return pendingRentFeeArray;
@@ -1110,13 +1112,13 @@ class RentMarket {
     //     uint256 amount;
     // }
     let accountBalanceArray = [];
-    response.forEach(function (element) {
+    for (element of response) {
       accountBalanceArray.push({
         accountAddress: element.accountAddress,
         tokenAddress: element.tokenAddress,
         amount: element.amount,
       });
-    });
+    }
 
     // * Return account balance array.
     return accountBalanceArray;
@@ -1286,7 +1288,13 @@ class RentMarket {
       const tokenURI = changeIPFSToGateway(rawTokenURI);
       // console.log("rawTokenURI: ", rawTokenURI);
       // console.log("tokenURI: ", tokenURI);
-      const response = await axios.get(tokenURI);
+      let response;
+      try {
+        response = await axios.get(tokenURI);
+      } catch (error) {
+        console.error(error);
+        throw error;
+      }
       const metadata = response.data;
 
       // * Get name, description, and attributes from json metadata.
@@ -1539,7 +1547,12 @@ class RentMarket {
         const tokenIdNumber = tokenId.toNumber();
         rawTokenURI = await this.testNFTContract.tokenURI(tokenIdNumber);
         tokenURI = changeIPFSToGateway(rawTokenURI);
-        response = await axios.get(tokenURI);
+        try {
+          response = await axios.get(tokenURI);
+        } catch (error) {
+          console.error(error);
+          throw error;
+        }
         metadata = response.data;
         // console.log("metadata: ", metadata);
       } catch (error) {
@@ -1631,7 +1644,7 @@ class RentMarket {
 
         // * Add nft array list to tokenArray.
         // https://docs.alchemy.com/alchemy/enhanced-apis/nft-api/getnfts
-        responseNftArray.forEach((element) => {
+        for (element of responseNftArray) {
           // console.log("element: ", element);
           tokenArray.push({
             key: `${element.contract.address}/${Number(element.id.tokenId)}`,
@@ -1639,7 +1652,7 @@ class RentMarket {
             tokenId: Number(element.id.tokenId),
             metadata: element.metadata,
           });
-        });
+        }
 
         // * Update my content data by now.
         this.allMyNFTArray = tokenArray;
@@ -1684,8 +1697,8 @@ class RentMarket {
   }
 
   async rentNFT({ provider, element, serviceAddress }) {
-    console.log("call rentNFT()");
-    console.log("provider: ", provider);
+    // console.log("call rentNFT()");
+    // console.log("provider: ", provider);
     // console.log("element: ", element);
     // console.log("serviceAddress: ", serviceAddress);
 
@@ -1715,8 +1728,8 @@ class RentMarket {
       }
     } else {
       // * Call rentNFT function.
-      console.log("this.rentMarketContract: ", this.rentMarketContract);
-      console.log("this.signer: ", this.signer);
+      // console.log("this.rentMarketContract: ", this.rentMarketContract);
+      // console.log("this.signer: ", this.signer);
       try {
         await this.rentMarketContract
           .connect(this.signer)

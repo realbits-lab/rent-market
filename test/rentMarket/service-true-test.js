@@ -44,11 +44,11 @@ describe("test registerService true case.", function () {
 
     // 1. Unregister all services.
     const allServiceArray = await rentMarketContract.getAllService();
-    allServiceArray.forEach(async (element) => {
+    for (element of allServiceArray) {
       await rentMarketContract
         .connect(rentMarketContractOwnerSigner)
         .unregisterService(element.serviceAddress);
-    });
+    }
 
     // 2. Set input data.
     const serviceName = "testServiceName";
@@ -83,11 +83,11 @@ describe("test registerService true case.", function () {
 
     // 1. Unregister all services.
     const allServiceArray = await rentMarketContract.getAllService();
-    allServiceArray.forEach(async (element) => {
+    for (element of allServiceArray) {
       await rentMarketContract
         .connect(rentMarketContractOwnerSigner)
         .unregisterService(element.serviceAddress);
-    });
+    }
 
     // 2. Set input data.
     const TOTAL_COUNT = 5;
