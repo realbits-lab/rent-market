@@ -952,7 +952,13 @@ class RentMarket {
     // * Get register data from smart contract.
     let collectionArray = [];
     response.forEach(async (element) => {
-      const response = await axios.get(element.uri);
+      let response;
+      try {
+        response = await axios.get(element.uri);
+      } catch (error) {
+        console.error(error);
+        throw error;
+      }
       const metadata = response.data;
       // console.log("collection metadata: ", metadata);
       collectionArray.push({
@@ -1286,7 +1292,13 @@ class RentMarket {
       const tokenURI = changeIPFSToGateway(rawTokenURI);
       // console.log("rawTokenURI: ", rawTokenURI);
       // console.log("tokenURI: ", tokenURI);
-      const response = await axios.get(tokenURI);
+      let response;
+      try {
+        response = await axios.get(tokenURI);
+      } catch (error) {
+        console.error(error);
+        throw error;
+      }
       const metadata = response.data;
 
       // * Get name, description, and attributes from json metadata.
@@ -1539,7 +1551,12 @@ class RentMarket {
         const tokenIdNumber = tokenId.toNumber();
         rawTokenURI = await this.testNFTContract.tokenURI(tokenIdNumber);
         tokenURI = changeIPFSToGateway(rawTokenURI);
-        response = await axios.get(tokenURI);
+        try {
+          response = await axios.get(tokenURI);
+        } catch (error) {
+          console.error(error);
+          throw error;
+        }
         metadata = response.data;
         // console.log("metadata: ", metadata);
       } catch (error) {
