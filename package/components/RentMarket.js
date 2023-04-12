@@ -952,17 +952,17 @@ class RentMarket {
   }
 
   async getAllCollection() {
-    console.log("call getAllCollection()");
+    // console.log("call getAllCollection()");
 
     // * Call rentMarket getAllCollection function.
     // console.log("this.rentMarketContract: ", this.rentMarketContract);
     const collectionList = await this.rentMarketContract.getAllCollection();
-    console.log("collectionList: ", collectionList);
+    // console.log("collectionList: ", collectionList);
 
     // * Get register data from smart contract.
     let collectionArray = [];
     const promises = collectionList.map(async (element) => {
-      console.log("element: ", element);
+      // console.log("element: ", element);
       let response;
       try {
         response = await axios.get(element.uri);
@@ -1613,7 +1613,7 @@ class RentMarket {
     // console.log("filterAddress: ", filterAddress);
 
     if (filterAddress.length === 0) {
-      return;
+      return tokenArray;
     }
     const filterString = `&contractAddresses%5B%5D=${filterAddress}`;
 

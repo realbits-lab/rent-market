@@ -92,8 +92,8 @@ const Market = ({
   // * Initialize data.
   // * -------------------------------------------------------------------------
   React.useEffect(() => {
-    console.log("call React.useEffect()");
-    console.log("inputRentMarketClass: ", inputRentMarketClass);
+    // console.log("call React.useEffect()");
+    // console.log("inputRentMarketClass: ", inputRentMarketClass);
     // console.log("inputCollectionArray: ", inputCollectionArray);
     // console.log("inputServiceAddress: ", inputServiceAddress);
     // console.log("inputRegisterNFTArray: ", inputRegisterNFTArray);
@@ -170,7 +170,7 @@ const Market = ({
             color="primary"
             variant="contained"
             onClick={async () => {
-              console.log("call onClick()");
+              // console.log("call onClick()");
               // console.log(
               //   "rentMarketClassRef.current: ",
               //   rentMarketClassRef.current
@@ -190,7 +190,7 @@ const Market = ({
                 // * Enable session (triggers QR Code modal).
                 await provider.enable();
               }
-              console.log("provider: ", provider);
+              // console.log("provider: ", provider);
 
               try {
                 await rentMarketClassRef.current.rentNFT({
@@ -383,33 +383,36 @@ const Market = ({
           <TableRow key={getUniqueKey()}>
             <TableCell align="center">Avatar</TableCell>
             <TableCell align="center">Name</TableCell>
-            <TableCell align="center">
-              Fee <br />
-              (matic)
-            </TableCell>
-            <TableCell align="center">
-              Duration
-              <br /> (blocks)
-            </TableCell>
+            <TableCell align="center">Fee</TableCell>
+            <TableCell align="center">Rent</TableCell>
           </TableRow>
         </TableHead>
 
         <TableBody>
           <TableRow key={getUniqueKey()}>
-            <TableCell component="th" scope="row">
-              <Skeleton
-                variant="circular"
-                width={RBSize.big}
-                height={RBSize.big}
-              />
+            <TableCell align="center">
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                <Box>
+                  <Skeleton
+                    variant="circular"
+                    width={RBSize.big}
+                    height={RBSize.big}
+                  />
+                </Box>
+              </Box>
             </TableCell>
-            <TableCell>
+            <TableCell align="center">
               <Skeleton variant="text" />
             </TableCell>
-            <TableCell>
+            <TableCell align="center">
               <Skeleton variant="text" />
             </TableCell>
-            <TableCell>
+            <TableCell align="center">
               <Skeleton variant="text" />
             </TableCell>
           </TableRow>
@@ -476,38 +479,47 @@ const Market = ({
   }
 
   function buildCollectionList() {
-    return (
-      <List>
-        {collectionArray.length !== 0 ? (
-          collectionArray.map((element) => {
-            // console.log("list collectionArray element: ", element);
-            // console.log("ListItem key element.key: ", element.key);
-            return (
-              <ListItem key={element.key} disablePadding>
-                <ListItemButton
-                  selected={collectionAddress === element.collectionAddress}
-                  onClick={(event) => handleListCollectionClick(element)}
-                >
-                  <Tooltip
-                    title={element.metadata ? element.metadata.name : "n/a"}
-                  >
-                    <Avatar
-                      src={element.metadata ? element.metadata.image : "n/a"}
-                      variant="rounded"
-                      sx={{ width: RBSize.middle, height: RBSize.middle }}
-                    />
-                  </Tooltip>
-                </ListItemButton>
-              </ListItem>
-            );
-          })
-        ) : (
+    // console.log("call buildCollectionList()");
+    // console.log("collectionArray: ", collectionArray);
+
+    //* TODO: Consider if collectionArray has zero element, it's now loading status.
+    //* TODO: Later, we will change this method.
+    if (collectionArray.length === 0) {
+      return (
+        <List>
           <Skeleton
             variant="rounded"
             width={RBSize.middle}
             height={RBSize.middle}
           />
-        )}
+        </List>
+      );
+    }
+
+    return (
+      <List>
+        {collectionArray.map((element) => {
+          // console.log("list collectionArray element: ", element);
+          // console.log("ListItem key element.key: ", element.key);
+          return (
+            <ListItem key={element.key} disablePadding>
+              <ListItemButton
+                selected={collectionAddress === element.collectionAddress}
+                onClick={(event) => handleListCollectionClick(element)}
+              >
+                <Tooltip
+                  title={element.metadata ? element.metadata.name : "n/a"}
+                >
+                  <Avatar
+                    src={element.metadata ? element.metadata.image : "n/a"}
+                    variant="rounded"
+                    sx={{ width: RBSize.middle, height: RBSize.middle }}
+                  />
+                </Tooltip>
+              </ListItemButton>
+            </ListItem>
+          );
+        })}
       </List>
     );
   }

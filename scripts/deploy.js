@@ -193,12 +193,12 @@ task("deployPromptNftContract", "Deploys the promptNFT contract")
     console.log("Contract deployed to address: ", response.address);
   });
 
-// Deploy a rentMarket contract with iterableMap libraries.
+//* Deploy a rentMarket contract with iterableMap libraries.
 task("deployRentMarket", "Deploy the rentMarket contract")
   .addParam("contract", "The contract name to be deployed.")
   .addParam("exclusive", "The exclusive bool type flag.")
   .setAction(async function (taskArguments, hre) {
-    // Deploy iterableMap library smart contract.
+    //* Deploy iterableMap library smart contract.
     console.log("Try to deploy a pendingRentFeeIterableMap.");
     const pendingRentFeeIterableMapContract =
       await hre.ethers.getContractFactory("pendingRentFeeIterableMap");
@@ -245,7 +245,7 @@ task("deployRentMarket", "Deploy the rentMarket contract")
     const rentDataIterableMapLibrary =
       await rentDataIterableMapContract.deploy();
 
-    // Wait all deployments.
+    //* Wait all deployments.
     console.log("Wait all deployments.");
     await pendingRentFeeIterableMapLibrary.deployed();
     await tokenDataIterableMapLibrary.deployed();
@@ -255,7 +255,7 @@ task("deployRentMarket", "Deploy the rentMarket contract")
     await registerDataIterableMapLibrary.deployed();
     await rentDataIterableMapLibrary.deployed();
 
-    // Deploy rentMarket smart contract.
+    //* Deploy rentMarket smart contract.
     console.log("Try to get a rentMarketContract.");
     const contractFactory = await hre.ethers.getContractFactory(
       taskArguments.contract,
