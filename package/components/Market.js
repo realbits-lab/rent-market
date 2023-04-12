@@ -497,7 +497,7 @@ const Market = ({
     }
 
     return (
-      <List>
+      <List style={{ display: "flex", flexDirection: "row", padding: 10 }}>
         {collectionArray.map((element) => {
           // console.log("list collectionArray element: ", element);
           // console.log("ListItem key element.key: ", element.key);
@@ -521,22 +521,6 @@ const Market = ({
           );
         })}
       </List>
-    );
-  }
-
-  function buildAllCollectionTable() {
-    return (
-      <Grid
-        container
-        padding={0}
-        spacing={0}
-        display="flex"
-        direction="column"
-        justifyContent="flex-start"
-      >
-        <Grid item>{buildCollectionList()}</Grid>
-        <Grid item>{buildNFTDataTable()}</Grid>
-      </Grid>
     );
   }
 
@@ -641,10 +625,20 @@ const Market = ({
 
   return (
     <>
-      {/* // * --------------------------------------------------------------*/}
-      {/* // * Show collection array data.                                   */}
-      {/* // * --------------------------------------------------------------*/}
-      {buildAllCollectionTable()}
+      {/*//* ----------------------------------------------------------------*/}
+      {/*//* Show collection array data.                                     */}
+      {/*//* ----------------------------------------------------------------*/}
+      <Grid
+        container
+        padding={0}
+        spacing={0}
+        display="flex"
+        direction="column"
+        justifyContent="flex-start"
+      >
+        <Grid item>{buildCollectionList()}</Grid>
+        <Grid item>{buildNFTDataTable()}</Grid>
+      </Grid>
     </>
   );
 };
