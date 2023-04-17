@@ -550,10 +550,6 @@ const My = ({
     // console.log("myRentNFTArray: ", myRentNFTArray);
     // console.log("web3modalSelectedChain: ", web3modalSelectedChain);
     // console.log(
-    //   "web3modalSelectedChain.network: ",
-    //   web3modalSelectedChain.network
-    // );
-    // console.log(
     //   "getChainName({ chainId: inputBlockchainNetwork }): ",
     //   getChainName({ chainId: inputBlockchainNetwork })
     // );

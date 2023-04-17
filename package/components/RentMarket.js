@@ -933,18 +933,19 @@ class RentMarket {
       throw new Error("Rent market contract is not defined.");
     }
 
-    const response = await this.rentMarketContract.getAllToken();
-    // console.log("getAllToken response: ", response);
+    const tokenList = await this.rentMarketContract.getAllToken();
+    // console.log("tokenList: ", tokenList);
 
     // * Get register data from smart contract.
     let tokenArray = [];
-    for (element of response) {
+    const promises = tokenList.map(async (element) => {
       tokenArray.push({
         key: element.tokenAddress,
         tokenAddress: element.tokenAddress,
         name: element.name,
       });
-    }
+    });
+    await Promise.all(promises);
 
     // * Return token data.
     return tokenArray;
@@ -960,7 +961,8 @@ class RentMarket {
 
     // * Get register data from smart contract.
     let collectionArray = [];
-    for (element of collectionList) {
+    const promises = collectionList.map(async (element) => {
+      // console.log("element: ", element);
       let response;
       try {
         response = await axios.get(element.uri);
@@ -970,13 +972,16 @@ class RentMarket {
       }
       const metadata = response.data;
       // console.log("collection metadata: ", metadata);
+
+      //* Add collection array with metadata.
       collectionArray.push({
         key: element.collectionAddress,
         collectionAddress: element.collectionAddress,
         uri: element.uri,
         metadata: metadata,
       });
-    }
+    });
+    await Promise.all(promises);
 
     // * Return collection data.
     return collectionArray;
@@ -985,18 +990,19 @@ class RentMarket {
   async getAllService() {
     // * Call rentMarket getAllService function.
     // console.log("this.rentMarketContract: ", this.rentMarketContract);
-    const response = await this.rentMarketContract.getAllService();
-    // console.log("getAllService response: ", response);
+    const serviceList = await this.rentMarketContract.getAllService();
+    // console.log("serviceList: ", serviceList);
 
     // * Get register data from smart contract.
     let serviceArray = [];
-    for (element of response) {
+    const promises = serviceList.map(async (element) => {
       serviceArray.push({
         key: element.serviceAddress,
         serviceAddress: element.serviceAddress,
         uri: element.uri,
       });
-    }
+    });
+    await Promise.all(promises);
 
     // * Return service data.
     return serviceArray;
@@ -1006,11 +1012,11 @@ class RentMarket {
     // console.log("call getAllRegisterData()");
 
     // * Call rentMarket getAllRegisterData function.
-    const response = await this.rentMarketContract.getAllRegisterData();
-    // console.log("response: ", response);
+    const registerDataList = await this.rentMarketContract.getAllRegisterData();
+    // console.log("registerDataList: ", registerDataList);
 
     let registerData = [];
-    for (element of response) {
+    const promises = registerDataList.map(async (element) => {
       registerData.push({
         nftAddress: element.nftAddress,
         tokenId: element.tokenId,
@@ -1025,7 +1031,8 @@ class RentMarket {
         serviceAddress: "0",
         rentStartTimestamp: "0",
       });
-    }
+    });
+    await Promise.all(promises);
 
     // * Return register data.
     return registerData;
@@ -1033,8 +1040,8 @@ class RentMarket {
 
   async getAllRentData() {
     // * Call rentMarket getAllRentData function.
-    const response = await this.rentMarketContract.getAllRentData();
-    // console.log("getAllRentData response: ", response);
+    const rentDataList = await this.rentMarketContract.getAllRentData();
+    // console.log("rentDataList: ", rentDataList);
 
     // struct rentData {
     //     address nftAddress;
@@ -1051,22 +1058,23 @@ class RentMarket {
     // }
     // * Get rent data from smart contract.
     let rentData = [];
-    for (e of response) {
+    const promises = rentDataList.map(async (element) => {
       // * Use a raw format.
       rentData.push({
-        nftAddress: e.nftAddress,
-        tokenId: e.tokenId,
-        rentFee: e.rentFee,
-        feeTokenAddress: e.feeTokenAddress,
-        rentFeeByToken: e.rentFeeByToken,
-        isRentByToken: e.isRentByToken,
-        rentDuration: e.rentDuration,
-        renterAddress: e.renterAddress,
-        renteeAddress: e.renteeAddress,
-        serviceAddress: e.serviceAddress,
-        rentStartTimestamp: e.rentStartTimestamp,
+        nftAddress: element.nftAddress,
+        tokenId: element.tokenId,
+        rentFee: element.rentFee,
+        feeTokenAddress: element.feeTokenAddress,
+        rentFeeByToken: element.rentFeeByToken,
+        isRentByToken: element.isRentByToken,
+        rentDuration: element.rentDuration,
+        renterAddress: element.renterAddress,
+        renteeAddress: element.renteeAddress,
+        serviceAddress: element.serviceAddress,
+        rentStartTimestamp: element.rentStartTimestamp,
       });
-    }
+    });
+    await Promise.all(promises);
 
     // * Return register data.
     return rentData;
@@ -1075,8 +1083,9 @@ class RentMarket {
   async getAllPendingRentFee() {
     // * Call rentMarket getAllPendingRentFee function.
     // console.log("this.rentMarketContract: ", this.rentMarketContract);
-    const response = await this.rentMarketContract.getAllPendingRentFee();
-    // console.log("getAllPendingRentFee response: ", response);
+    const pendingRentFeeList =
+      await this.rentMarketContract.getAllPendingRentFee();
+    // console.log("pendingRentFeeList: ", pendingRentFeeList);
 
     // * Get pending rent fee from smart contract.
     // struct pendingRentFee {
@@ -1086,14 +1095,15 @@ class RentMarket {
     //     uint256 amount;
     // }
     let pendingRentFeeArray = [];
-    for (element of response) {
+    const promises = pendingRentFeeList.map(async (element) => {
       pendingRentFeeArray.push({
         renterAddress: element.renterAddress,
         serviceAddress: element.serviceAddress,
         feeTokenAddress: element.feeTokenAddress,
         amount: element.amount,
       });
-    }
+    });
+    await Promise.all(promises);
 
     // * Return pending rent fee array.
     return pendingRentFeeArray;
@@ -1102,8 +1112,9 @@ class RentMarket {
   async getAllAccountBalance() {
     // * Call rentMarket getAllAccountBalance function.
     // console.log("this.rentMarketContract: ", this.rentMarketContract);
-    const response = await this.rentMarketContract.getAllAccountBalance();
-    // console.log("getAllAccountBalance response: ", response);
+    const accountBalanceList =
+      await this.rentMarketContract.getAllAccountBalance();
+    // console.log("accountBalanceList: ", accountBalanceList);
 
     // * Get account balance array from smart contract.
     // struct accountBalance {
@@ -1112,13 +1123,14 @@ class RentMarket {
     //     uint256 amount;
     // }
     let accountBalanceArray = [];
-    for (element of response) {
+    const promises = accountBalanceList.map(async (element) => {
       accountBalanceArray.push({
         accountAddress: element.accountAddress,
         tokenAddress: element.tokenAddress,
         amount: element.amount,
       });
-    }
+    });
+    await Promise.all(promises);
 
     // * Return account balance array.
     return accountBalanceArray;
@@ -1601,7 +1613,7 @@ class RentMarket {
     // console.log("filterAddress: ", filterAddress);
 
     if (filterAddress.length === 0) {
-      return;
+      return tokenArray;
     }
     const filterString = `&contractAddresses%5B%5D=${filterAddress}`;
 
@@ -1644,7 +1656,7 @@ class RentMarket {
 
         // * Add nft array list to tokenArray.
         // https://docs.alchemy.com/alchemy/enhanced-apis/nft-api/getnfts
-        for (element of responseNftArray) {
+        const promises = responseNftArray.map(async (element) => {
           // console.log("element: ", element);
           tokenArray.push({
             key: `${element.contract.address}/${Number(element.id.tokenId)}`,
@@ -1652,7 +1664,8 @@ class RentMarket {
             tokenId: Number(element.id.tokenId),
             metadata: element.metadata,
           });
-        }
+        });
+        await Promise.all(promises);
 
         // * Update my content data by now.
         this.allMyNFTArray = tokenArray;
