@@ -41,7 +41,7 @@ import "./feeSnapshot.sol";
 /// @author A realbits dev team.
 /// @notice rentMarket can be used for rentNFT market or promptNFT market.
 /// @dev All function calls are currently being tested.
-contract rentMarket is Ownable, Pausable {
+contract rentMarket is Ownable, Pausable, feeSnapshot {
     //* Iterable mapping data type with library.
     using pendingRentFeeIterableMap for pendingRentFeeIterableMap.pendingRentFeeMap;
     using accountBalanceIterableMap for accountBalanceIterableMap.accountBalanceMap;
