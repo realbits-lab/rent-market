@@ -109,6 +109,11 @@ const prepareContract = async ([wallet, other], provider) => {
   );
   const rentDataIterableMapLibrary = await rentDataIterableMapContract.deploy();
 
+  const balanceSnapshotLibContract = await ethers.getContractFactory(
+    "balanceSnapshotLib"
+  );
+  const balanceSnapshotLibrary = await balanceSnapshotLibContract.deploy();
+
   await pendingRentFeeIterableMapLibrary.deployed();
   await tokenDataIterableMapLibrary.deployed();
   await accountBalanceIterableMapLibrary.deployed();
@@ -116,6 +121,7 @@ const prepareContract = async ([wallet, other], provider) => {
   await serviceDataIterableMapLibrary.deployed();
   await registerDataIterableMapLibrary.deployed();
   await rentDataIterableMapLibrary.deployed();
+  await balanceSnapshotLibrary.deployed();
 
   // * -------------------------------------------------------------------------
   // * Deploy rentMarket smart contract.
@@ -138,6 +144,8 @@ const prepareContract = async ([wallet, other], provider) => {
           registerDataIterableMapLibrary.deployTransaction.creates,
         rentDataIterableMap:
           rentDataIterableMapLibrary.deployTransaction.creates,
+        balanceSnapshotLib:
+          balanceSnapshotLibrary.deployTransaction.creates,
       },
     }
   );

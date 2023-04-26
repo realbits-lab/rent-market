@@ -130,40 +130,59 @@ describe("test settleRentData true case.", function () {
     //*-------------------------------------------------------------------------
     //* Check the previous snapshot data.
     //*-------------------------------------------------------------------------
-    //* rentee address: userSigner.address
     //* renter address: testNFTContractOwnerSigner.address
-    //* service address: serviceContractOwnerSigner.address
-    //* market address: rentMarketContractOwnerSigner.address
     tx = await rentMarketContract.makeSnapshot();
     await tx.wait();
     let snapshotId = await rentMarketContract.getCurrentSnapshotId();
-    let feeResult = await rentMarketContract.feeOfAt(
-      userSigner.address,
-      snapshotId
-    );
-    // console.log("feeResult: ", feeResult);
-    // console.log("feeResult[totalFee]: ", feeResult["totalFee"]);
-    // console.log("feeResult[totalFeeByToken]: ", feeResult["totalFeeByToken"]);
-    expect(feeResult["totalFee"]).to.be.equal(BigNumber.from(0));
-    expect(feeResult["totalFeeByToken"]).to.be.equal(BigNumber.from(0));
-    feeResult = await rentMarketContract.feeOfAt(
+
+    let balanceResult = await rentMarketContract.balanceOfAt(
       testNFTContractOwnerSigner.address,
       snapshotId
     );
-    expect(feeResult["totalFee"]).to.be.equal(BigNumber.from(0));
-    expect(feeResult["totalFeeByToken"]).to.be.equal(BigNumber.from(0));
-    feeResult = await rentMarketContract.feeOfAt(
+    // console.log("snapshotId: ", snapshotId);
+    // console.log("balanceResult: ", balanceResult);
+    // console.log("balanceResult[balance]: ", balanceResult["balance"]);
+    // console.log(
+    //   "balanceResult[balanceByToken]: ",
+    //   balanceResult["balanceByToken"]
+    // );
+    // console.log("balanceResult[found]: ", balanceResult["found"]);
+    if (balanceResult["found"] === false) {
+      balanceResult["balance"] = await rentMarketContract
+        .connect(testNFTContractOwnerSigner)
+        .getMyBalance(ethers.constants.AddressZero);
+    }
+    // console.log("balanceResult[balance]: ", balanceResult["balance"]);
+    expect(balanceResult["balance"]).to.be.equal(BigNumber.from(0));
+    expect(balanceResult["balanceByToken"]).to.be.equal(BigNumber.from(0));
+
+    //* service address: serviceContractOwnerSigner.address
+    balanceResult = await rentMarketContract.balanceOfAt(
       serviceContractOwnerSigner.address,
       snapshotId
     );
-    expect(feeResult["totalFee"]).to.be.equal(BigNumber.from(0));
-    expect(feeResult["totalFeeByToken"]).to.be.equal(BigNumber.from(0));
-    feeResult = await rentMarketContract.feeOfAt(
+    // console.log("balanceResult[balance]: ", balanceResult["balance"]);
+    if (balanceResult["found"] === false) {
+      balanceResult["balance"] = await rentMarketContract
+        .connect(serviceContractOwnerSigner)
+        .getMyBalance(ethers.constants.AddressZero);
+    }
+    expect(balanceResult["balance"]).to.be.equal(BigNumber.from(0));
+    expect(balanceResult["balanceByToken"]).to.be.equal(BigNumber.from(0));
+
+    //* market address: rentMarketContractOwnerSigner.address
+    balanceResult = await rentMarketContract.balanceOfAt(
       rentMarketContractOwnerSigner.address,
       snapshotId
     );
-    expect(feeResult["totalFee"]).to.be.equal(BigNumber.from(0));
-    expect(feeResult["totalFeeByToken"]).to.be.equal(BigNumber.from(0));
+    // console.log("balanceResult[balance]: ", balanceResult["balance"]);
+    if (balanceResult["found"] === false) {
+      balanceResult["balance"] = await rentMarketContract
+        .connect(rentMarketContractOwnerSigner)
+        .getMyBalance(ethers.constants.AddressZero);
+    }
+    expect(balanceResult["balance"]).to.be.equal(BigNumber.from(0));
+    expect(balanceResult["balanceByToken"]).to.be.equal(BigNumber.from(0));
 
     //*-------------------------------------------------------------------------
     //* Make transaction for settleRentData function.
@@ -193,13 +212,13 @@ describe("test settleRentData true case.", function () {
     //*-------------------------------------------------------------------------
     //* Get each balanace for owner, service, and market.
     //*-------------------------------------------------------------------------
-    const realRenterBalance = await rentMarketContract
+    let realRenterBalance = await rentMarketContract
       .connect(testNFTContractOwnerSigner)
       .getMyBalance(ethers.constants.AddressZero);
-    const realServiceBalance = await rentMarketContract
+    let realServiceBalance = await rentMarketContract
       .connect(serviceContractOwnerSigner)
       .getMyBalance(ethers.constants.AddressZero);
-    const realMarketBalance = await rentMarketContract
+    let realMarketBalance = await rentMarketContract
       .connect(rentMarketContractOwnerSigner)
       .getMyBalance(ethers.constants.AddressZero);
 
@@ -222,44 +241,53 @@ describe("test settleRentData true case.", function () {
     expect(realMarketBalance).to.be.equal(expectedMarketBalance);
 
     //*-------------------------------------------------------------------------
-    //* Check the previous snapshot data.
+    //* Check the post snapshot data.
     //*-------------------------------------------------------------------------
-    //* rentee address: userSigner.address
-    //* renter address: testNFTContractOwnerSigner.address
-    //* service address: serviceContractOwnerSigner.address
-    //* market address: rentMarketContractOwnerSigner.address
     tx = await rentMarketContract.makeSnapshot();
     await tx.wait();
     snapshotId = await rentMarketContract.getCurrentSnapshotId();
-    feeResult = await rentMarketContract.feeOfAt(
-      userSigner.address,
-      snapshotId
-    );
-    console.log("feeResult: ", feeResult);
-    console.log("feeResult[totalFee]: ", feeResult["totalFee"]);
-    console.log("feeResult[totalFeeByToken]: ", feeResult["totalFeeByToken"]);
-    console.log("rentFee: ", rentFee);
-    expect(feeResult["totalFee"]).to.be.equal(rentFee);
-    expect(feeResult["totalFeeByToken"]).to.be.equal(BigNumber.from(0));
-    feeResult = await rentMarketContract.feeOfAt(
+
+    //* renter address: testNFTContractOwnerSigner.address
+    balanceResult = await rentMarketContract.balanceOfAt(
       testNFTContractOwnerSigner.address,
       snapshotId
     );
-    console.log("expectedRenterBalance: ", expectedRenterBalance);
-    expect(feeResult["totalFee"]).to.be.equal(expectedRenterBalance);
-    expect(feeResult["totalFeeByToken"]).to.be.equal(BigNumber.from(0));
-    // feeResult = await rentMarketContract.feeOfAt(
-    //   serviceContractOwnerSigner.address,
-    //   snapshotId
+    if (balanceResult["found"] === true) {
+      realRenterBalance = balanceResult["balance"];
+    }
+    // console.log("snapshotId: ", snapshotId);
+    // console.log("balanceResult: ", balanceResult);
+    // console.log("balanceResult[balance]: ", balanceResult["balance"]);
+    // console.log(
+    //   "balanceResult[balanceByToken]: ",
+    //   balanceResult["balanceByToken"]
     // );
-    // expect(feeResult["totalFee"]).to.be.equal(BigNumber.from(0));
-    // expect(feeResult["totalFeeByToken"]).to.be.equal(BigNumber.from(0));
-    // feeResult = await rentMarketContract.feeOfAt(
-    //   rentMarketContractOwnerSigner.address,
-    //   snapshotId
-    // );
-    // expect(feeResult["totalFee"]).to.be.equal(BigNumber.from(0));
-    // expect(feeResult["totalFeeByToken"]).to.be.equal(BigNumber.from(0));
+    // console.log("rentFee: ", rentFee);
+    // console.log("expectedRenterBalance: ", expectedRenterBalance);
+    expect(realRenterBalance).to.be.equal(expectedRenterBalance);
+    expect(balanceResult["balanceByToken"]).to.be.equal(BigNumber.from(0));
+
+    //* service address: serviceContractOwnerSigner.address
+    balanceResult = await rentMarketContract.balanceOfAt(
+      serviceContractOwnerSigner.address,
+      snapshotId
+    );
+    if (balanceResult["found"] === true) {
+      realServiceBalance = balanceResult["balance"];
+    }
+    expect(realServiceBalance).to.be.equal(expectedServiceBalance);
+    expect(balanceResult["balanceByToken"]).to.be.equal(BigNumber.from(0));
+
+    //* market address: rentMarketContractOwnerSigner.address
+    balanceResult = await rentMarketContract.balanceOfAt(
+      rentMarketContractOwnerSigner.address,
+      snapshotId
+    );
+    if (balanceResult["found"] === true) {
+      realMarketBalance = balanceResult["balance"];
+    }
+    expect(realMarketBalance).to.be.equal(expectedMarketBalance);
+    expect(balanceResult["balanceByToken"]).to.be.equal(BigNumber.from(0));
   });
 
   it("Check snapshot for multiple settlement cases.", async () => {
@@ -362,6 +390,39 @@ describe("test settleRentData true case.", function () {
     await hre.network.provider.send("hardhat_mine", [`0x${progressTime}`]);
 
     //*-------------------------------------------------------------------------
+    //* Check the previous snapshot data.
+    //*-------------------------------------------------------------------------
+    tx = await rentMarketContract.makeSnapshot();
+    await tx.wait();
+    let snapshotId = await rentMarketContract.getCurrentSnapshotId();
+
+    //* renter address: testNFTContractOwnerSigner.address
+    balanceResult = await rentMarketContract.balanceOfAt(
+      testNFTContractOwnerSigner.address,
+      snapshotId
+    );
+    let renterTotalFee = balanceResult["balance"];
+    let renterTotalFeeByToken = balanceResult["balanceByToken"];
+    // console.log("testNFTContractOwnerSigner");
+    // console.log("renterTotalFee: ", renterTotalFee);
+
+    //* service address: serviceContractOwnerSigner.address
+    balanceResult = await rentMarketContract.balanceOfAt(
+      serviceContractOwnerSigner.address,
+      snapshotId
+    );
+    let serviceTotalFee = balanceResult["balance"];
+    let serviceTotalFeeByToken = balanceResult["balanceByToken"];
+
+    //* market address: rentMarketContractOwnerSigner.address
+    balanceResult = await rentMarketContract.balanceOfAt(
+      rentMarketContractOwnerSigner.address,
+      snapshotId
+    );
+    let marketTotalFee = balanceResult["balance"];
+    let marketTotalFeeByToken = balanceResult["balanceByToken"];
+
+    //*-------------------------------------------------------------------------
     //* Settle rent data.
     //*-------------------------------------------------------------------------
     const latestBlock = await ethers.provider.getBlock("latest");
@@ -393,19 +454,20 @@ describe("test settleRentData true case.", function () {
     //*-------------------------------------------------------------------------
     //* Get real value of each balanace for renter, rentee, and market.
     //*-------------------------------------------------------------------------
-    const realRenterBalance = await rentMarketContract
+    let realRenterBalance = await rentMarketContract
       .connect(testNFTContractOwnerSigner)
       .getMyBalance(ethers.constants.AddressZero);
-    const realServiceBalance = await rentMarketContract
+    let realServiceBalance = await rentMarketContract
       .connect(serviceContractOwnerSigner)
       .getMyBalance(ethers.constants.AddressZero);
-    const realMarketBalance = await rentMarketContract
+    let realMarketBalance = await rentMarketContract
       .connect(rentMarketContractOwnerSigner)
       .getMyBalance(ethers.constants.AddressZero);
 
     //*-------------------------------------------------------------------------
     //* Get expected total value of each quota for owner, service, and market.
     //*-------------------------------------------------------------------------
+    let expectedRenteeBalance = BigNumber.from(0);
     let expectedRenterBalance = BigNumber.from(0);
     let expectedServiceBalance = BigNumber.from(0);
     let expectedMarketBalance = BigNumber.from(0);
@@ -413,6 +475,8 @@ describe("test settleRentData true case.", function () {
       await rentMarketContract.getFeeQuota();
     for (let i = startTokenId; i <= endTokenId; i++) {
       const idx = i - startTokenId;
+
+      expectedRenteeBalance = rentFeeArray[idx].add(expectedRenteeBalance);
 
       const renterBalance = rentFeeArray[idx].mul(renterQuota).div(100);
       expectedRenterBalance = renterBalance.add(expectedRenterBalance);
@@ -432,5 +496,67 @@ describe("test settleRentData true case.", function () {
     expect(realRenterBalance).to.be.equal(expectedRenterBalance);
     expect(realServiceBalance).to.be.equal(expectedServiceBalance);
     expect(realMarketBalance).to.be.equal(expectedMarketBalance);
+
+    //*-------------------------------------------------------------------------
+    //* Check the post snapshot data.
+    //*-------------------------------------------------------------------------
+    tx = await rentMarketContract.makeSnapshot();
+    await tx.wait();
+    snapshotId = await rentMarketContract.getCurrentSnapshotId();
+    // console.log(
+    //   "testNFTContractOwnerSigner.address: ",
+    //   testNFTContractOwnerSigner.address
+    // );
+    for (let i = 1; i <= snapshotId; i++) {
+      balanceResult = await rentMarketContract.balanceOfAt(
+        testNFTContractOwnerSigner.address,
+        i
+      );
+      // console.log("i: ", i);
+      // console.log("balanceResult: ", balanceResult);
+    }
+
+    //* Check renter fee snapshot.
+    balanceResult = await rentMarketContract.balanceOfAt(
+      testNFTContractOwnerSigner.address,
+      snapshotId
+    );
+    // console.log("testNFTContractOwnerSigner");
+    // console.log("balanceResult: ", balanceResult);
+    // console.log("realRenterBalance: ", realRenterBalance);
+    // console.log("expectedRenterBalance: ", expectedRenterBalance);
+    if (balanceResult["found"] === true) {
+      realRenterBalance = balanceResult["balance"];
+    }
+    expect(realRenterBalance).to.be.equal(
+      expectedRenterBalance.add(renterTotalFee)
+    );
+    expect(balanceResult["balanceByToken"]).to.be.equal(BigNumber.from(0));
+
+    //* Check service fee snapshot.
+    balanceResult = await rentMarketContract.balanceOfAt(
+      serviceContractOwnerSigner.address,
+      snapshotId
+    );
+    if (balanceResult["found"] === true) {
+      realServiceBalance = balanceResult["balance"];
+    }
+    expect(realServiceBalance).to.be.equal(
+      expectedServiceBalance.add(serviceTotalFee)
+    );
+    expect(balanceResult["balanceByToken"]).to.be.equal(BigNumber.from(0));
+
+    //* Check market fee snapshot.
+    balanceResult = await rentMarketContract.balanceOfAt(
+      rentMarketContractOwnerSigner.address,
+      snapshotId
+    );
+    if (balanceResult["found"] === true) {
+      realMarketBalance = balanceResult["balance"];
+    }
+    expect(realMarketBalance).to.be.equal(
+      expectedMarketBalance.add(marketTotalFee)
+    );
+    expect(balanceResult["balanceByToken"]).to.be.equal(BigNumber.from(0));
   });
 });

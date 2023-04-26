@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 import "hardhat/console.sol";
 import "./iterableMapLib.sol";
 import "./IRentNFT.sol";
-import "./feeSnapshot.sol";
+import "./balanceSnapshotLib.sol";
 
 //*
 //* Error messages.
@@ -41,7 +41,7 @@ import "./feeSnapshot.sol";
 /// @author A realbits dev team.
 /// @notice rentMarket can be used for rentNFT market or promptNFT market.
 /// @dev All function calls are currently being tested.
-contract rentMarket is Ownable, Pausable, feeSnapshot {
+contract rentMarket is Ownable, Pausable {
     //* Iterable mapping data type with library.
     using pendingRentFeeIterableMap for pendingRentFeeIterableMap.pendingRentFeeMap;
     using accountBalanceIterableMap for accountBalanceIterableMap.accountBalanceMap;
@@ -51,6 +51,7 @@ contract rentMarket is Ownable, Pausable, feeSnapshot {
     using registerDataIterableMap for registerDataIterableMap.registerDataMap;
     using rentDataIterableMap for rentDataIterableMap.rentDataMap;
     using ERC165Checker for address;
+    using balanceSnapshotLib for balanceSnapshotLib.balanceSnapshotData;
 
     //* Market fee receiver address.
     address private MARKET_SHARE_ADDRESS;
@@ -91,6 +92,9 @@ contract rentMarket is Ownable, Pausable, feeSnapshot {
     //* Data for account balance data when settleRentData.
     accountBalanceIterableMap.accountBalanceMap accountBalanceItMap;
 
+    //* Data for balance snapshot of renter, service, and market account.
+    balanceSnapshotLib.balanceSnapshotData balanceSnapshot;
+
     //* Exclusive rent flag.
     //* In case of renting prompt NFT, the same NFT can be rented many times simultaneously.
     bool public exclusive;
@@ -117,7 +121,7 @@ contract rentMarket is Ownable, Pausable, feeSnapshot {
     //* Set market share address to this self contract address.
     constructor(bool exclusive_) {
         MARKET_SHARE_ADDRESS = msg.sender;
-        console.log("exclusive_: ", exclusive_);
+        // console.log("exclusive_: ", exclusive_);
         exclusive = exclusive_;
     }
 
@@ -531,9 +535,9 @@ contract rentMarket is Ownable, Pausable, feeSnapshot {
         //* - In case of prompt NFT, NFT contract is a msg.sender.
         bool isRegister = checkRegister(nftAddress, msg.sender);
         address ownerAddress = getNFTOwner(nftAddress, tokenId);
-        console.log("isRegister: ", isRegister);
-        console.log("ownerAddress: ", ownerAddress);
-        console.log("msg.sender: ", msg.sender);
+        // console.log("isRegister: ", isRegister);
+        // console.log("ownerAddress: ", ownerAddress);
+        // console.log("msg.sender: ", msg.sender);
         require(
             isRegister == true ||
                 ownerAddress == msg.sender ||
@@ -1130,7 +1134,6 @@ contract rentMarket is Ownable, Pausable, feeSnapshot {
         uint256 marketShare = amountRentFee - renterShare - serviceShare;
 
         //* Transfer rent fee to the owner of NFT.
-        // console.log("renterShare: ", renterShare);
         accountBalanceItMap.add(
             data.renterAddress,
             data.feeTokenAddress,
@@ -1162,34 +1165,28 @@ contract rentMarket is Ownable, Pausable, feeSnapshot {
         //*---------------------------------------------------------------------
         //* Update snapshot.
         //*---------------------------------------------------------------------
+        //* TODO: Supposed that market use only one token except base coin.
 
-        //* Update user (renter) snapshot.
-        _updateAccountFee(
-            data.renteeAddress,
-            data.rentFee,
-            data.rentFeeByToken
+        //* Update NFT owner balance snapshot.
+        updateAccountBalance(
+            data.isRentByToken,
+            data.renterAddress,
+            data.feeTokenAddress
         );
 
-        //* Update NFT owner (rentee) snapshot.
-        if (data.isRentByToken == true) {
-            _updateAccountFee(data.renterAddress, 0, renterShare);
-        } else {
-            _updateAccountFee(data.renterAddress, renterShare, 0);
-        }
+        //* Update service owner balance snapshot.
+        updateAccountBalance(
+            data.isRentByToken,
+            data.serviceAddress,
+            data.feeTokenAddress
+        );
 
-        //* Update Service owner (service) snapshot.
-        if (data.isRentByToken == true) {
-            _updateAccountFee(data.serviceAddress, 0, serviceShare);
-        } else {
-            _updateAccountFee(data.serviceAddress, serviceShare, 0);
-        }
-
-        //* Update Service owner (service) snapshot.
-        if (data.isRentByToken == true) {
-            _updateAccountFee(MARKET_SHARE_ADDRESS, 0, marketShare);
-        } else {
-            _updateAccountFee(MARKET_SHARE_ADDRESS, marketShare, 0);
-        }
+        //* Update market owner balance snapshot.
+        updateAccountBalance(
+            data.isRentByToken,
+            MARKET_SHARE_ADDRESS,
+            data.feeTokenAddress
+        );
 
         //* Emit SettleRentData event.
         emit SettleRentData(
@@ -1389,7 +1386,7 @@ contract rentMarket is Ownable, Pausable, feeSnapshot {
         if (supportInterfaceResult == true) {
             //* Get the owner address of NFT with token ID.
             bool response = IRentNFT(nftAddress_).checkRegisterRole(sender_);
-            console.log("response: ", response);
+            // console.log("response: ", response);
             return response;
         } else {
             return false;
@@ -1458,10 +1455,48 @@ contract rentMarket is Ownable, Pausable, feeSnapshot {
     }
 
     function getCurrentSnapshotId() public view returns (uint256) {
-        return _getCurrentSnapshotId();
+        return balanceSnapshot.getCurrentSnapshotId();
     }
 
     function makeSnapshot() public onlyOwner whenNotPaused returns (uint256) {
-        return _snapshot();
+        return balanceSnapshot.makeSnapshot();
+    }
+
+    function updateAccountBalance(
+        bool isRentByToken,
+        address accountAddress,
+        address tokenAddress
+    ) private {
+        // uint256 balance = accountBalanceItMap.getAmount(
+        //     accountAddress,
+        //     address(0)
+        // );
+        // console.log("accountAddress: ", accountAddress);
+        // console.log("balance: ", balance);
+
+        if (isRentByToken == true) {
+            balanceSnapshot.updateAccountBalance(
+                accountAddress,
+                0,
+                accountBalanceItMap.getAmount(accountAddress, tokenAddress)
+            );
+        } else {
+            balanceSnapshot.updateAccountBalance(
+                accountAddress,
+                accountBalanceItMap.getAmount(accountAddress, address(0)),
+                0
+            );
+        }
+    }
+
+    function balanceOfAt(
+        address accountAddress,
+        uint256 snapshotId
+    )
+        public
+        view
+        returns (bool found, uint256 balance, uint256 balanceByToken)
+    {
+        return balanceSnapshot.balanceOfAt(accountAddress, snapshotId);
     }
 }
