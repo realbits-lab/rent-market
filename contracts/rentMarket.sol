@@ -1159,8 +1159,37 @@ contract rentMarket is Ownable, Pausable, feeSnapshot {
 
         rentDataItMap.remove(data.nftAddress, data.tokenId);
 
-        //* TODO: Update account fee.
-        // _updateAccountFee(data.renterAddress, fee);
+        //*---------------------------------------------------------------------
+        //* Update snapshot.
+        //*---------------------------------------------------------------------
+
+        //* Update user (renter) snapshot.
+        _updateAccountFee(
+            data.renteeAddress,
+            data.rentFee,
+            data.rentFeeByToken
+        );
+
+        //* Update NFT owner (rentee) snapshot.
+        if (data.isRentByToken == true) {
+            _updateAccountFee(data.renterAddress, 0, renterShare);
+        } else {
+            _updateAccountFee(data.renterAddress, renterShare, 0);
+        }
+
+        //* Update Service owner (service) snapshot.
+        if (data.isRentByToken == true) {
+            _updateAccountFee(data.serviceAddress, 0, serviceShare);
+        } else {
+            _updateAccountFee(data.serviceAddress, serviceShare, 0);
+        }
+
+        //* Update Service owner (service) snapshot.
+        if (data.isRentByToken == true) {
+            _updateAccountFee(MARKET_SHARE_ADDRESS, 0, marketShare);
+        } else {
+            _updateAccountFee(MARKET_SHARE_ADDRESS, marketShare, 0);
+        }
 
         //* Emit SettleRentData event.
         emit SettleRentData(
