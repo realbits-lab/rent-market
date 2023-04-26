@@ -1456,4 +1456,12 @@ contract rentMarket is Ownable, Pausable, feeSnapshot {
         //* Return result.
         return false;
     }
+
+    function getCurrentSnapshotId() public view returns (uint256) {
+        return _getCurrentSnapshotId();
+    }
+
+    function makeSnapshot() public onlyOwner whenNotPaused returns (uint256) {
+        return _snapshot();
+    }
 }

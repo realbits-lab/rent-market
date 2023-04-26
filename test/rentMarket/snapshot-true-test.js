@@ -128,6 +128,44 @@ describe("test settleRentData true case.", function () {
     const allRentArray = await rentMarketContract.getAllRentData();
 
     //*-------------------------------------------------------------------------
+    //* Check the previous snapshot data.
+    //*-------------------------------------------------------------------------
+    //* rentee address: userSigner.address
+    //* renter address: testNFTContractOwnerSigner.address
+    //* service address: serviceContractOwnerSigner.address
+    //* market address: rentMarketContractOwnerSigner.address
+    tx = await rentMarketContract.makeSnapshot();
+    await tx.wait();
+    let snapshotId = await rentMarketContract.getCurrentSnapshotId();
+    let feeResult = await rentMarketContract.feeOfAt(
+      userSigner.address,
+      snapshotId
+    );
+    // console.log("feeResult: ", feeResult);
+    // console.log("feeResult[totalFee]: ", feeResult["totalFee"]);
+    // console.log("feeResult[totalFeeByToken]: ", feeResult["totalFeeByToken"]);
+    expect(feeResult["totalFee"]).to.be.equal(BigNumber.from(0));
+    expect(feeResult["totalFeeByToken"]).to.be.equal(BigNumber.from(0));
+    feeResult = await rentMarketContract.feeOfAt(
+      testNFTContractOwnerSigner.address,
+      snapshotId
+    );
+    expect(feeResult["totalFee"]).to.be.equal(BigNumber.from(0));
+    expect(feeResult["totalFeeByToken"]).to.be.equal(BigNumber.from(0));
+    feeResult = await rentMarketContract.feeOfAt(
+      serviceContractOwnerSigner.address,
+      snapshotId
+    );
+    expect(feeResult["totalFee"]).to.be.equal(BigNumber.from(0));
+    expect(feeResult["totalFeeByToken"]).to.be.equal(BigNumber.from(0));
+    feeResult = await rentMarketContract.feeOfAt(
+      rentMarketContractOwnerSigner.address,
+      snapshotId
+    );
+    expect(feeResult["totalFee"]).to.be.equal(BigNumber.from(0));
+    expect(feeResult["totalFeeByToken"]).to.be.equal(BigNumber.from(0));
+
+    //*-------------------------------------------------------------------------
     //* Make transaction for settleRentData function.
     //*-------------------------------------------------------------------------
     allRentArray.map(async (element) => {
@@ -172,7 +210,9 @@ describe("test settleRentData true case.", function () {
       await rentMarketContract.getFeeQuota();
     let expectedRenterBalance = rentFee.mul(renterQuota).div(100);
     let expectedServiceBalance = rentFee.mul(serviceQuota).div(100);
-    let expectedMarketBalance = rentFee.mul(marketQuota).div(100);
+    let expectedMarketBalance = rentFee
+      .sub(expectedRenterBalance)
+      .sub(expectedServiceBalance);
 
     //*-------------------------------------------------------------------------
     //* Check each balance is equal to quota * rentFee.
@@ -180,6 +220,46 @@ describe("test settleRentData true case.", function () {
     expect(realRenterBalance).to.be.equal(expectedRenterBalance);
     expect(realServiceBalance).to.be.equal(expectedServiceBalance);
     expect(realMarketBalance).to.be.equal(expectedMarketBalance);
+
+    //*-------------------------------------------------------------------------
+    //* Check the previous snapshot data.
+    //*-------------------------------------------------------------------------
+    //* rentee address: userSigner.address
+    //* renter address: testNFTContractOwnerSigner.address
+    //* service address: serviceContractOwnerSigner.address
+    //* market address: rentMarketContractOwnerSigner.address
+    tx = await rentMarketContract.makeSnapshot();
+    await tx.wait();
+    snapshotId = await rentMarketContract.getCurrentSnapshotId();
+    feeResult = await rentMarketContract.feeOfAt(
+      userSigner.address,
+      snapshotId
+    );
+    console.log("feeResult: ", feeResult);
+    console.log("feeResult[totalFee]: ", feeResult["totalFee"]);
+    console.log("feeResult[totalFeeByToken]: ", feeResult["totalFeeByToken"]);
+    console.log("rentFee: ", rentFee);
+    expect(feeResult["totalFee"]).to.be.equal(rentFee);
+    expect(feeResult["totalFeeByToken"]).to.be.equal(BigNumber.from(0));
+    feeResult = await rentMarketContract.feeOfAt(
+      testNFTContractOwnerSigner.address,
+      snapshotId
+    );
+    console.log("expectedRenterBalance: ", expectedRenterBalance);
+    expect(feeResult["totalFee"]).to.be.equal(expectedRenterBalance);
+    expect(feeResult["totalFeeByToken"]).to.be.equal(BigNumber.from(0));
+    // feeResult = await rentMarketContract.feeOfAt(
+    //   serviceContractOwnerSigner.address,
+    //   snapshotId
+    // );
+    // expect(feeResult["totalFee"]).to.be.equal(BigNumber.from(0));
+    // expect(feeResult["totalFeeByToken"]).to.be.equal(BigNumber.from(0));
+    // feeResult = await rentMarketContract.feeOfAt(
+    //   rentMarketContractOwnerSigner.address,
+    //   snapshotId
+    // );
+    // expect(feeResult["totalFee"]).to.be.equal(BigNumber.from(0));
+    // expect(feeResult["totalFeeByToken"]).to.be.equal(BigNumber.from(0));
   });
 
   it("Check snapshot for multiple settlement cases.", async () => {
@@ -333,18 +413,17 @@ describe("test settleRentData true case.", function () {
       await rentMarketContract.getFeeQuota();
     for (let i = startTokenId; i <= endTokenId; i++) {
       const idx = i - startTokenId;
-      expectedRenterBalance = rentFeeArray[idx]
-        .mul(renterQuota)
-        .div(100)
-        .add(expectedRenterBalance);
-      expectedServiceBalance = rentFeeArray[idx]
-        .mul(serviceQuota)
-        .div(100)
-        .add(expectedServiceBalance);
-      expectedMarketBalance = rentFeeArray[idx]
-        .mul(marketQuota)
-        .div(100)
-        .add(expectedMarketBalance);
+
+      const renterBalance = rentFeeArray[idx].mul(renterQuota).div(100);
+      expectedRenterBalance = renterBalance.add(expectedRenterBalance);
+
+      const serviceBalance = rentFeeArray[idx].mul(serviceQuota).div(100);
+      expectedServiceBalance = serviceBalance.add(expectedServiceBalance);
+
+      const marketBalance = rentFeeArray[idx]
+        .sub(renterBalance)
+        .sub(serviceBalance);
+      expectedMarketBalance = marketBalance.add(expectedMarketBalance);
     }
 
     //*-------------------------------------------------------------------------
