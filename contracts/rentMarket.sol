@@ -1089,7 +1089,7 @@ contract rentMarket is Ownable, Pausable, feeSnapshot {
         //     uint256 rentStartTimestamp;
         // }
 
-        // Check nftAddress and tokenId is in rent data.
+        //* Check nftAddress and tokenId is in rent data.
         require(rentDataItMap.contains(nftAddress, tokenId) == true, "RM10");
 
         //* Find the element which should be removed from rent data.
@@ -1158,6 +1158,9 @@ contract rentMarket is Ownable, Pausable, feeSnapshot {
         );
 
         rentDataItMap.remove(data.nftAddress, data.tokenId);
+
+        //* TODO: Update account fee.
+        // _updateAccountFee(data.renterAddress, fee);
 
         //* Emit SettleRentData event.
         emit SettleRentData(

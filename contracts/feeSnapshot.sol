@@ -13,6 +13,7 @@ abstract contract feeSnapshot {
     struct Snapshots {
         uint256[] ids;
         uint256[] totalFees;
+        uint256[] totalFeesByToken;
     }
 
     //* Account can be one of these.
@@ -30,7 +31,7 @@ abstract contract feeSnapshot {
     event Snapshot(uint256 id);
 
     /// @dev Creates a new snapshot and returns its snapshot id. Emits a Snapshot event that contains the same id.
-    function _snapshot() internal virtual returns (uint256) {
+    function _snapshot() internal returns (uint256) {
         _currentSnapshotId.increment();
 
         uint256 currentId = _getCurrentSnapshotId();
@@ -41,7 +42,7 @@ abstract contract feeSnapshot {
     }
 
     /// @dev Get the current snapshotId.
-    function _getCurrentSnapshotId() internal view virtual returns (uint256) {
+    function _getCurrentSnapshotId() internal view returns (uint256) {
         return _currentSnapshotId.current();
     }
 
@@ -49,14 +50,14 @@ abstract contract feeSnapshot {
     function feeOfAt(
         address account,
         uint256 snapshotId
-    ) public view virtual returns (uint256) {
+    ) public view returns (uint256 totalFee, uint256 totalFeeByToken) {
         return _feeAt(snapshotId, _accountFeeSnapshots[account]);
     }
 
     function _feeAt(
         uint256 snapshotId,
         Snapshots storage snapshots
-    ) private view returns (uint256) {
+    ) private view returns (uint256 totalFee, uint256 totalFeeByToken) {
         require(snapshotId > 0, "feeSnapshot: id is 0");
         require(
             snapshotId <= _getCurrentSnapshotId(),
@@ -81,49 +82,63 @@ abstract contract feeSnapshot {
 
         if (index == snapshots.ids.length) {
             if (index == 0) {
-                return 0;
+                return (0, 0);
             } else {
-                return snapshots.totalFees[index - 1];
+                return (
+                    snapshots.totalFees[index - 1],
+                    snapshots.totalFeesByToken[index - 1]
+                );
             }
         } else {
-            return snapshots.totalFees[index];
+            return (
+                snapshots.totalFees[index],
+                snapshots.totalFeesByToken[index]
+            );
         }
     }
 
     //* Update fee snapshots before the values are modified.
     //* This is called in settleRentData function of rentMarket contract.
-    function _updateAccountFee(address account, uint256 fee) internal virtual {
-        _updateSnapshot(_accountFeeSnapshots[account], fee);
+    function _updateAccountFee(
+        address account,
+        uint256 fee,
+        uint256 feeByToken
+    ) internal {
+        _updateSnapshot(_accountFeeSnapshots[account], fee, feeByToken);
     }
 
-    function _updateSnapshot(Snapshots storage snapshots, uint256 fee) private {
+    function _updateSnapshot(
+        Snapshots storage snapshots,
+        uint256 fee,
+        uint256 feeByToken
+    ) private {
         uint256 currentId = _getCurrentSnapshotId();
         uint256 totalFee = 0;
+        uint256 totalFeeByToken = 0;
 
-        if (_lastSnapshotId(snapshots.ids) < currentId) {
+        if (_getLastArrayValue(snapshots.ids) < currentId) {
+            //* Push snapshot id.
             snapshots.ids.push(currentId);
-            totalFee = _lastTotalFee(snapshots.totalFees) + fee;
+
+            //* Push the updated total fee.
+            totalFee = _getLastArrayValue(snapshots.totalFees) + fee;
             snapshots.totalFees.push(totalFee);
+
+            //* Push the updated total fee by token.
+            totalFeeByToken =
+                _getLastArrayValue(snapshots.totalFeesByToken) +
+                feeByToken;
+            snapshots.totalFeesByToken.push(totalFeeByToken);
         }
     }
 
-    function _lastSnapshotId(
-        uint256[] storage ids
-    ) private view returns (uint256) {
-        if (ids.length == 0) {
+    function _getLastArrayValue(
+        uint256[] storage array
+    ) private view returns (uint256 lastArrayValue) {
+        if (array.length == 0) {
             return 0;
         } else {
-            return ids[ids.length - 1];
-        }
-    }
-
-    function _lastTotalFee(
-        uint256[] storage totalFees
-    ) private view returns (uint256) {
-        if (totalFees.length == 0) {
-            return 0;
-        } else {
-            return totalFees[totalFees.length - 1];
+            return array[array.length - 1];
         }
     }
 }
