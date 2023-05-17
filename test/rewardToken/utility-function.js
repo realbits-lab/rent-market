@@ -20,15 +20,19 @@ const prepareContract = async ([wallet, other], provider) => {
   const rewardTokenShareContractDeployedResponse =
     await rewardTokenShareContract.deployed();
 
-  //* Deploy reward token vesting wallet contract.
-  const rewardTokenVestingWalletContractFactory =
-    await ethers.getContractFactory("rewardTokenVestingWallet");
-  const rewardTokenVestingWalletContract =
-    await rewardTokenVestingWalletContractFactory.deploy(
-      rewardTokenShareContractDeployedResponse.address
-    );
-  const rewardTokenVestingWalletContractDeployedResponse =
-    await rewardTokenVestingWalletContract.deployed();
+  // //* Deploy reward token vesting wallet contract.
+  // const rewardTokenVestingWalletContractFactory =
+  //   await ethers.getContractFactory("rewardTokenVestingWallet");
+  // const rewardTokenVestingWalletContract =
+  //   await rewardTokenVestingWalletContractFactory.deploy(
+  //     rewardTokenShareContractDeployedResponse.address
+  //   );
+  // const rewardTokenVestingWalletContractDeployedResponse =
+  //   await rewardTokenVestingWalletContract.deployed();
+  // console.log(
+  //   "rewardTokenVestingWalletContract deployed address: ",
+  //   rewardTokenVestingWalletContractDeployedResponse.address
+  // );
 
   //* Deploy reward token contract.
   // console.log("try to call ethers.getContractFactory(rewardToken)");
@@ -39,7 +43,7 @@ const prepareContract = async ([wallet, other], provider) => {
   const rewardTokenContract = await rewardTokenContractFactory.deploy(
     rewardTokenName,
     rewardTokenSymbol,
-    rewardTokenVestingWalletContractDeployedResponse.address
+    rewardTokenShareContractDeployedResponse.address
   );
   // console.log("rewardTokenContract: ", rewardTokenContract);
   const rewardTokenContractDeployedResponse =
@@ -51,8 +55,10 @@ const prepareContract = async ([wallet, other], provider) => {
     rewardTokenContractOwnerSigner,
     userSigner,
     remainSignerArray,
-    // Return reward token contract.
+    // Return reward token related contracts.
     rewardTokenContract,
+    // rewardTokenVestingWalletContract,
+    rewardTokenShareContract,
   };
 };
 
@@ -65,6 +71,8 @@ const initializeBeforeEach = async () => {
     remainSignerArray,
     //* Contract values.
     rewardTokenContract,
+    // rewardTokenVestingWalletContract,
+    rewardTokenShareContract,
   } = await loadFixture(prepareContract));
 };
 

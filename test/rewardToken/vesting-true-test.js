@@ -16,7 +16,9 @@ describe("test the reward token vesting true case.", function () {
     userSigner,
     remainSignerArray,
     //* Contract values.
-    rewardTokenContract;
+    rewardTokenContract,
+    // rewardTokenVestingWalletContract,
+    rewardTokenShareContract;
 
   beforeEach(async function () {
     //*-------------------------------------------------------------------------
@@ -30,6 +32,8 @@ describe("test the reward token vesting true case.", function () {
       remainSignerArray,
       //* Contract values.
       rewardTokenContract,
+      // rewardTokenVestingWalletContract,
+      rewardTokenShareContract,
     } = await initializeBeforeEach());
   });
 
@@ -51,7 +55,9 @@ describe("test the reward token vesting true case.", function () {
     const totalAllocation = await rewardTokenContract
       .connect(userSigner)
       .totalAllocation();
-    console.log("totalAllocation: ", totalAllocation);
-    expect(totalAllocation).to.equal(BigNumber.from(1000000000));
+    // console.log("totalAllocation: ", totalAllocation);
+    expect(totalAllocation).to.equal(
+      BigNumber.from(1000000000).mul(BigNumber.from(10).pow(18))
+    );
   });
 });

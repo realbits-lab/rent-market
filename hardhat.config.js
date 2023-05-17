@@ -31,10 +31,10 @@ module.exports = {
       },
     },
   },
-  // ethernal: {
-  //   email: process.env.ETHERNAL_EMAIL,
-  //   password: process.env.ETHERNAL_PASSWORD,
-  // },
+  ethernal: {
+    email: process.env.ETHERNAL_EMAIL,
+    password: process.env.ETHERNAL_PASSWORD,
+  },
   docgen: {
     root: process.cwd(),
     sourcesDir: "contracts",
