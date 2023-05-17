@@ -1,11 +1,12 @@
 const { expect } = require("chai");
+const { BigNumber } = require("ethers");
+const helpers = require("@nomicfoundation/hardhat-network-helpers");
 const {
   rewardTokenName,
   rewardTokenSymbol,
   initializeBeforeEach,
   sleep,
 } = require("./utility-function");
-const { BigNumber } = require("ethers");
 
 describe("test the reward token vesting true case.", function () {
   let //* Signer values.
@@ -48,5 +49,35 @@ describe("test the reward token vesting true case.", function () {
     expect(totalAllocation).to.equal(
       BigNumber.from(1000000000).mul(BigNumber.from(10).pow(18))
     );
+  });
+
+  it("Check the vesting after duration.", async function () {
+    let totalAllocation = await rewardTokenContract
+      .connect(userSigner)
+      .totalAllocation();
+    let released = await rewardTokenContract.connect(userSigner).released();
+    expect(released).to.equal(BigNumber.from(0));
+
+    let releasable = await rewardTokenContract.connect(userSigner).releasable();
+    console.log("releasable: ", releasable);
+    expect(releasable).to.equal(BigNumber.from(0));
+
+    let currentTimestamp = await helpers.time.latest();
+    console.log("currentTimestamp: ", currentTimestamp);
+
+    const fiveWeeks = 60 * 60 * 24 * 7 * 5;
+    await helpers.time.increase(fiveWeeks + 1);
+
+    currentTimestamp = await helpers.time.latest();
+    console.log("currentTimestamp: ", currentTimestamp);
+
+    releasable = await rewardTokenContract.connect(userSigner).releasable();
+    console.log("releasable: ", releasable);
+
+    const minimumReleasable = await rewardTokenContract
+      .connect(userSigner)
+      .minimumReleasable();
+    console.log("minimumReleasable: ", minimumReleasable);
+    expect(releasable).to.gt(minimumReleasable);
   });
 });

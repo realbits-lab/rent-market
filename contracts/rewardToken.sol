@@ -89,6 +89,25 @@ contract rewardToken is ERC20 {
         return totalAllocation() / frequency();
     }
 
+    /// @dev Getter for the remaining time to the next vesting by seconds.
+    function remainingTimestampToNextVesting() public view returns (uint256) {
+        uint256 currentBlockTimestamp = block.timestamp;
+        uint256 vestingUnitTimestamp = duration() / frequency();
+        uint256 remainingTimestamp = 0;
+
+        for (uint256 i = 0; i < frequency(); i++) {
+            remainingTimestamp =
+                currentBlockTimestamp -
+                vestingUnitTimestamp *
+                i;
+            if (remainingTimestamp < vestingUnitTimestamp) {
+                return remainingTimestamp;
+            }
+        }
+
+        return vestingUnitTimestamp;
+    }
+
     /// @dev Release the tokens that have already vested.
     function release() public {
         uint256 amount = releasable();
