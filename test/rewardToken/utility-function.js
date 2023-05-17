@@ -3,13 +3,32 @@ const { loadFixture } = require("ethereum-waffle");
 
 const rewardTokenName = "RewardToken";
 const rewardTokenSymbol = "RWT";
-//* The first account in hardhat local blockchain.
-const shareContractAddress = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
 
 const prepareContract = async ([wallet, other], provider) => {
   //* Get account signers.
   const [rewardTokenContractOwnerSigner, userSigner, ...remainSignerArray] =
     await ethers.getSigners();
+
+  //* rewardToken <-> rewardTokenVestingWallet <-> rewardTokenShare <-> rentMarket
+
+  //* Deploy reward token share contract.
+  const rewardTokenShareContractFactory = await ethers.getContractFactory(
+    "rewardTokenShare"
+  );
+  const rewardTokenShareContract =
+    await rewardTokenShareContractFactory.deploy();
+  const rewardTokenShareContractDeployedResponse =
+    await rewardTokenShareContract.deployed();
+
+  //* Deploy reward token vesting wallet contract.
+  const rewardTokenVestingWalletContractFactory =
+    await ethers.getContractFactory("rewardTokenVestingWallet");
+  const rewardTokenVestingWalletContract =
+    await rewardTokenVestingWalletContractFactory.deploy(
+      rewardTokenShareContractDeployedResponse.address
+    );
+  const rewardTokenVestingWalletContractDeployedResponse =
+    await rewardTokenVestingWalletContract.deployed();
 
   //* Deploy reward token contract.
   // console.log("try to call ethers.getContractFactory(rewardToken)");
@@ -20,11 +39,12 @@ const prepareContract = async ([wallet, other], provider) => {
   const rewardTokenContract = await rewardTokenContractFactory.deploy(
     rewardTokenName,
     rewardTokenSymbol,
-    shareContractAddress
+    rewardTokenVestingWalletContractDeployedResponse.address
   );
   // console.log("rewardTokenContract: ", rewardTokenContract);
-  const deployedResponse = await rewardTokenContract.deployed();
-  // console.log("rewardTokenContract deployed address: ", deployedResponse.address);
+  const rewardTokenContractDeployedResponse =
+    await rewardTokenContract.deployed();
+  // console.log("rewardTokenContract deployed address: ", rewardTokenContractDeployedResponse.address);
 
   return {
     // Return deployer.

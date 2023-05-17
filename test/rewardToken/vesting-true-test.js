@@ -5,6 +5,7 @@ const {
   initializeBeforeEach,
   sleep,
 } = require("./utility-function");
+const { BigNumber } = require("ethers");
 
 describe("test the reward token vesting true case.", function () {
   //*---------------------------------------------------------------------------
@@ -41,5 +42,16 @@ describe("test the reward token vesting true case.", function () {
 
     expect(name).to.equal(rewardTokenName);
     expect(symbol).to.equal(rewardTokenSymbol);
+  });
+
+  it("Check the total allocation.", async function () {
+    //*-------------------------------------------------------------------------
+    //* Define variables.
+    //*-------------------------------------------------------------------------
+    const totalAllocation = await rewardTokenContract
+      .connect(userSigner)
+      .totalAllocation();
+    console.log("totalAllocation: ", totalAllocation);
+    expect(totalAllocation).to.equal(BigNumber.from(1000000000));
   });
 });
