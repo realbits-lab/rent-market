@@ -9,7 +9,7 @@ const prepareContract = async ([wallet, other], provider) => {
   const [rewardTokenContractOwnerSigner, userSigner, ...remainSignerArray] =
     await ethers.getSigners();
 
-  //* rewardToken <-> rewardTokenVestingWallet <-> rewardTokenShare <-> rentMarket
+  //* rewardToken <-> rewardTokenShare <-> rentMarket
 
   //* Deploy reward token share contract.
   const rewardTokenShareContractFactory = await ethers.getContractFactory(
@@ -19,20 +19,6 @@ const prepareContract = async ([wallet, other], provider) => {
     await rewardTokenShareContractFactory.deploy();
   const rewardTokenShareContractDeployedResponse =
     await rewardTokenShareContract.deployed();
-
-  // //* Deploy reward token vesting wallet contract.
-  // const rewardTokenVestingWalletContractFactory =
-  //   await ethers.getContractFactory("rewardTokenVestingWallet");
-  // const rewardTokenVestingWalletContract =
-  //   await rewardTokenVestingWalletContractFactory.deploy(
-  //     rewardTokenShareContractDeployedResponse.address
-  //   );
-  // const rewardTokenVestingWalletContractDeployedResponse =
-  //   await rewardTokenVestingWalletContract.deployed();
-  // console.log(
-  //   "rewardTokenVestingWalletContract deployed address: ",
-  //   rewardTokenVestingWalletContractDeployedResponse.address
-  // );
 
   //* Deploy reward token contract.
   // console.log("try to call ethers.getContractFactory(rewardToken)");
@@ -51,13 +37,12 @@ const prepareContract = async ([wallet, other], provider) => {
   // console.log("rewardTokenContract deployed address: ", rewardTokenContractDeployedResponse.address);
 
   return {
-    // Return deployer.
+    //* Return deployer.
     rewardTokenContractOwnerSigner,
     userSigner,
     remainSignerArray,
-    // Return reward token related contracts.
+    //* Return reward token related contracts.
     rewardTokenContract,
-    // rewardTokenVestingWalletContract,
     rewardTokenShareContract,
   };
 };
@@ -71,7 +56,6 @@ const initializeBeforeEach = async () => {
     remainSignerArray,
     //* Contract values.
     rewardTokenContract,
-    // rewardTokenVestingWalletContract,
     rewardTokenShareContract,
   } = await loadFixture(prepareContract));
 };
