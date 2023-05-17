@@ -39,7 +39,6 @@ import "./balanceSnapshotLib.sol";
 
 /// @title A rentMarket class.
 /// @author A realbits dev team.
-/// @notice rentMarket can be used for rentNFT market or promptNFT market.
 /// @dev All function calls are currently being tested.
 contract rentMarket is Ownable, Pausable {
     //* Iterable mapping data type with library.
@@ -137,14 +136,14 @@ contract rentMarket is Ownable, Pausable {
         emit Receive(msg.sender, msg.value);
     }
 
-    /// @notice Pause rentMarket for registerNFT and rentNFT function.
     /// @dev Call _pause function in Pausible. Only sender who has market contract owner can pause
+    /// Pause rentMarket for registerNFT and rentNFT function.
     function pause() public onlyOwner {
         _pause();
     }
 
-    /// @notice Unpause rentMarket for registerNFT and rentNFT function.
     /// @dev Call _unpause function in Pausible. Only sender who has market contract owner can pause
+    /// Unpause rentMarket for registerNFT and rentNFT function.
     function unpause() public onlyOwner {
         _unpause();
     }
@@ -167,7 +166,7 @@ contract rentMarket is Ownable, Pausable {
     //* TOKEN GET/REMOVE FUNCTION
     //*-------------------------------------------------------------------------
 
-    /// @notice Return all token data as array type
+    /// @dev Return all token data as array type
     /// @return All token data as array
     function getAllToken()
         public
@@ -190,7 +189,7 @@ contract rentMarket is Ownable, Pausable {
     //* TOKEN REGISTER/CHANGE/UNREGISTER FUNCTION
     //*-------------------------------------------------------------------------
 
-    /// @notice Register token
+    /// @dev Register token
     /// @param tokenAddress token address
     function registerToken(
         address tokenAddress,
@@ -211,7 +210,7 @@ contract rentMarket is Ownable, Pausable {
         }
     }
 
-    /// @notice Unregister token data
+    /// @dev Unregister token data
     /// @param tokenAddress token address
     function unregisterToken(
         address tokenAddress
@@ -254,7 +253,7 @@ contract rentMarket is Ownable, Pausable {
     //* COLLECTION GET/REMOVE FUNCTION
     //*-------------------------------------------------------------------------
 
-    /// @notice Return all collection data as array type
+    /// @dev Return all collection data as array type
     /// @return All collection data as array
     function getAllCollection()
         public
@@ -273,7 +272,7 @@ contract rentMarket is Ownable, Pausable {
         return data;
     }
 
-    /// @notice Return matched collection data with collection address.
+    /// @dev Return matched collection data with collection address.
     /// @param collectionAddress collection address
     /// @return Matched collection data
     function getCollection(
@@ -286,7 +285,7 @@ contract rentMarket is Ownable, Pausable {
     //* COLLECTION REGISTER/UNREGISTER FUNCTION
     //*-------------------------------------------------------------------------
 
-    /// @notice Register collection
+    /// @dev Register collection
     /// @param collectionAddress collection address
     /// @param uri collection metadata uri
     function registerCollection(
@@ -308,7 +307,7 @@ contract rentMarket is Ownable, Pausable {
         }
     }
 
-    /// @notice Unregister collection data
+    /// @dev Unregister collection data
     /// @param collectionAddress collection address
     function unregisterCollection(
         address collectionAddress
@@ -350,7 +349,7 @@ contract rentMarket is Ownable, Pausable {
     //* SERVICE GET/REMOVE FUNCTION
     //*-------------------------------------------------------------------------
 
-    /// @notice Return all service data as array type
+    /// @dev Return all service data as array type
     /// @return All service data as array
     function getAllService()
         public
@@ -369,7 +368,7 @@ contract rentMarket is Ownable, Pausable {
         return data;
     }
 
-    /// @notice Return matched service data with service address.
+    /// @dev Return matched service data with service address.
     /// @param serviceAddress service address
     /// @return Matched service data
     function getService(
@@ -382,7 +381,7 @@ contract rentMarket is Ownable, Pausable {
     //* SERVICE REGISTER/UNREGISTER FUNCTION
     //*-------------------------------------------------------------------------
 
-    /// @notice Register service
+    /// @dev Register service
     /// @param serviceAddress service address
     /// @param uri service metadata uri
     function registerService(
@@ -404,7 +403,7 @@ contract rentMarket is Ownable, Pausable {
         }
     }
 
-    /// @notice Unregister service data
+    /// @dev Unregister service data
     /// @param serviceAddress service address
     function unregisterService(
         address serviceAddress
@@ -473,7 +472,7 @@ contract rentMarket is Ownable, Pausable {
     //* NFT GET/REMOVE FUNCTION
     //*-------------------------------------------------------------------------
 
-    /// @notice Return all registered data as array type
+    /// @dev Return all registered data as array type
     /// @return All registered data as array
     function getAllRegisterData()
         public
@@ -500,7 +499,7 @@ contract rentMarket is Ownable, Pausable {
         return data;
     }
 
-    /// @notice Return matched registered data with NFT address and token ID
+    /// @dev Return matched registered data with NFT address and token ID
     /// @param nftAddress NFT address
     /// @param tokenId token ID
     /// @return Matched registered data
@@ -515,7 +514,7 @@ contract rentMarket is Ownable, Pausable {
     //* NFT REQUEST-REGISTER/CHANGE/UNREGISTER FUNCTION
     //*-------------------------------------------------------------------------
 
-    /// @notice Request to register NFT. Sender should be an owner of NFT and NFT collection is already registered.
+    /// @dev Request to register NFT. Sender should be an owner of NFT and NFT collection is already registered.
     /// @param nftAddress NFT address
     /// @param tokenId NFT token ID
     /// @return success or failture (bool).
@@ -586,7 +585,7 @@ contract rentMarket is Ownable, Pausable {
         }
     }
 
-    /// @notice Change NFT data
+    /// @dev Change NFT data
     /// @param nftAddress NFT address
     /// @param tokenId NFT token ID
     /// @param rentFee rent fee
@@ -643,7 +642,7 @@ contract rentMarket is Ownable, Pausable {
         }
     }
 
-    /// @notice Unregister NFT data
+    /// @dev Unregister NFT data
     /// @param nftAddress NFT address
     /// @param tokenId NFT token ID
     function unregisterNFT(
@@ -730,7 +729,7 @@ contract rentMarket is Ownable, Pausable {
     //* RENT GET/REMOVE FUNCTION
     //*-------------------------------------------------------------------------
 
-    /// @notice Return the all rented NFT data.
+    /// @dev Return the all rented NFT data.
     /// @return All rented NFT data array.
     function getAllRentData()
         public
@@ -749,7 +748,7 @@ contract rentMarket is Ownable, Pausable {
         return data;
     }
 
-    /// @notice Return matched rented data with NFT address and token ID
+    /// @dev Return matched rented data with NFT address and token ID
     /// @param nftAddress NFT address
     /// @param tokenId token ID
     /// @return Matched rented data
@@ -764,7 +763,7 @@ contract rentMarket is Ownable, Pausable {
     //* RENT RENT/RENTBYTOKEN/UNRENT FUNCTION
     //*-------------------------------------------------------------------------
 
-    /// @notice Rent NFT
+    /// @dev Rent NFT
     /// @param nftAddress NFT address
     /// @param tokenId NFT token ID
     /// @param serviceAddress service address
@@ -846,7 +845,7 @@ contract rentMarket is Ownable, Pausable {
         }
     }
 
-    /// @notice Rent NFT by token
+    /// @dev Rent NFT by token
     /// @param nftAddress NFT address
     /// @param tokenId NFT token ID
     /// @param serviceAddress service address
@@ -923,7 +922,7 @@ contract rentMarket is Ownable, Pausable {
         return true;
     }
 
-    /// @notice Unrent NFT
+    /// @dev Unrent NFT
     /// @param nftAddress NFT address
     /// @param tokenId NFT token ID
     function unrentNFT(
@@ -1224,7 +1223,7 @@ contract rentMarket is Ownable, Pausable {
     //* WITHDRAW WITHDRAW FUNCTION
     //*-------------------------------------------------------------------------
 
-    /// @notice Return all pending rent fee data as array type
+    /// @dev Return all pending rent fee data as array type
     /// @return All pending rent fee data as array
     function getAllPendingRentFee()
         public
@@ -1243,7 +1242,7 @@ contract rentMarket is Ownable, Pausable {
         return data;
     }
 
-    /// @notice Return all account balance data as array type
+    /// @dev Return all account balance data as array type
     /// @return All account balance data as array
     function getAllAccountBalance()
         public
