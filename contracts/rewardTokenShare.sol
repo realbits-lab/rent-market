@@ -25,7 +25,7 @@ interface IRentMarket {
 /// each rentMarket contract distribute the receive vesting token to each balance account.
 contract rewardTokenShare is Ownable {
     /// @dev rewardToken contract address.
-    address private immutable _rewardTokenContractAddress;
+    address private _rewardTokenContractAddress;
 
     /// @dev Project team account address which is used for sending the vesting token.
     address private immutable _projectTeamAccountAddress;
@@ -49,13 +49,49 @@ contract rewardTokenShare is Ownable {
     /// @param projectTeamAccountAddress_ Address for project team account.
     /// @param tokenPoolContractAddress_ Address for token pool contract.
     constructor(
-        address rewardTokenContractAddress_,
         address projectTeamAccountAddress_,
         address tokenPoolContractAddress_
     ) {
-        _rewardTokenContractAddress = rewardTokenContractAddress_;
         _projectTeamAccountAddress = projectTeamAccountAddress_;
         _tokenPoolContractAddress = tokenPoolContractAddress_;
+    }
+
+    function setRewardTokenContractAddress(
+        address rewardTokenContractAddress_
+    ) public onlyOwner {
+        _rewardTokenContractAddress = rewardTokenContractAddress_;
+    }
+
+    function getRewardTokenContractAddress()
+        public
+        view
+        returns (address rewardTokenContractAddress_)
+    {
+        return _rewardTokenContractAddress;
+    }
+
+    function getProjectTeamAccountAddress()
+        public
+        view
+        returns (address projectTeamAccountAddress_)
+    {
+        return _projectTeamAccountAddress;
+    }
+
+    function getTokenPoolContractAddress()
+        public
+        view
+        returns (address tokenPoolContractAddress_)
+    {
+        return _tokenPoolContractAddress;
+    }
+
+    function getRentMarketContractAddressArray()
+        public
+        view
+        returns (address[] memory rentMarketContractAddressArray_)
+    {
+        return _rentMarketContractAddressArray;
     }
 
     /// @dev Add rentMarket contract address.

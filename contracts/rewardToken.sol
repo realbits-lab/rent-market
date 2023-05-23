@@ -145,7 +145,9 @@ contract rewardToken is ERC20 {
         } else if (timestamp_ > start() + duration()) {
             return totalAllocation_;
         } else {
-            return (totalAllocation_ * (timestamp_ - start())) / duration();
+            uint256 vestingAmount = (totalAllocation_ *
+                (timestamp_ - start())) / duration();
+            return vestingAmount;
         }
     }
 }
