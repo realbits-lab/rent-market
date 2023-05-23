@@ -34,7 +34,8 @@ contract rewardToken is ERC20 {
     constructor(
         string memory rewardTokenName_,
         string memory rewardTokenSymbol_,
-        address rewardTokenShareContractAddress_
+        address rewardTokenShareContractAddress_,
+        address projectTeamAccountAddress_
     ) ERC20(rewardTokenName_, rewardTokenSymbol_) {
         require(
             rewardTokenShareContractAddress_ != address(0),
@@ -42,11 +43,13 @@ contract rewardToken is ERC20 {
         );
 
         _rewardTokenShareContractAddress = rewardTokenShareContractAddress_;
+        //* TODO: Set later.
         _start = block.timestamp;
         _duration = 250 weeks;
         _frequency = 50;
 
-        _mint(address(this), 1_000_000_000 * (10 ** 18));
+        _mint(projectTeamAccountAddress_, 200_000_000 * (10 ** 18));
+        _mint(address(this), 800_000_000 * (10 ** 18));
     }
 
     /// @dev Getter for the share contract address.

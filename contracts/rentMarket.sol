@@ -874,6 +874,7 @@ contract rentMarket is Ownable, Pausable {
             address(this),
             data.rentFeeByToken
         );
+        console.log("transferFromResponse: ", transferFromResponse);
 
         if (transferFromResponse == false) {
             return false;
@@ -897,6 +898,8 @@ contract rentMarket is Ownable, Pausable {
         rentDataItMap.insert(rentData);
 
         //* Add pendingRentFeeMap.
+        console.log("data.feeTokenAddress: ", data.feeTokenAddress);
+        console.log("data.rentFeeByToken: ", data.rentFeeByToken);
         pendingRentFeeMap.add(
             ownerAddress,
             serviceAddress,
