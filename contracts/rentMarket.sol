@@ -1161,31 +1161,33 @@ contract rentMarket is Ownable, Pausable {
 
         rentDataItMap.remove(data.nftAddress, data.tokenId);
 
+        //* TODO: Handle later.
+        //* TODO: The vesting distribution algorithm does not use snapshot.
         //*---------------------------------------------------------------------
         //* Update snapshot.
         //*---------------------------------------------------------------------
         //* TODO: Supposed that market use only one token except base coin.
 
-        //* Update NFT owner balance snapshot.
-        updateAccountBalance(
-            data.isRentByToken,
-            data.renterAddress,
-            data.feeTokenAddress
-        );
+        // //* Update NFT owner balance snapshot.
+        // updateAccountBalance(
+        //     data.isRentByToken,
+        //     data.renterAddress,
+        //     data.feeTokenAddress
+        // );
 
-        //* Update service owner balance snapshot.
-        updateAccountBalance(
-            data.isRentByToken,
-            data.serviceAddress,
-            data.feeTokenAddress
-        );
+        // //* Update service owner balance snapshot.
+        // updateAccountBalance(
+        //     data.isRentByToken,
+        //     data.serviceAddress,
+        //     data.feeTokenAddress
+        // );
 
-        //* Update market owner balance snapshot.
-        updateAccountBalance(
-            data.isRentByToken,
-            MARKET_SHARE_ADDRESS,
-            data.feeTokenAddress
-        );
+        // //* Update market owner balance snapshot.
+        // updateAccountBalance(
+        //     data.isRentByToken,
+        //     MARKET_SHARE_ADDRESS,
+        //     data.feeTokenAddress
+        // );
 
         //* Emit SettleRentData event.
         emit SettleRentData(
@@ -1267,7 +1269,7 @@ contract rentMarket is Ownable, Pausable {
     /// @return totalAccountBalance_  Total account accumulated balance
     function getTotalAccountBalance(
         address tokenAddress_
-    ) external view returns (uint256 totalAccountBalance_) {
+    ) public view returns (uint256 totalAccountBalance_) {
         uint256 totalAccountBalance = 0;
         accountBalanceIterableMap.accountBalance memory data;
 
@@ -1330,6 +1332,50 @@ contract rentMarket is Ownable, Pausable {
     //*-------------------------------------------------------------------------
     //* UTILITY FUNCTION
     //*-------------------------------------------------------------------------
+
+    //*-------------------------------------------------------------------------
+    //* DISTRIBUTE VESTING TOKEN FUNCTION
+    //*-------------------------------------------------------------------------
+    function distributeVestingToken(address tokenAddress_) public {
+        uint256 allowanceAmount = IERC20(tokenAddress_).allowance(
+            tokenAddress_,
+            address(this)
+        );
+        if (allowanceAmount == 0) {
+            return;
+        }
+
+        // struct accountBalance {
+        //     address accountAddress;
+        //     address tokenAddress;
+        //     uint256 amount;
+        // }
+        uint256 totalBalance = getTotalAccountBalance(tokenAddress_);
+        uint256 sumVestingBalance = 0;
+        accountBalanceIterableMap.accountBalance memory data;
+        for (uint256 i = 0; i < accountBalanceItMap.keys.length; i++) {
+            data = accountBalanceItMap.data[accountBalanceItMap.keys[i]].data;
+            if (data.tokenAddress == tokenAddress_) {
+                uint256 vestingShare = SafeMath.div(
+                    allowanceAmount * data.amount,
+                    totalBalance
+                );
+                sumVestingBalance += vestingShare;
+                accountBalanceItMap.add(
+                    data.accountAddress,
+                    data.tokenAddress,
+                    vestingShare
+                );
+            }
+        }
+
+        //* Send the remaing token to market account;
+        accountBalanceItMap.add(
+            MARKET_SHARE_ADDRESS,
+            tokenAddress_,
+            allowanceAmount - sumVestingBalance
+        );
+    }
 
     //*-------------------------------------------------------------------------
     //* MARKET_ADDRESS GET/SET FUNCTION
@@ -1471,49 +1517,44 @@ contract rentMarket is Ownable, Pausable {
         return false;
     }
 
-    function getCurrentSnapshotId() public view returns (uint256) {
-        return balanceSnapshot.getCurrentSnapshotId();
-    }
+    //* TODO: Handle later.
+    //* TODO: The vesting distribution algorithm does not use snapshot.
+    // function getCurrentSnapshotId() public view returns (uint256) {
+    //     return balanceSnapshot.getCurrentSnapshotId();
+    // }
 
-    function makeSnapshot() public onlyOwner whenNotPaused returns (uint256) {
-        return balanceSnapshot.makeSnapshot();
-    }
+    // function makeSnapshot() public onlyOwner whenNotPaused returns (uint256) {
+    //     return balanceSnapshot.makeSnapshot();
+    // }
 
-    function updateAccountBalance(
-        bool isRentByToken,
-        address accountAddress,
-        address tokenAddress
-    ) private {
-        // uint256 balance = accountBalanceItMap.getAmount(
-        //     accountAddress,
-        //     address(0)
-        // );
-        // console.log("accountAddress: ", accountAddress);
-        // console.log("balance: ", balance);
+    // function updateAccountBalance(
+    //     bool isRentByToken,
+    //     address accountAddress,
+    //     address tokenAddress
+    // ) private {
+    //     if (isRentByToken == true) {
+    //         balanceSnapshot.updateAccountBalance(
+    //             accountAddress,
+    //             0,
+    //             accountBalanceItMap.getAmount(accountAddress, tokenAddress)
+    //         );
+    //     } else {
+    //         balanceSnapshot.updateAccountBalance(
+    //             accountAddress,
+    //             accountBalanceItMap.getAmount(accountAddress, address(0)),
+    //             0
+    //         );
+    //     }
+    // }
 
-        if (isRentByToken == true) {
-            balanceSnapshot.updateAccountBalance(
-                accountAddress,
-                0,
-                accountBalanceItMap.getAmount(accountAddress, tokenAddress)
-            );
-        } else {
-            balanceSnapshot.updateAccountBalance(
-                accountAddress,
-                accountBalanceItMap.getAmount(accountAddress, address(0)),
-                0
-            );
-        }
-    }
-
-    function balanceOfAt(
-        address accountAddress,
-        uint256 snapshotId
-    )
-        public
-        view
-        returns (bool found, uint256 balance, uint256 balanceByToken)
-    {
-        return balanceSnapshot.balanceOfAt(accountAddress, snapshotId);
-    }
+    // function balanceOfAt(
+    //     address accountAddress,
+    //     uint256 snapshotId
+    // )
+    //     public
+    //     view
+    //     returns (bool found, uint256 balance, uint256 balanceByToken)
+    // {
+    //     return balanceSnapshot.balanceOfAt(accountAddress, snapshotId);
+    // }
 }

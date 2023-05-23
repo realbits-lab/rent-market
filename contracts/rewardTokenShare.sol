@@ -177,7 +177,7 @@ contract rewardTokenShare is Ownable {
                 totalSentAmount += share;
             }
 
-            IERC20(_rewardTokenContractAddress).transfer(
+            IERC20(_rewardTokenContractAddress).approve(
                 _rentMarketContractAddressArray[i],
                 share
             );
