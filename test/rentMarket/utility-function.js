@@ -151,7 +151,9 @@ const prepareContract = async ([wallet, other], provider) => {
 
   // https://docs.ethers.io/v4/api-contract.html
   const exclusive = true;
-  rentMarketContract = await rentMarketContractFactory.deploy(exclusive);
+  rentMarketContract = await rentMarketContractFactory
+    .connect(rentMarketContractOwnerSigner)
+    .deploy(exclusive);
   response = await rentMarketContract.deployed();
   // console.log("rentMarket deployed address: ", response.address);
 
@@ -160,11 +162,9 @@ const prepareContract = async ([wallet, other], provider) => {
   //*---------------------------------------------------------------------------
   // https://docs.ethers.io/v4/api-contract.html
   const testNFTContractFactory = await ethers.getContractFactory("rentNFT");
-  testNFTContract = await testNFTContractFactory.deploy(
-    NFT_NAME,
-    NFT_SYMBOL,
-    NFT_BASE_URI
-  );
+  testNFTContract = await testNFTContractFactory
+    .connect(testNFTContractOwnerSigner)
+    .deploy(NFT_NAME, NFT_SYMBOL, NFT_BASE_URI);
   response = await testNFTContract.deployed();
   // console.log("testNFT deployed address: ", response.address);
 
