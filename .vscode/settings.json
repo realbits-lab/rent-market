@@ -1,3 +1,10 @@
 {
-	"vue.features.codeActions.enable": false
+  // "vue.features.codeActions.enable": false,
+  // "solidity.defaultCompiler": "localNodeModule",
+  // "solidity.compileUsingRemoteVersion": "v0.8.9+commit.e5eed63a",
+  // "solidity.enableLocalNodeCompiler": false,
+  // "solidity.defaultCompiler": "localNodeModule",
+  // "solidity.compileUsingRemoteVersion": "latest",
+  // "solidity.packageDefaultDependenciesContractsDirectory": "",
+  "solidity.packageDefaultDependenciesDirectory": "node_modules"
 }
