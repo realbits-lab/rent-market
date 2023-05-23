@@ -56,6 +56,14 @@ contract rewardTokenShare is Ownable {
         _tokenPoolContractAddress = tokenPoolContractAddress_;
     }
 
+    function getRewardTokenBalance()
+        public
+        view
+        returns (uint256 rewardTokenBalance_)
+    {
+        return IERC20(_rewardTokenContractAddress).balanceOf(address(this));
+    }
+
     function setRewardTokenContractAddress(
         address rewardTokenContractAddress_
     ) public onlyOwner {

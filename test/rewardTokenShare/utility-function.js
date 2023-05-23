@@ -3,6 +3,7 @@ const { loadFixture } = require("ethereum-waffle");
 
 const rewardTokenName = "RewardToken";
 const rewardTokenSymbol = "RWT";
+const FIVE_WEEKS_TIMESTAMP = 60 * 60 * 24 * 7 * 5;
 
 const prepareContract = async ([wallet, other], provider) => {
   //* Get account signers.
@@ -83,4 +84,5 @@ module.exports = {
   rewardTokenSymbol,
   initializeBeforeEach,
   sleep,
+  FIVE_WEEKS_TIMESTAMP,
 };
