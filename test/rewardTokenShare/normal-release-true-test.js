@@ -11,20 +11,25 @@ const {
 
 describe("test the reward token share release true case.", function () {
   let //* Signer values.
-    rentNFTContractOwnerSigner,
+    rewardTokenContractSigner,
+    rewardTokenShareContractSigner,
+    rentMarketContractSigner,
     userSigner,
     projectTeamAccountSigner,
     tokenPoolContractAddressSigner,
     remainSignerArray,
     //* Contract values.
     rewardTokenContract,
-    rewardTokenShareContract;
+    rewardTokenShareContract,
+    rentMarketContract;
 
   beforeEach(async function () {
     //* Initialize contract and data.
     ({
       //* Signer values.
-      rentNFTContractOwnerSigner,
+      rewardTokenContractSigner,
+      rewardTokenShareContractSigner,
+      rentMarketContractSigner,
       userSigner,
       projectTeamAccountSigner,
       tokenPoolContractAddressSigner,
@@ -32,6 +37,7 @@ describe("test the reward token share release true case.", function () {
       //* Contract values.
       rewardTokenContract,
       rewardTokenShareContract,
+      rentMarketContract,
     } = await initializeBeforeEach());
   });
 
