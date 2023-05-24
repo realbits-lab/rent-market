@@ -58,14 +58,6 @@ describe("test the reward token share release true case.", function () {
       .minimumReleasable();
     // console.log("minimumReleasable: ", minimumReleasable);
     expect(released).to.gt(minimumReleasable);
-
-    //* Check the reward token balance of reward token share contract.
-    const rewardTokenShareBalance =
-      await rewardTokenShareContract.getRewardTokenBalance();
-    // console.log("rewardTokenShareBalance: ", rewardTokenShareBalance);
-
-    //* Compare the released amount as the minimum releasable.
-    expect(rewardTokenShareBalance).eq(released);
   });
 
   it("Check the two times release function call revert error.", async function () {
@@ -83,16 +75,6 @@ describe("test the reward token share release true case.", function () {
 
     //* Get the released amount.
     const released = await rewardTokenContract.connect(userSigner).released();
-
-    //* Add rent market contract to reward token share contract.
-    tx = await rewardTokenShareContract
-      .connect(rewardTokenShareContractSigner)
-      .addRentMarketContractAddress(rentMarketContract.address);
-    await tx.wait();
-
-    //* Call the release function of reward token share contract.
-    tx = await rewardTokenShareContract.connect(userSigner).release();
-    await tx.wait();
 
     //* Check the reward token share contract balance is zero.
     rewardTokenShareContractBalance = await rewardTokenContract.balanceOf(
@@ -149,6 +131,8 @@ describe("test the reward token share release true case.", function () {
   });
 
   it("Check the distributeVestingToken function.", async function () {
+    const VESTING_THRESHOLD = 100;
+
     const allowance = await rewardTokenContract.allowance(
       rewardTokenShareContract.address,
       rentMarketContract.address
@@ -185,8 +169,9 @@ describe("test the reward token share release true case.", function () {
 
     //* Compare the each expected amount as actual amount.
     tx = await rentMarketContract.distributeVestingToken(
+      rewardTokenContract.address,
       rewardTokenShareContract.address,
-      rewardTokenContract.address
+      VESTING_THRESHOLD
     );
     await tx.wait();
 

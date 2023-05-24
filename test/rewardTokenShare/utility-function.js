@@ -201,8 +201,10 @@ const prepareContract = async ([wallet, other], provider) => {
   //* - Settle.
   //*
   //* Vesting.
+  //* - Add rent market to reward token share contract.
   //* - Increase timestamp.
-  //* - Release vesting.
+  //* - Release in reward token.
+  //* - Release in reward token share.
   //*---------------------------------------------------------------------------
 
   //*---------------------------------------------------------------------------
@@ -214,12 +216,14 @@ const prepareContract = async ([wallet, other], provider) => {
     .connect(rentMarketContractSigner)
     .registerCollection(rentNFTContract.address, "collection_uri");
   await tx.wait();
+  // console.log(`Call registerCollection(${rentNFTContract.address}) done.`);
 
   //* Register reward token contract to rent market contract.
   tx = await rentMarketContract
     .connect(rentMarketContractSigner)
     .registerToken(rewardTokenContract.address, "reward_token_name");
   await tx.wait();
+  // console.log(`Call registerToken(${rewardTokenContract.address}) done.`);
 
   //* Register service address to rent market contract.
   tx = await rentMarketContract
@@ -288,6 +292,7 @@ const prepareContract = async ([wallet, other], provider) => {
     .approve(rentMarketContract.address, data.rentFee);
 
   //* Rent nft.
+  // console.log("Start to call rentNFTByToken()");
   tx = await rentMarketContract
     .connect(userSigner)
     .rentNFTByToken(rentNFTContract.address, 1, serviceSigner.address);
@@ -317,11 +322,21 @@ const prepareContract = async ([wallet, other], provider) => {
   //* Vesting.
   //*---------------------------------------------------------------------------
 
+  //* Add rent market contract to reward token share contract.
+  tx = await rewardTokenShareContract
+    .connect(rewardTokenShareContractSigner)
+    .addRentMarketContractAddress(rentMarketContract.address);
+  await tx.wait();
+
   //* Proceed the block timestamp.
   await helpers.time.increase(FIVE_WEEKS_TIMESTAMP + 1);
 
-  //* Release vesting.
-  tx = await rewardTokenContract.release();
+  //* Call the release function in reward token contract.
+  tx = await rewardTokenContract.connect(userSigner).release();
+  await tx.wait();
+
+  //* Call the release function in reward token share contract.
+  tx = await rewardTokenShareContract.connect(userSigner).release();
   await tx.wait();
 
   return {

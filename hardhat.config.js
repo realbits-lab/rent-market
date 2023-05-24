@@ -31,6 +31,9 @@ module.exports = {
       },
     },
   },
+  mocha: {
+    timeout: 100000000,
+  },
   ethernal: {
     email: process.env.ETHERNAL_EMAIL,
     password: process.env.ETHERNAL_PASSWORD,

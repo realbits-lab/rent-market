@@ -867,6 +867,7 @@ contract rentMarket is Ownable, Pausable {
         address ownerAddress = getNFTOwner(nftAddress, tokenId);
         registerDataIterableMap.registerData memory data = registerDataItMap
             .getByNFT(nftAddress, tokenId);
+        require(data.feeTokenAddress != address(0), "RM20");
 
         //* Send erc20 token to rentMarket contract
         bool transferFromResponse = IERC20(data.feeTokenAddress).transferFrom(
@@ -874,7 +875,7 @@ contract rentMarket is Ownable, Pausable {
             address(this),
             data.rentFeeByToken
         );
-        console.log("transferFromResponse: ", transferFromResponse);
+        // console.log("transferFromResponse: ", transferFromResponse);
 
         if (transferFromResponse == false) {
             return false;
@@ -898,8 +899,8 @@ contract rentMarket is Ownable, Pausable {
         rentDataItMap.insert(rentData);
 
         //* Add pendingRentFeeMap.
-        console.log("data.feeTokenAddress: ", data.feeTokenAddress);
-        console.log("data.rentFeeByToken: ", data.rentFeeByToken);
+        // console.log("data.feeTokenAddress: ", data.feeTokenAddress);
+        // console.log("data.rentFeeByToken: ", data.rentFeeByToken);
         pendingRentFeeMap.add(
             ownerAddress,
             serviceAddress,
@@ -1340,9 +1341,14 @@ contract rentMarket is Ownable, Pausable {
     //* DISTRIBUTE VESTING TOKEN FUNCTION
     //*-------------------------------------------------------------------------
     function distributeVestingToken(
+        address tokenAddress_,
         address rewardTokenShareContractAddress_,
-        address tokenAddress_
+        uint256 threshold
     ) public {
+        if (threshold == 0) {
+            return;
+        }
+
         uint256 allowanceAmount = IERC20(tokenAddress_).allowance(
             rewardTokenShareContractAddress_,
             address(this)
@@ -1361,6 +1367,10 @@ contract rentMarket is Ownable, Pausable {
         uint256 sumVestingBalance = 0;
         accountBalanceIterableMap.accountBalance memory data;
         for (uint256 i = 0; i < accountBalanceItMap.keys.length; i++) {
+            if (i >= threshold) {
+                break;
+            }
+
             data = accountBalanceItMap.data[accountBalanceItMap.keys[i]].data;
             // console.log("data.tokenAddress: ", data.tokenAddress);
             // console.log("tokenAddress_: ", tokenAddress_);
@@ -1370,7 +1380,7 @@ contract rentMarket is Ownable, Pausable {
                     totalBalance
                 );
                 sumVestingBalance += vestingShare;
-                console.log("vestingShare: ", vestingShare);
+                // console.log("vestingShare: ", vestingShare);
                 accountBalanceItMap.add(
                     data.accountAddress,
                     data.tokenAddress,
@@ -1379,12 +1389,12 @@ contract rentMarket is Ownable, Pausable {
             }
         }
 
-        console.log("allowanceAmount: ", allowanceAmount);
-        console.log("sumVestingBalance: ", sumVestingBalance);
-        console.log(
-            "allowanceAmount - sumVestingBalance: ",
-            allowanceAmount - sumVestingBalance
-        );
+        // console.log("allowanceAmount: ", allowanceAmount);
+        // console.log("sumVestingBalance: ", sumVestingBalance);
+        // console.log(
+        //     "allowanceAmount - sumVestingBalance: ",
+        //     allowanceAmount - sumVestingBalance
+        // );
         //* Send the remaing token to market account;
         if (allowanceAmount - sumVestingBalance > 0) {
             accountBalanceItMap.add(
