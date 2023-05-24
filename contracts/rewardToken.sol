@@ -3,6 +3,7 @@ pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol";
 
 // import "hardhat/console.sol";
 
@@ -11,7 +12,7 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 /// @dev A reward token wallet is used to send the vesting tokens to project contributors periodically.
 ///
 /// The total 1 billion tokens are made when deployer calls constructor.
-contract rewardToken is ERC20 {
+contract rewardToken is ERC20, ERC20Permit {
     /// @dev Reward token released event.
     event RewardTokenReleased(uint256 amount);
 
@@ -36,7 +37,10 @@ contract rewardToken is ERC20 {
         string memory rewardTokenSymbol_,
         address rewardTokenShareContractAddress_,
         address projectTeamAccountAddress_
-    ) ERC20(rewardTokenName_, rewardTokenSymbol_) {
+    )
+        ERC20(rewardTokenName_, rewardTokenSymbol_)
+        ERC20Permit(rewardTokenName_)
+    {
         require(
             rewardTokenShareContractAddress_ != address(0),
             "rewardToken: rewardTokenShareContractAddress is zero address"
