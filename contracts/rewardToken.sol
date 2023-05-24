@@ -48,6 +48,7 @@ contract rewardToken is ERC20 {
         _duration = 250 weeks;
         _frequency = 50;
 
+        //* TODO: Set later.
         _mint(projectTeamAccountAddress_, 200_000_000 * (10 ** 18));
         _mint(address(this), 800_000_000 * (10 ** 18));
     }

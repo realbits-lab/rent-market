@@ -1339,11 +1339,15 @@ contract rentMarket is Ownable, Pausable {
     //*-------------------------------------------------------------------------
     //* DISTRIBUTE VESTING TOKEN FUNCTION
     //*-------------------------------------------------------------------------
-    function distributeVestingToken(address tokenAddress_) public {
+    function distributeVestingToken(
+        address rewardTokenShareContractAddress_,
+        address tokenAddress_
+    ) public {
         uint256 allowanceAmount = IERC20(tokenAddress_).allowance(
-            tokenAddress_,
+            rewardTokenShareContractAddress_,
             address(this)
         );
+        // console.log("allowanceAmount: ", allowanceAmount);
         if (allowanceAmount == 0) {
             return;
         }
@@ -1358,12 +1362,15 @@ contract rentMarket is Ownable, Pausable {
         accountBalanceIterableMap.accountBalance memory data;
         for (uint256 i = 0; i < accountBalanceItMap.keys.length; i++) {
             data = accountBalanceItMap.data[accountBalanceItMap.keys[i]].data;
+            // console.log("data.tokenAddress: ", data.tokenAddress);
+            // console.log("tokenAddress_: ", tokenAddress_);
             if (data.tokenAddress == tokenAddress_) {
                 uint256 vestingShare = SafeMath.div(
                     allowanceAmount * data.amount,
                     totalBalance
                 );
                 sumVestingBalance += vestingShare;
+                console.log("vestingShare: ", vestingShare);
                 accountBalanceItMap.add(
                     data.accountAddress,
                     data.tokenAddress,
@@ -1372,12 +1379,20 @@ contract rentMarket is Ownable, Pausable {
             }
         }
 
-        //* Send the remaing token to market account;
-        accountBalanceItMap.add(
-            MARKET_SHARE_ADDRESS,
-            tokenAddress_,
+        console.log("allowanceAmount: ", allowanceAmount);
+        console.log("sumVestingBalance: ", sumVestingBalance);
+        console.log(
+            "allowanceAmount - sumVestingBalance: ",
             allowanceAmount - sumVestingBalance
         );
+        //* Send the remaing token to market account;
+        if (allowanceAmount - sumVestingBalance > 0) {
+            accountBalanceItMap.add(
+                MARKET_SHARE_ADDRESS,
+                tokenAddress_,
+                allowanceAmount - sumVestingBalance
+            );
+        }
     }
 
     //*-------------------------------------------------------------------------

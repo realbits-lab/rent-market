@@ -281,6 +281,7 @@ const prepareContract = async ([wallet, other], provider) => {
     .balanceOf(userSigner.address);
   // console.log("balanceOf(userSigner.address) response: ", response);
 
+  //* TODO: Use permit.
   //* Approve.
   tx = await rewardTokenContract
     .connect(userSigner)

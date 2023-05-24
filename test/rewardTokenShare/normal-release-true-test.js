@@ -25,6 +25,7 @@ describe("test the reward token share release true case.", function () {
     rewardTokenContract,
     rewardTokenShareContract,
     rentMarketContract;
+  let tx, response;
 
   beforeEach(async function () {
     //* Initialize contract and data.
@@ -46,10 +47,10 @@ describe("test the reward token share release true case.", function () {
     } = await initializeBeforeEach());
   });
 
-  it("Check the reward token balance of reward token share contract.", async function () {
+  it("Check the balance of a reward token share contract.", async function () {
     //* Get the released amount.
     const released = await rewardTokenContract.connect(userSigner).released();
-    // console.log("released: ", released);
+    console.log("released: ", released);
 
     //* Get the minimum releasable amount.
     const minimumReleasable = await rewardTokenContract
@@ -67,20 +68,11 @@ describe("test the reward token share release true case.", function () {
     expect(rewardTokenShareBalance).eq(released);
   });
 
-  it("Check the two times vesting of a reward token vesting.", async function () {
-    //* Get released amount.
-    const released = await rewardTokenContract.connect(userSigner).released();
-    // console.log("released: ", released);
-
-    //* Get the minimum releasable amount.
-    const minimumReleasable = await rewardTokenContract
-      .connect(userSigner)
-      .minimumReleasable();
-    // console.log("minimumReleasable: ", minimumReleasable);
-
-    //* Compare the released amount as the minimum releasable.
-    expect(released).to.gt(minimumReleasable);
-    expect(released).to.lt(minimumReleasable.mul(2));
+  it("Check the two times release function call revert error.", async function () {
+    //* Release vesting.
+    await expect(rewardTokenContract.release()).to.be.revertedWith(
+      "rewardToken: Releasable amount is smaller than the vesting minimum amount."
+    );
   });
 
   it("Check the reward token balance of rent market contract.", async function () {
@@ -89,51 +81,18 @@ describe("test the reward token share release true case.", function () {
     const TOKEN_POOL_CONTRACT_SHARE = 15;
     const RENT_MARKET_CONTRACT_SHARE = 45;
 
+    //* Get the released amount.
+    const released = await rewardTokenContract.connect(userSigner).released();
+
     //* Add rent market contract to reward token share contract.
-    let tx = await rewardTokenShareContract
+    tx = await rewardTokenShareContract
       .connect(rewardTokenShareContractSigner)
       .addRentMarketContractAddress(rentMarketContract.address);
     await tx.wait();
 
-    response = await rentMarketContract
-      .connect(userSigner)
-      .getTotalAccountBalance(rewardTokenContract.address);
-    // console.log("getTotalAccountBalance() response: ", response);
-
-    let rewardTokenShareContractBalance = await rewardTokenContract.balanceOf(
-      rewardTokenShareContract.address
-    );
-    // console.log(
-    //   "rewardTokenShareContractBalance: ",
-    //   rewardTokenShareContractBalance / Math.pow(10, 18)
-    // );
-
-    let projectTeamAccountBalance = await rewardTokenContract.balanceOf(
-      projectTeamAccountSigner.address
-    );
-    // console.log("projectTeamAccountBalance: ", projectTeamAccountBalance);
-    let tokenPoolContractBalance = await rewardTokenContract.balanceOf(
-      tokenPoolContractAddressSigner.address
-    );
-    // console.log(
-    //   "tokenPoolContractBalance: ",
-    //   tokenPoolContractBalance / Math.pow(10, 18)
-    // );
-    let rentMarketContractAllowance = await rewardTokenContract.allowance(
-      rewardTokenShareContract.address,
-      rentMarketContract.address
-    );
-    // console.log("rentMarketContract.address: ", rentMarketContract.address);
-    // console.log(
-    //   "rentMarketContractAllowance: ",
-    //   rentMarketContractAllowance / Math.pow(10, 18)
-    // );
-
     //* Call the release function of reward token share contract.
     tx = await rewardTokenShareContract.connect(userSigner).release();
     await tx.wait();
-    const released = await rewardTokenContract.connect(userSigner).released();
-    // console.log("released: ", released / Math.pow(10, 18));
 
     //* Check the reward token share contract balance is zero.
     rewardTokenShareContractBalance = await rewardTokenContract.balanceOf(
@@ -187,5 +146,109 @@ describe("test the reward token share release true case.", function () {
     expect(rentMarketContractAllowance).eq(
       released.sub(projectTeamAccountBalance).sub(tokenPoolContractBalance)
     );
+  });
+
+  it("Check the distributeVestingToken function.", async function () {
+    const allowance = await rewardTokenContract.allowance(
+      rewardTokenShareContract.address,
+      rentMarketContract.address
+    );
+
+    //* Get account balance array from rent market.
+    //* Calculate the expected amount of each account balance.
+    const totalBalance = await rentMarketContract.getTotalAccountBalance(
+      rewardTokenContract.address
+    );
+    // console.log("totalBalance: ", totalBalance);
+    let accountBalanceArray = await rentMarketContract.getAllAccountBalance();
+    // console.log("accountBalanceArray: ", accountBalanceArray);
+
+    let sumVestingBalance = BigNumber.from(0);
+    const vestingAccountBalanceArray = accountBalanceArray.map(function (data) {
+      let amount = data.amount;
+      if (data.tokenAddress === rewardTokenContract.address) {
+        const vestingAmount = allowance.mul(data.amount).div(totalBalance);
+        // console.log("vestingAmount: ", vestingAmount);
+        // console.log("data.amount: ", data.amount);
+        amount = data.amount.add(vestingAmount);
+        sumVestingBalance = sumVestingBalance.add(vestingAmount);
+      }
+
+      return {
+        accountAddress: data.accountAddress,
+        tokenAddress: data.tokenAddress,
+        amount: amount,
+      };
+    });
+    await Promise.all(vestingAccountBalanceArray);
+    console.log("vestingAccountBalanceArray: ", vestingAccountBalanceArray);
+
+    //* Compare the each expected amount as actual amount.
+    tx = await rentMarketContract.distributeVestingToken(
+      rewardTokenShareContract.address,
+      rewardTokenContract.address
+    );
+    await tx.wait();
+
+    accountBalanceArray = await rentMarketContract.getAllAccountBalance();
+    console.log("accountBalanceArray: ", accountBalanceArray);
+
+    console.log("allowance: ", allowance);
+    console.log("sumVestingBalance: ", sumVestingBalance);
+    for (let i = 0; i < accountBalanceArray.length; i++) {
+      for (let j = 0; j < vestingAccountBalanceArray.length; j++) {
+        if (
+          accountBalanceArray[i].accountAddress ===
+          vestingAccountBalanceArray[j].accountAddress
+        ) {
+          console.log(
+            "accountBalanceArray[i].amount: ",
+            accountBalanceArray[i].amount
+          );
+          console.log(
+            "vestingAccountBalanceArray[j].amount: ",
+            vestingAccountBalanceArray[j].amount
+          );
+          console.log(
+            "accountBalanceArray[i].accountAddress: ",
+            accountBalanceArray[i].accountAddress
+          );
+          console.log(
+            "rentMarketContractSigner.address: ",
+            rentMarketContractSigner.address
+          );
+          if (
+            accountBalanceArray[i].accountAddress ===
+            rentMarketContractSigner.address
+          ) {
+            expect(accountBalanceArray[i].amount).eq(
+              vestingAccountBalanceArray[j].amount
+                .add(allowance)
+                .sub(sumVestingBalance)
+            );
+          } else {
+            expect(accountBalanceArray[i].amount).eq(
+              vestingAccountBalanceArray[j].amount
+            );
+          }
+        }
+      }
+    }
+
+    // const promises = accountBalanceArray.map(async function (data) {
+    //   const found = await vestingAccountBalanceArray.find(async function (e) {
+    //     console.log("e: ", e);
+    //     console.log("data: ", data);
+    //     return e.accountAddress === data.accountAddress;
+    //   });
+
+    //   console.log("found: ", found);
+    //   if (found !== undefined) {
+    //     expect(found.amount).eq(data.amount);
+    //   }
+
+    //   return data;
+    // });
+    // await Promise.all(promises);
   });
 });
