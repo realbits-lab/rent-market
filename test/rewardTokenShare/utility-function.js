@@ -266,17 +266,6 @@ const prepareContract = async ([wallet, other], provider) => {
   // console.log("getAllRegisterData() response: ", response);
 
   //* Send the reward token to user signer.
-  // tx = await rewardTokenContract.approve(rewardTokenContractSigner.address, 10);
-  // await tx.wait();
-  // const allowance = await rewardTokenContract.allowance(
-  //   rewardTokenContract.address,
-  //   rewardTokenContractSigner.address
-  // );
-  // console.log("allowance: ", allowance);
-  // tx = await rewardTokenContract
-  //   .connect(rewardTokenContractSigner)
-  //   .transferFrom(rewardTokenContract.address, userSigner.address, 10);
-  // await tx.wait();
   response = await rewardTokenContract
     .connect(userSigner)
     .balanceOf(userSigner.address);
