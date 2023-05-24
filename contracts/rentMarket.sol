@@ -70,6 +70,9 @@ contract rentMarket is Ownable, Pausable {
     //* Default market fee quota.
     uint256 private MARKET_FEE_QUOTA = 30;
 
+    //* Default vesting distribute threshold.
+    uint256 private _threshold = 100;
+
     //* Data for token.
     tokenDataIterableMap.tokenDataMap tokenItMap;
 
@@ -1340,12 +1343,19 @@ contract rentMarket is Ownable, Pausable {
     //*-------------------------------------------------------------------------
     //* DISTRIBUTE VESTING TOKEN FUNCTION
     //*-------------------------------------------------------------------------
+    function getThreshold() public view returns (uint256) {
+        return _threshold;
+    }
+
+    function setThreshold(uint256 threshold_) public onlyOwner {
+        _threshold = threshold_;
+    }
+
     function distributeVestingToken(
         address tokenAddress_,
-        address rewardTokenShareContractAddress_,
-        uint256 threshold
+        address rewardTokenShareContractAddress_
     ) public {
-        if (threshold == 0) {
+        if (_threshold == 0) {
             return;
         }
 
@@ -1367,7 +1377,7 @@ contract rentMarket is Ownable, Pausable {
         uint256 sumVestingBalance = 0;
         accountBalanceIterableMap.accountBalance memory data;
         for (uint256 i = 0; i < accountBalanceItMap.keys.length; i++) {
-            if (i >= threshold) {
+            if (i >= _threshold) {
                 break;
             }
 

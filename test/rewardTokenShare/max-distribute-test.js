@@ -50,7 +50,6 @@ describe("test the distribute vesting function case.", function () {
 
   it("Check the distribute vesting token function in many accounts case.", async function () {
     const NFT_COUNT = 5;
-    const VESTING_THRESHOLD = 100;
     // 1 day.
     const RENT_DURATION = 60 * 60 * 24;
 
@@ -185,8 +184,7 @@ describe("test the distribute vesting function case.", function () {
     //* Check the gas fee.
     tx = await rentMarketContract.distributeVestingToken(
       rewardTokenContract.address,
-      rewardTokenShareContract.address,
-      VESTING_THRESHOLD
+      rewardTokenShareContract.address
     );
     await tx.wait();
     console.log(

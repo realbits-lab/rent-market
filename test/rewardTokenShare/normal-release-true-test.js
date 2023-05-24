@@ -131,8 +131,6 @@ describe("test the reward token share release true case.", function () {
   });
 
   it("Check the distributeVestingToken function.", async function () {
-    const VESTING_THRESHOLD = 100;
-
     const allowance = await rewardTokenContract.allowance(
       rewardTokenShareContract.address,
       rentMarketContract.address
@@ -170,8 +168,7 @@ describe("test the reward token share release true case.", function () {
     //* Compare the each expected amount as actual amount.
     tx = await rentMarketContract.distributeVestingToken(
       rewardTokenContract.address,
-      rewardTokenShareContract.address,
-      VESTING_THRESHOLD
+      rewardTokenShareContract.address
     );
     await tx.wait();
 
