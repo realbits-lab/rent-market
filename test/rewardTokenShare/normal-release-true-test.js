@@ -50,7 +50,7 @@ describe("test the reward token share release true case.", function () {
   it("Check the balance of a reward token share contract.", async function () {
     //* Get the released amount.
     const released = await rewardTokenContract.connect(userSigner).released();
-    console.log("released: ", released);
+    // console.log("released: ", released);
 
     //* Get the minimum releasable amount.
     const minimumReleasable = await rewardTokenContract
@@ -181,7 +181,7 @@ describe("test the reward token share release true case.", function () {
       };
     });
     await Promise.all(vestingAccountBalanceArray);
-    console.log("vestingAccountBalanceArray: ", vestingAccountBalanceArray);
+    // console.log("vestingAccountBalanceArray: ", vestingAccountBalanceArray);
 
     //* Compare the each expected amount as actual amount.
     tx = await rentMarketContract.distributeVestingToken(
@@ -191,32 +191,32 @@ describe("test the reward token share release true case.", function () {
     await tx.wait();
 
     accountBalanceArray = await rentMarketContract.getAllAccountBalance();
-    console.log("accountBalanceArray: ", accountBalanceArray);
+    // console.log("accountBalanceArray: ", accountBalanceArray);
 
-    console.log("allowance: ", allowance);
-    console.log("sumVestingBalance: ", sumVestingBalance);
+    // console.log("allowance: ", allowance);
+    // console.log("sumVestingBalance: ", sumVestingBalance);
     for (let i = 0; i < accountBalanceArray.length; i++) {
       for (let j = 0; j < vestingAccountBalanceArray.length; j++) {
         if (
           accountBalanceArray[i].accountAddress ===
           vestingAccountBalanceArray[j].accountAddress
         ) {
-          console.log(
-            "accountBalanceArray[i].amount: ",
-            accountBalanceArray[i].amount
-          );
-          console.log(
-            "vestingAccountBalanceArray[j].amount: ",
-            vestingAccountBalanceArray[j].amount
-          );
-          console.log(
-            "accountBalanceArray[i].accountAddress: ",
-            accountBalanceArray[i].accountAddress
-          );
-          console.log(
-            "rentMarketContractSigner.address: ",
-            rentMarketContractSigner.address
-          );
+          // console.log(
+          //   "accountBalanceArray[i].amount: ",
+          //   accountBalanceArray[i].amount
+          // );
+          // console.log(
+          //   "vestingAccountBalanceArray[j].amount: ",
+          //   vestingAccountBalanceArray[j].amount
+          // );
+          // console.log(
+          //   "accountBalanceArray[i].accountAddress: ",
+          //   accountBalanceArray[i].accountAddress
+          // );
+          // console.log(
+          //   "rentMarketContractSigner.address: ",
+          //   rentMarketContractSigner.address
+          // );
           if (
             accountBalanceArray[i].accountAddress ===
             rentMarketContractSigner.address
