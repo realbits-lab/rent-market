@@ -20,7 +20,17 @@ const prepareContract = async ([wallet, other], provider) => {
     ...remainSignerArray
   ] = await ethers.getSigners();
 
+  //*---------------------------------------------------------------------------
   //* rewardToken <-> rewardTokenShare <-> rentMarket
+  //*---------------------------------------------------------------------------
+
+  //*---------------------------------------------------------------------------
+  //* Deploy contracts.
+  //* - reward token share contract
+  //* - reward token contract
+  //* - rent market contract
+  //* - rent nft contract
+  //*---------------------------------------------------------------------------
 
   //* Deploy reward token share contract.
   const rewardTokenShareContractFactory = await ethers.getContractFactory(
@@ -60,6 +70,12 @@ const prepareContract = async ([wallet, other], provider) => {
   //   "rewardTokenContract deployed address: ",
   //   rewardTokenContractDeployedResponse.address
   // );
+
+  //* Set reward token contract address to reward token share contract.
+  tx = await rewardTokenShareContract
+    .connect(rewardTokenShareContractSigner)
+    .setRewardTokenContractAddress(rewardTokenContractDeployedResponse.address);
+  await tx.wait();
 
   //* Deploy iterableMap library contract.
   const pendingRentFeeIterableMapContract = await ethers.getContractFactory(
@@ -167,11 +183,31 @@ const prepareContract = async ([wallet, other], provider) => {
   //   rentNFTContractDeployedResponse.address
   // );
 
-  //* Mint rent nft.
-  tx = await rentNFTContract
-    .connect(rentNFTContractSigner)
-    .safeMint(userSigner.address);
-  await tx.wait();
+  //*---------------------------------------------------------------------------
+  //* Vesting process.
+  //*
+  //* Prepare rent market.
+  //* - Register collection.
+  //* - Register token.
+  //* - Register service.
+  //*
+  //* Rent nft.
+  //* - Mint nft.
+  //* - Register nft.
+  //* - Change nft.
+  //* - Transfer token to user.
+  //* - Rent nft by token.
+  //* - Increase timestamp.
+  //* - Settle.
+  //*
+  //* Vesting.
+  //* - Increase timestamp.
+  //* - Release vesting.
+  //*---------------------------------------------------------------------------
+
+  //*---------------------------------------------------------------------------
+  //* Prepare rent market.
+  //*---------------------------------------------------------------------------
 
   //* Register rent nft contract to rent market contract.
   tx = await rentMarketContract
@@ -191,6 +227,16 @@ const prepareContract = async ([wallet, other], provider) => {
     .registerService(serviceSigner.address, "service_uri");
   await tx.wait();
 
+  //*---------------------------------------------------------------------------
+  //* Rent nft.
+  //*---------------------------------------------------------------------------
+
+  //* Mint rent nft.
+  tx = await rentNFTContract
+    .connect(rentNFTContractSigner)
+    .safeMint(userSigner.address);
+  await tx.wait();
+
   //* Register rent nft.
   tx = await rentMarketContract
     .connect(rentNFTContractSigner)
@@ -198,7 +244,7 @@ const prepareContract = async ([wallet, other], provider) => {
   await tx.wait();
 
   response = await rentMarketContract.connect(userSigner).getAllRegisterData();
-  console.log("getAllRegisterData() response: ", response);
+  // console.log("getAllRegisterData() response: ", response);
 
   //* Change the rent duration.
   const data = await rentMarketContract
@@ -217,7 +263,7 @@ const prepareContract = async ([wallet, other], provider) => {
   );
 
   response = await rentMarketContract.connect(userSigner).getAllRegisterData();
-  console.log("getAllRegisterData() response: ", response);
+  // console.log("getAllRegisterData() response: ", response);
 
   //* Send the reward token to user signer.
   // tx = await rewardTokenContract.approve(rewardTokenContractSigner.address, 10);
@@ -234,7 +280,7 @@ const prepareContract = async ([wallet, other], provider) => {
   response = await rewardTokenContract
     .connect(userSigner)
     .balanceOf(userSigner.address);
-  console.log("balanceOf(userSigner.address) response: ", response);
+  // console.log("balanceOf(userSigner.address) response: ", response);
 
   tx = await rewardTokenContract
     .connect(projectTeamAccountSigner)
@@ -244,7 +290,7 @@ const prepareContract = async ([wallet, other], provider) => {
   response = await rewardTokenContract
     .connect(userSigner)
     .balanceOf(userSigner.address);
-  console.log("balanceOf(userSigner.address) response: ", response);
+  // console.log("balanceOf(userSigner.address) response: ", response);
 
   //* Approve.
   tx = await rewardTokenContract
@@ -256,17 +302,17 @@ const prepareContract = async ([wallet, other], provider) => {
     .connect(userSigner)
     .rentNFTByToken(rentNFTContract.address, 1, serviceSigner.address);
   response = await tx.wait();
-  console.log("rentNFTByToken() response: ", response);
+  // console.log("rentNFTByToken() response: ", response);
 
   response = await rewardTokenContract
     .connect(userSigner)
     .balanceOf(rentMarketContract.address);
-  console.log("balanceOf(rentMarketContract.address) response: ", response);
+  // console.log("balanceOf(rentMarketContract.address) response: ", response);
 
   response = await rentMarketContract
     .connect(userSigner)
     .getAllPendingRentFee();
-  console.log("getAllPendingRentFee() response: ", response);
+  // console.log("getAllPendingRentFee() response: ", response);
 
   //* Increase the block timestamp.
   await helpers.time.increase(10);
@@ -277,10 +323,15 @@ const prepareContract = async ([wallet, other], provider) => {
     .settleRentData(rentNFTContract.address, 1);
   await tx.wait();
 
-  //* Set reward token contract address to reward token share contract.
-  tx = await rewardTokenShareContract
-    .connect(rewardTokenShareContractSigner)
-    .setRewardTokenContractAddress(rewardTokenContractDeployedResponse.address);
+  //*---------------------------------------------------------------------------
+  //* Vesting.
+  //*---------------------------------------------------------------------------
+
+  //* Proceed the block timestamp.
+  await helpers.time.increase(FIVE_WEEKS_TIMESTAMP + 1);
+
+  //* Release vesting.
+  tx = await rewardTokenContract.release();
   await tx.wait();
 
   return {
