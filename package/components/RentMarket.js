@@ -18,12 +18,12 @@ import promptNFTABI from "../contracts/promptNFT.json";
 let thisRentMarket;
 
 class RentMarket {
-  // * For alchemy API call max count.
+  //* For alchemy API call max count.
   MAX_LOOP_COUNT = 100;
 
-  // * -------------------------------------------------------------------------
-  // * Alchemy variables.
-  // * -------------------------------------------------------------------------
+  //*---------------------------------------------------------------------------
+  //* Alchemy variables.
+  //*---------------------------------------------------------------------------
   // https://docs.alchemy.com/alchemy/enhanced-apis/nft-api/getnfts
   ALCHEMY_DEFAULT_PAGE_COUNT = 100;
   NFT_MODE = process.env.NEXT_PUBLIC_NFT_MODE;
