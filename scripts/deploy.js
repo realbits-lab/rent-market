@@ -169,6 +169,31 @@ task("deployRentNftContract", "Deploys the rentNFT contract")
     console.log("Contract deployed to address: ", response.address);
   });
 
+// Deploy a payment NFT contract.
+task("deployPaymentNftContract", "Deploys the paymentNFT contract")
+  .addParam("contract", "The contract name to be deployed.")
+  .addParam("name", "The contract name to be deployed.")
+  .addParam("symbol", "The contract name to be deployed.")
+  .addParam("uri", "The base uri of nft.")
+  .setAction(async function (taskArguments, hre) {
+    const contractFactory = await hre.ethers.getContractFactory(
+      taskArguments.contract,
+      getAccount()
+    );
+    const response = await contractFactory.deploy(
+      taskArguments.name,
+      taskArguments.symbol,
+      taskArguments.uri,
+      {
+        // gasPrice: hre.ethers.utils.parseUnits("50", "gwei"),
+        // gasLimit: hre.ethers.utils.parseUnits("70", "gwei"),
+      }
+    );
+
+    // console.log("response.deployTransaction: ", response.deployTransaction);
+    console.log("Contract deployed to address: ", response.address);
+  });
+
 // Deploy a prompt nft contract.
 task("deployPromptNftContract", "Deploys the promptNFT contract")
   .addParam("contract", "The contract name to be deployed.")

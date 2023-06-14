@@ -15,32 +15,26 @@ const {
 
 task("safeMint", "Mints from the NFT contract")
   .addParam("contract", "The NFT contract name.")
-  .addParam("address", "The address to receive a token.")
+  .addParam("to", "The address to receive a token.")
   .addParam("estimate", "The estimate gas fee flag.")
   .setAction(async function (taskArguments, hre) {
     const contract = await getNFTContract(taskArguments.contract, hre);
     if (taskArguments.estimate === "true") {
-      const estimation = await contract.estimateGas.safeMint(
-        taskArguments.address,
-        {
-          // gasPrice: hre.ethers.utils.parseUnits("50", "gwei"),
-        }
-      );
+      const estimation = await contract.estimateGas.safeMint(taskArguments.to, {
+        // gasPrice: hre.ethers.utils.parseUnits("50", "gwei"),
+      });
       console.log("estimation: ", estimation.toNumber());
     } else {
-      const transactionResponse = await contract.safeMint(
-        taskArguments.address,
-        {
-          // gasPrice: hre.ethers.utils.parseUnits("50", "gwei"),
-        }
-      );
+      const transactionResponse = await contract.safeMint(taskArguments.to, {
+        // gasPrice: hre.ethers.utils.parseUnits("50", "gwei"),
+      });
       console.log(`Transaction Hash: ${transactionResponse.hash}`);
     }
   });
 
 task("safeMintForPrompt", "Mint for prompt from the NFT contract")
   .addParam("contract", "The NFT contract name.")
-  .addParam("address", "The address to receive a token.")
+  .addParam("to", "The address to receive a token.")
   .addParam("uri", "The token uri.")
   .addParam(
     "tokenOwnerEncryptData",
@@ -53,7 +47,7 @@ task("safeMintForPrompt", "Mint for prompt from the NFT contract")
   .setAction(async function (taskArguments, hre) {
     const contract = await getNFTContract(taskArguments.contract, hre);
     const transactionResponse = await contract.safeMint(
-      taskArguments.address,
+      taskArguments.to,
       taskArguments.uri,
       taskArguments.tokenOwnerEncryptData,
       taskArguments.contractOwnerEncryptData,
@@ -66,7 +60,7 @@ task("safeMintForPrompt", "Mint for prompt from the NFT contract")
 
 task("safeMintAmount", "Mint as amount with NFT contract")
   .addParam("contract", "The NFT contract name.")
-  .addParam("address", "The address to receive a token")
+  .addParam("to", "The address to receive a token")
   .addParam("amount", "Amount for minting")
   .addParam("estimate", "The estimate gas fee flag.")
   .setAction(async function (taskArguments, hre) {
@@ -74,7 +68,7 @@ task("safeMintAmount", "Mint as amount with NFT contract")
 
     if (taskArguments.estimate === "true") {
       const estimation = await contract.estimateGas.safeMintAmount(
-        taskArguments.address,
+        taskArguments.to,
         taskArguments.amount,
         {
           // gasPrice: hre.ethers.utils.parseUnits("50", "gwei"),
@@ -83,7 +77,7 @@ task("safeMintAmount", "Mint as amount with NFT contract")
       console.log("estimation: ", estimation.toNumber());
     } else {
       const transactionResponse = await contract.safeMintAmount(
-        taskArguments.address,
+        taskArguments.to,
         taskArguments.amount,
         {
           // gasPrice: hre.ethers.utils.parseUnits("50", "gwei"),
