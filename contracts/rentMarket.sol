@@ -39,7 +39,6 @@ import "./balanceSnapshotLib.sol";
 
 /// @title A rentMarket class.
 /// @author A realbits dev team.
-/// @notice rentMarket can be used for rentNFT market or promptNFT market.
 /// @dev All function calls are currently being tested.
 contract rentMarket is Ownable, Pausable {
     //* Iterable mapping data type with library.
@@ -70,6 +69,9 @@ contract rentMarket is Ownable, Pausable {
 
     //* Default market fee quota.
     uint256 private MARKET_FEE_QUOTA = 30;
+
+    //* Default vesting distribute threshold.
+    uint256 private _threshold = 100;
 
     //* Data for token.
     tokenDataIterableMap.tokenDataMap tokenItMap;
@@ -137,14 +139,14 @@ contract rentMarket is Ownable, Pausable {
         emit Receive(msg.sender, msg.value);
     }
 
-    /// @notice Pause rentMarket for registerNFT and rentNFT function.
     /// @dev Call _pause function in Pausible. Only sender who has market contract owner can pause
+    /// Pause rentMarket for registerNFT and rentNFT function.
     function pause() public onlyOwner {
         _pause();
     }
 
-    /// @notice Unpause rentMarket for registerNFT and rentNFT function.
     /// @dev Call _unpause function in Pausible. Only sender who has market contract owner can pause
+    /// Unpause rentMarket for registerNFT and rentNFT function.
     function unpause() public onlyOwner {
         _unpause();
     }
@@ -167,7 +169,7 @@ contract rentMarket is Ownable, Pausable {
     //* TOKEN GET/REMOVE FUNCTION
     //*-------------------------------------------------------------------------
 
-    /// @notice Return all token data as array type
+    /// @dev Return all token data as array type
     /// @return All token data as array
     function getAllToken()
         public
@@ -190,7 +192,7 @@ contract rentMarket is Ownable, Pausable {
     //* TOKEN REGISTER/CHANGE/UNREGISTER FUNCTION
     //*-------------------------------------------------------------------------
 
-    /// @notice Register token
+    /// @dev Register token
     /// @param tokenAddress token address
     function registerToken(
         address tokenAddress,
@@ -211,7 +213,7 @@ contract rentMarket is Ownable, Pausable {
         }
     }
 
-    /// @notice Unregister token data
+    /// @dev Unregister token data
     /// @param tokenAddress token address
     function unregisterToken(
         address tokenAddress
@@ -254,7 +256,7 @@ contract rentMarket is Ownable, Pausable {
     //* COLLECTION GET/REMOVE FUNCTION
     //*-------------------------------------------------------------------------
 
-    /// @notice Return all collection data as array type
+    /// @dev Return all collection data as array type
     /// @return All collection data as array
     function getAllCollection()
         public
@@ -273,7 +275,7 @@ contract rentMarket is Ownable, Pausable {
         return data;
     }
 
-    /// @notice Return matched collection data with collection address.
+    /// @dev Return matched collection data with collection address.
     /// @param collectionAddress collection address
     /// @return Matched collection data
     function getCollection(
@@ -286,7 +288,7 @@ contract rentMarket is Ownable, Pausable {
     //* COLLECTION REGISTER/UNREGISTER FUNCTION
     //*-------------------------------------------------------------------------
 
-    /// @notice Register collection
+    /// @dev Register collection
     /// @param collectionAddress collection address
     /// @param uri collection metadata uri
     function registerCollection(
@@ -308,7 +310,7 @@ contract rentMarket is Ownable, Pausable {
         }
     }
 
-    /// @notice Unregister collection data
+    /// @dev Unregister collection data
     /// @param collectionAddress collection address
     function unregisterCollection(
         address collectionAddress
@@ -350,7 +352,7 @@ contract rentMarket is Ownable, Pausable {
     //* SERVICE GET/REMOVE FUNCTION
     //*-------------------------------------------------------------------------
 
-    /// @notice Return all service data as array type
+    /// @dev Return all service data as array type
     /// @return All service data as array
     function getAllService()
         public
@@ -369,7 +371,7 @@ contract rentMarket is Ownable, Pausable {
         return data;
     }
 
-    /// @notice Return matched service data with service address.
+    /// @dev Return matched service data with service address.
     /// @param serviceAddress service address
     /// @return Matched service data
     function getService(
@@ -382,7 +384,7 @@ contract rentMarket is Ownable, Pausable {
     //* SERVICE REGISTER/UNREGISTER FUNCTION
     //*-------------------------------------------------------------------------
 
-    /// @notice Register service
+    /// @dev Register service
     /// @param serviceAddress service address
     /// @param uri service metadata uri
     function registerService(
@@ -404,7 +406,7 @@ contract rentMarket is Ownable, Pausable {
         }
     }
 
-    /// @notice Unregister service data
+    /// @dev Unregister service data
     /// @param serviceAddress service address
     function unregisterService(
         address serviceAddress
@@ -473,7 +475,7 @@ contract rentMarket is Ownable, Pausable {
     //* NFT GET/REMOVE FUNCTION
     //*-------------------------------------------------------------------------
 
-    /// @notice Return all registered data as array type
+    /// @dev Return all registered data as array type
     /// @return All registered data as array
     function getAllRegisterData()
         public
@@ -500,7 +502,7 @@ contract rentMarket is Ownable, Pausable {
         return data;
     }
 
-    /// @notice Return matched registered data with NFT address and token ID
+    /// @dev Return matched registered data with NFT address and token ID
     /// @param nftAddress NFT address
     /// @param tokenId token ID
     /// @return Matched registered data
@@ -515,7 +517,7 @@ contract rentMarket is Ownable, Pausable {
     //* NFT REQUEST-REGISTER/CHANGE/UNREGISTER FUNCTION
     //*-------------------------------------------------------------------------
 
-    /// @notice Request to register NFT. Sender should be an owner of NFT and NFT collection is already registered.
+    /// @dev Request to register NFT. Sender should be an owner of NFT and NFT collection is already registered.
     /// @param nftAddress NFT address
     /// @param tokenId NFT token ID
     /// @return success or failture (bool).
@@ -586,7 +588,7 @@ contract rentMarket is Ownable, Pausable {
         }
     }
 
-    /// @notice Change NFT data
+    /// @dev Change NFT data
     /// @param nftAddress NFT address
     /// @param tokenId NFT token ID
     /// @param rentFee rent fee
@@ -643,7 +645,7 @@ contract rentMarket is Ownable, Pausable {
         }
     }
 
-    /// @notice Unregister NFT data
+    /// @dev Unregister NFT data
     /// @param nftAddress NFT address
     /// @param tokenId NFT token ID
     function unregisterNFT(
@@ -730,7 +732,7 @@ contract rentMarket is Ownable, Pausable {
     //* RENT GET/REMOVE FUNCTION
     //*-------------------------------------------------------------------------
 
-    /// @notice Return the all rented NFT data.
+    /// @dev Return the all rented NFT data.
     /// @return All rented NFT data array.
     function getAllRentData()
         public
@@ -749,7 +751,7 @@ contract rentMarket is Ownable, Pausable {
         return data;
     }
 
-    /// @notice Return matched rented data with NFT address and token ID
+    /// @dev Return matched rented data with NFT address and token ID
     /// @param nftAddress NFT address
     /// @param tokenId token ID
     /// @return Matched rented data
@@ -764,7 +766,7 @@ contract rentMarket is Ownable, Pausable {
     //* RENT RENT/RENTBYTOKEN/UNRENT FUNCTION
     //*-------------------------------------------------------------------------
 
-    /// @notice Rent NFT
+    /// @dev Rent NFT
     /// @param nftAddress NFT address
     /// @param tokenId NFT token ID
     /// @param serviceAddress service address
@@ -846,7 +848,7 @@ contract rentMarket is Ownable, Pausable {
         }
     }
 
-    /// @notice Rent NFT by token
+    /// @dev Rent NFT by token
     /// @param nftAddress NFT address
     /// @param tokenId NFT token ID
     /// @param serviceAddress service address
@@ -868,6 +870,7 @@ contract rentMarket is Ownable, Pausable {
         address ownerAddress = getNFTOwner(nftAddress, tokenId);
         registerDataIterableMap.registerData memory data = registerDataItMap
             .getByNFT(nftAddress, tokenId);
+        require(data.feeTokenAddress != address(0), "RM20");
 
         //* Send erc20 token to rentMarket contract
         bool transferFromResponse = IERC20(data.feeTokenAddress).transferFrom(
@@ -875,6 +878,7 @@ contract rentMarket is Ownable, Pausable {
             address(this),
             data.rentFeeByToken
         );
+        // console.log("transferFromResponse: ", transferFromResponse);
 
         if (transferFromResponse == false) {
             return false;
@@ -898,6 +902,8 @@ contract rentMarket is Ownable, Pausable {
         rentDataItMap.insert(rentData);
 
         //* Add pendingRentFeeMap.
+        // console.log("data.feeTokenAddress: ", data.feeTokenAddress);
+        // console.log("data.rentFeeByToken: ", data.rentFeeByToken);
         pendingRentFeeMap.add(
             ownerAddress,
             serviceAddress,
@@ -923,7 +929,7 @@ contract rentMarket is Ownable, Pausable {
         return true;
     }
 
-    /// @notice Unrent NFT
+    /// @dev Unrent NFT
     /// @param nftAddress NFT address
     /// @param tokenId NFT token ID
     function unrentNFT(
@@ -1162,31 +1168,33 @@ contract rentMarket is Ownable, Pausable {
 
         rentDataItMap.remove(data.nftAddress, data.tokenId);
 
+        //* TODO: Handle later.
+        //* TODO: The vesting distribution algorithm does not use snapshot.
         //*---------------------------------------------------------------------
         //* Update snapshot.
         //*---------------------------------------------------------------------
         //* TODO: Supposed that market use only one token except base coin.
 
-        //* Update NFT owner balance snapshot.
-        updateAccountBalance(
-            data.isRentByToken,
-            data.renterAddress,
-            data.feeTokenAddress
-        );
+        // //* Update NFT owner balance snapshot.
+        // updateAccountBalance(
+        //     data.isRentByToken,
+        //     data.renterAddress,
+        //     data.feeTokenAddress
+        // );
 
-        //* Update service owner balance snapshot.
-        updateAccountBalance(
-            data.isRentByToken,
-            data.serviceAddress,
-            data.feeTokenAddress
-        );
+        // //* Update service owner balance snapshot.
+        // updateAccountBalance(
+        //     data.isRentByToken,
+        //     data.serviceAddress,
+        //     data.feeTokenAddress
+        // );
 
-        //* Update market owner balance snapshot.
-        updateAccountBalance(
-            data.isRentByToken,
-            MARKET_SHARE_ADDRESS,
-            data.feeTokenAddress
-        );
+        // //* Update market owner balance snapshot.
+        // updateAccountBalance(
+        //     data.isRentByToken,
+        //     MARKET_SHARE_ADDRESS,
+        //     data.feeTokenAddress
+        // );
 
         //* Emit SettleRentData event.
         emit SettleRentData(
@@ -1224,7 +1232,7 @@ contract rentMarket is Ownable, Pausable {
     //* WITHDRAW WITHDRAW FUNCTION
     //*-------------------------------------------------------------------------
 
-    /// @notice Return all pending rent fee data as array type
+    /// @dev Return all pending rent fee data as array type
     /// @return All pending rent fee data as array
     function getAllPendingRentFee()
         public
@@ -1243,7 +1251,7 @@ contract rentMarket is Ownable, Pausable {
         return data;
     }
 
-    /// @notice Return all account balance data as array type
+    /// @dev Return all account balance data as array type
     /// @return All account balance data as array
     function getAllAccountBalance()
         public
@@ -1262,6 +1270,24 @@ contract rentMarket is Ownable, Pausable {
         }
 
         return data;
+    }
+
+    /// @dev Return total account accumulated balance value
+    /// @return totalAccountBalance_  Total account accumulated balance
+    function getTotalAccountBalance(
+        address tokenAddress_
+    ) public view returns (uint256 totalAccountBalance_) {
+        uint256 totalAccountBalance = 0;
+        accountBalanceIterableMap.accountBalance memory data;
+
+        for (uint256 i = 0; i < accountBalanceItMap.keys.length; i++) {
+            data = accountBalanceItMap.data[accountBalanceItMap.keys[i]].data;
+            if (data.tokenAddress == tokenAddress_) {
+                totalAccountBalance += data.amount;
+            }
+        }
+
+        return totalAccountBalance;
     }
 
     function withdrawMyBalance(
@@ -1313,6 +1339,81 @@ contract rentMarket is Ownable, Pausable {
     //*-------------------------------------------------------------------------
     //* UTILITY FUNCTION
     //*-------------------------------------------------------------------------
+
+    //*-------------------------------------------------------------------------
+    //* DISTRIBUTE VESTING TOKEN FUNCTION
+    //*-------------------------------------------------------------------------
+    function getThreshold() public view returns (uint256) {
+        return _threshold;
+    }
+
+    function setThreshold(uint256 threshold_) public onlyOwner {
+        _threshold = threshold_;
+    }
+
+    function distributeVestingToken(
+        address tokenAddress_,
+        address rewardTokenShareContractAddress_
+    ) public {
+        if (_threshold == 0) {
+            return;
+        }
+
+        uint256 allowanceAmount = IERC20(tokenAddress_).allowance(
+            rewardTokenShareContractAddress_,
+            address(this)
+        );
+        // console.log("allowanceAmount: ", allowanceAmount);
+        if (allowanceAmount == 0) {
+            return;
+        }
+
+        // struct accountBalance {
+        //     address accountAddress;
+        //     address tokenAddress;
+        //     uint256 amount;
+        // }
+        uint256 totalBalance = getTotalAccountBalance(tokenAddress_);
+        uint256 sumVestingBalance = 0;
+        accountBalanceIterableMap.accountBalance memory data;
+        for (uint256 i = 0; i < accountBalanceItMap.keys.length; i++) {
+            if (i >= _threshold) {
+                break;
+            }
+
+            data = accountBalanceItMap.data[accountBalanceItMap.keys[i]].data;
+            // console.log("data.tokenAddress: ", data.tokenAddress);
+            // console.log("tokenAddress_: ", tokenAddress_);
+            if (data.tokenAddress == tokenAddress_) {
+                uint256 vestingShare = SafeMath.div(
+                    allowanceAmount * data.amount,
+                    totalBalance
+                );
+                sumVestingBalance += vestingShare;
+                // console.log("vestingShare: ", vestingShare);
+                accountBalanceItMap.add(
+                    data.accountAddress,
+                    data.tokenAddress,
+                    vestingShare
+                );
+            }
+        }
+
+        // console.log("allowanceAmount: ", allowanceAmount);
+        // console.log("sumVestingBalance: ", sumVestingBalance);
+        // console.log(
+        //     "allowanceAmount - sumVestingBalance: ",
+        //     allowanceAmount - sumVestingBalance
+        // );
+        //* Send the remaing token to market account;
+        if (allowanceAmount - sumVestingBalance > 0) {
+            accountBalanceItMap.add(
+                MARKET_SHARE_ADDRESS,
+                tokenAddress_,
+                allowanceAmount - sumVestingBalance
+            );
+        }
+    }
 
     //*-------------------------------------------------------------------------
     //* MARKET_ADDRESS GET/SET FUNCTION
@@ -1454,49 +1555,44 @@ contract rentMarket is Ownable, Pausable {
         return false;
     }
 
-    function getCurrentSnapshotId() public view returns (uint256) {
-        return balanceSnapshot.getCurrentSnapshotId();
-    }
+    //* TODO: Handle later.
+    //* TODO: The vesting distribution algorithm does not use snapshot.
+    // function getCurrentSnapshotId() public view returns (uint256) {
+    //     return balanceSnapshot.getCurrentSnapshotId();
+    // }
 
-    function makeSnapshot() public onlyOwner whenNotPaused returns (uint256) {
-        return balanceSnapshot.makeSnapshot();
-    }
+    // function makeSnapshot() public onlyOwner whenNotPaused returns (uint256) {
+    //     return balanceSnapshot.makeSnapshot();
+    // }
 
-    function updateAccountBalance(
-        bool isRentByToken,
-        address accountAddress,
-        address tokenAddress
-    ) private {
-        // uint256 balance = accountBalanceItMap.getAmount(
-        //     accountAddress,
-        //     address(0)
-        // );
-        // console.log("accountAddress: ", accountAddress);
-        // console.log("balance: ", balance);
+    // function updateAccountBalance(
+    //     bool isRentByToken,
+    //     address accountAddress,
+    //     address tokenAddress
+    // ) private {
+    //     if (isRentByToken == true) {
+    //         balanceSnapshot.updateAccountBalance(
+    //             accountAddress,
+    //             0,
+    //             accountBalanceItMap.getAmount(accountAddress, tokenAddress)
+    //         );
+    //     } else {
+    //         balanceSnapshot.updateAccountBalance(
+    //             accountAddress,
+    //             accountBalanceItMap.getAmount(accountAddress, address(0)),
+    //             0
+    //         );
+    //     }
+    // }
 
-        if (isRentByToken == true) {
-            balanceSnapshot.updateAccountBalance(
-                accountAddress,
-                0,
-                accountBalanceItMap.getAmount(accountAddress, tokenAddress)
-            );
-        } else {
-            balanceSnapshot.updateAccountBalance(
-                accountAddress,
-                accountBalanceItMap.getAmount(accountAddress, address(0)),
-                0
-            );
-        }
-    }
-
-    function balanceOfAt(
-        address accountAddress,
-        uint256 snapshotId
-    )
-        public
-        view
-        returns (bool found, uint256 balance, uint256 balanceByToken)
-    {
-        return balanceSnapshot.balanceOfAt(accountAddress, snapshotId);
-    }
+    // function balanceOfAt(
+    //     address accountAddress,
+    //     uint256 snapshotId
+    // )
+    //     public
+    //     view
+    //     returns (bool found, uint256 balance, uint256 balanceByToken)
+    // {
+    //     return balanceSnapshot.balanceOfAt(accountAddress, snapshotId);
+    // }
 }

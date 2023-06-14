@@ -31,10 +31,13 @@ module.exports = {
       },
     },
   },
-  // ethernal: {
-  //   email: process.env.ETHERNAL_EMAIL,
-  //   password: process.env.ETHERNAL_PASSWORD,
-  // },
+  mocha: {
+    timeout: 100000000,
+  },
+  ethernal: {
+    email: process.env.ETHERNAL_EMAIL,
+    password: process.env.ETHERNAL_PASSWORD,
+  },
   docgen: {
     root: process.cwd(),
     sourcesDir: "contracts",

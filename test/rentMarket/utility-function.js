@@ -3,15 +3,15 @@ const { BigNumber } = ethers;
 const { parseEther, formatEther } = ethers.utils;
 const { loadFixture, deployContract } = require("ethereum-waffle");
 
-// * We suppose that.
-// * - rentNFT contract owner(deployer) is the same as rentNFT token owner.
+//* We suppose that.
+//* - rentNFT contract owner(deployer) is the same as rentNFT token owner.
 
 const TOKEN_ID = 1;
 const RENT_FEE = "2";
 const RENT_DURATION = 100;
 const TEST_TOKEN_NAME = "testToken";
 
-// * Define service, collection, and nft uri value.
+//* Define service, collection, and nft uri value.
 const SERVICE_URI = "https://avame.s3.ap-northeast-2.amazonaws.com/avame.json";
 const COLLECTION_URI =
   "https://dulls-nft.s3.ap-northeast-2.amazonaws.com/collection.json";
@@ -31,32 +31,32 @@ const defaultFeeToken = ethers.constants.AddressZero;
 const defaultRentFeeByToken = BigNumber.from(0);
 const defaultRentDuration = BigNumber.from(60 * 60 * 24);
 
-// * Deply rentMarket, testNFT, and testToken contracts
+//* Deply rentMarket, testNFT, and testToken contracts
 const prepareContract = async ([wallet, other], provider) => {
-  // * -------------------------------------------------------------------------
-  // * Signer return values.
-  // * -------------------------------------------------------------------------
+  //*---------------------------------------------------------------------------
+  //* Signer return values.
+  //*---------------------------------------------------------------------------
   let rentMarketContractOwnerSigner;
   let serviceContractOwnerSigner;
   let testNFTContractOwnerSigner;
   let userSigner;
   let remainSignerArray;
 
-  // * -------------------------------------------------------------------------
-  // * Contract return values.
-  // * -------------------------------------------------------------------------
+  //*---------------------------------------------------------------------------
+  //* Contract return values.
+  //*---------------------------------------------------------------------------
   let rentMarketContract;
   let testNFTContract;
   let testTokenContract;
 
-  // * -------------------------------------------------------------------------
-  // * Other variables.
-  // * -------------------------------------------------------------------------
+  //*---------------------------------------------------------------------------
+  //* Other variables.
+  //*---------------------------------------------------------------------------
   let response;
 
-  // * -------------------------------------------------------------------------
-  // * Get sample account signers.
-  // * -------------------------------------------------------------------------
+  //*---------------------------------------------------------------------------
+  //* Get sample account signers.
+  //*---------------------------------------------------------------------------
   [
     rentMarketContractOwnerSigner,
     testNFTContractOwnerSigner,
@@ -65,9 +65,9 @@ const prepareContract = async ([wallet, other], provider) => {
     ...remainSignerArray
   ] = await ethers.getSigners();
 
-  // * -------------------------------------------------------------------------
-  // * Deploy iterableMap library smart contract.
-  // * -------------------------------------------------------------------------
+  //*---------------------------------------------------------------------------
+  //* Deploy iterableMap library smart contract.
+  //*---------------------------------------------------------------------------
   const pendingRentFeeIterableMapContract = await ethers.getContractFactory(
     "pendingRentFeeIterableMap"
   );
@@ -123,9 +123,9 @@ const prepareContract = async ([wallet, other], provider) => {
   await rentDataIterableMapLibrary.deployed();
   await balanceSnapshotLibrary.deployed();
 
-  // * -------------------------------------------------------------------------
-  // * Deploy rentMarket smart contract.
-  // * -------------------------------------------------------------------------
+  //*---------------------------------------------------------------------------
+  //* Deploy rentMarket smart contract.
+  //*---------------------------------------------------------------------------
   const rentMarketContractFactory = await ethers.getContractFactory(
     "rentMarket",
     {
@@ -144,34 +144,33 @@ const prepareContract = async ([wallet, other], provider) => {
           registerDataIterableMapLibrary.deployTransaction.creates,
         rentDataIterableMap:
           rentDataIterableMapLibrary.deployTransaction.creates,
-        balanceSnapshotLib:
-          balanceSnapshotLibrary.deployTransaction.creates,
+        balanceSnapshotLib: balanceSnapshotLibrary.deployTransaction.creates,
       },
     }
   );
 
   // https://docs.ethers.io/v4/api-contract.html
   const exclusive = true;
-  rentMarketContract = await rentMarketContractFactory.deploy(exclusive);
+  rentMarketContract = await rentMarketContractFactory
+    .connect(rentMarketContractOwnerSigner)
+    .deploy(exclusive);
   response = await rentMarketContract.deployed();
   // console.log("rentMarket deployed address: ", response.address);
 
-  // * -------------------------------------------------------------------------
-  // * Deploy testNFT smart contract.
-  // * -------------------------------------------------------------------------
+  //*---------------------------------------------------------------------------
+  //* Deploy testNFT smart contract.
+  //*---------------------------------------------------------------------------
   // https://docs.ethers.io/v4/api-contract.html
   const testNFTContractFactory = await ethers.getContractFactory("rentNFT");
-  testNFTContract = await testNFTContractFactory.deploy(
-    NFT_NAME,
-    NFT_SYMBOL,
-    NFT_BASE_URI
-  );
+  testNFTContract = await testNFTContractFactory
+    .connect(testNFTContractOwnerSigner)
+    .deploy(NFT_NAME, NFT_SYMBOL, NFT_BASE_URI);
   response = await testNFTContract.deployed();
   // console.log("testNFT deployed address: ", response.address);
 
-  // * -------------------------------------------------------------------------
-  // * Deploy testToken contract.
-  // * -------------------------------------------------------------------------
+  //*---------------------------------------------------------------------------
+  //* Deploy testToken contract.
+  //*---------------------------------------------------------------------------
   const testTokenContractFactory = await ethers.getContractFactory("testToken");
   testTokenContract = await testTokenContractFactory.deploy(
     TOKEN_NAME,
@@ -180,21 +179,21 @@ const prepareContract = async ([wallet, other], provider) => {
   response = await testTokenContract.deployed();
   // console.log("testToken deployed address: ", response.address);
 
-  // * -------------------------------------------------------------------------
-  // * Mint NFT.
-  // * -------------------------------------------------------------------------
+  //*---------------------------------------------------------------------------
+  //* Mint NFT.
+  //*---------------------------------------------------------------------------
   for (let i = MINT_START_TOKEN_ID; i <= MINT_END_TOKEN_ID; i++) {
     await testNFTContract.safeMint(testNFTContractOwnerSigner.address);
   }
 
   return {
-    // * Return signer values.
+    //* Return signer values.
     rentMarketContractOwnerSigner,
     testNFTContractOwnerSigner,
     serviceContractOwnerSigner,
     userSigner,
     remainSignerArray,
-    // * Return contract values.
+    //* Return contract values.
     rentMarketContract,
     testNFTContract,
     testTokenContract,
@@ -212,9 +211,9 @@ const removeAllData = async ({
   let tx;
   let txArray = [];
 
-  // * -------------------------------------------------------------------------
-  // * Unregister token.
-  // * -------------------------------------------------------------------------
+  //*---------------------------------------------------------------------------
+  //* Unregister token.
+  //*---------------------------------------------------------------------------
   txArray = [];
   const allTokenArray = await rentMarketContract.getAllToken();
   for (element of allTokenArray) {
@@ -225,9 +224,9 @@ const removeAllData = async ({
   }
   await Promise.all(txArray);
 
-  // * -------------------------------------------------------------------------
-  // * Unregister collection.
-  // * -------------------------------------------------------------------------
+  //*---------------------------------------------------------------------------
+  //* Unregister collection.
+  //*---------------------------------------------------------------------------
   txArray = [];
   const allCollectionArray = await rentMarketContract.getAllCollection();
   for (element of allCollectionArray) {
@@ -238,9 +237,9 @@ const removeAllData = async ({
   }
   await Promise.all(txArray);
 
-  // * -------------------------------------------------------------------------
-  // * Unregister service.
-  // * -------------------------------------------------------------------------
+  //*---------------------------------------------------------------------------
+  //* Unregister service.
+  //*---------------------------------------------------------------------------
   txArray = [];
   const allServiceArray = await rentMarketContract.getAllService();
   for (element of allServiceArray) {
@@ -251,9 +250,9 @@ const removeAllData = async ({
   }
   await Promise.all(txArray);
 
-  // * -------------------------------------------------------------------------
-  // * Unregister NFT.
-  // * -------------------------------------------------------------------------
+  //*---------------------------------------------------------------------------
+  //* Unregister NFT.
+  //*---------------------------------------------------------------------------
   txArray = [];
   const allRegisterArray = await rentMarketContract.getAllRegisterData();
   for (element of allRegisterArray) {
@@ -265,9 +264,9 @@ const removeAllData = async ({
   }
   await Promise.all(txArray);
 
-  // * -------------------------------------------------------------------------
-  // * Unrent NFT.
-  // * -------------------------------------------------------------------------
+  //*---------------------------------------------------------------------------
+  //* Unrent NFT.
+  //*---------------------------------------------------------------------------
   txArray = [];
   let allRentArray = await rentMarketContract.getAllRentData();
   for (element of allRentArray) {
@@ -284,10 +283,10 @@ const removeAllData = async ({
   );
   await tx.wait();
 
-  // * -------------------------------------------------------------------------
-  // * Settle rent data.
-  // * - Should get all rent array data again, because unrentNFT function was called above.
-  // * -------------------------------------------------------------------------
+  //*---------------------------------------------------------------------------
+  //* Settle rent data.
+  //* - Should get all rent array data again, because unrentNFT function was called above.
+  //*---------------------------------------------------------------------------
   txArray = [];
   allRentArray = await rentMarketContract.getAllRentData();
   for (element of allRentArray) {
@@ -306,9 +305,9 @@ const removeAllData = async ({
   }
   await Promise.all(txArray);
 
-  // * -------------------------------------------------------------------------
-  // * Withdraw base coin.
-  // * -------------------------------------------------------------------------
+  //*---------------------------------------------------------------------------
+  //* Withdraw base coin.
+  //*---------------------------------------------------------------------------
   txArray = [];
   tx = await rentMarketContract
     .connect(testNFTContractOwnerSigner)
@@ -333,9 +332,9 @@ const removeAllData = async ({
   txArray.push(tx.wait());
   await Promise.all(txArray);
 
-  // * -------------------------------------------------------------------------
-  // * Withdraw fee token.
-  // * -------------------------------------------------------------------------
+  //*---------------------------------------------------------------------------
+  //* Withdraw fee token.
+  //*---------------------------------------------------------------------------
   txArray = [];
   tx = await rentMarketContract
     .connect(testNFTContractOwnerSigner)
@@ -365,12 +364,12 @@ const initializeBeforeEach = async () => {
   let transaction;
   let transactionArray = [];
 
-  // * -------------------------------------------------------------------------
-  // * Deploy smart contracts with fixture and mint NFT.
-  // * - rent market
-  // * - test nft
-  // * - test token
-  // * -------------------------------------------------------------------------
+  //*---------------------------------------------------------------------------
+  //* Deploy smart contracts with fixture and mint NFT.
+  //* - rent market
+  //* - test nft
+  //* - test token
+  //*---------------------------------------------------------------------------
   const {
     // Signer values.
     rentMarketContractOwnerSigner,
@@ -384,19 +383,19 @@ const initializeBeforeEach = async () => {
     testTokenContract,
   } = await loadFixture(prepareContract);
 
-  // * -------------------------------------------------------------------------
-  // * Remove all data and register service and collection.
-  // * - remove
-  //   * service
-  //   * collection
-  //   * register NFT
-  //   * rent
-  //   * settle
-  //   * withdraw (base, token)
-  // * - register
-  //   * service
-  //   * collection
-  // * -------------------------------------------------------------------------
+  //* ---------------------------------------------------------------------------
+  //* Remove all data and register service and collection.
+  //* - remove
+  //  * service
+  //  * collection
+  //  * register NFT
+  //  * rent
+  //  * settle
+  //  * withdraw (base, token)
+  //* - register
+  //  * service
+  //  * collection
+  //* ---------------------------------------------------------------------------
   await removeAllData({
     rentMarketContract,
     testNFTContract,
@@ -406,25 +405,25 @@ const initializeBeforeEach = async () => {
     serviceContractOwnerSigner,
   });
 
-  // * -------------------------------------------------------------------------
-  // * Register token.
-  // * -------------------------------------------------------------------------
+  //*---------------------------------------------------------------------------
+  //* Register token.
+  //*---------------------------------------------------------------------------
   transaction = await rentMarketContract
     .connect(rentMarketContractOwnerSigner)
     .registerToken(testTokenContract.address, TEST_TOKEN_NAME);
   transactionArray.push(transaction.wait());
 
-  // * -------------------------------------------------------------------------
-  // * Register collection.
-  // * -------------------------------------------------------------------------
+  //*---------------------------------------------------------------------------
+  //* Register collection.
+  //*---------------------------------------------------------------------------
   transaction = await rentMarketContract
     .connect(rentMarketContractOwnerSigner)
     .registerCollection(testNFTContract.address, COLLECTION_URI);
   transactionArray.push(transaction.wait());
 
-  // * -------------------------------------------------------------------------
-  // * Register service.
-  // * -------------------------------------------------------------------------
+  //*---------------------------------------------------------------------------
+  //* Register service.
+  //*---------------------------------------------------------------------------
   transaction = await rentMarketContract
     .connect(rentMarketContractOwnerSigner)
     .registerService(serviceContractOwnerSigner.address, SERVICE_URI);
@@ -456,9 +455,9 @@ const registerNFT = async ({
 }) => {
   let transactionArray = [];
 
-  // * -------------------------------------------------------------------------
-  // * Call registerNFT to rentMarket contract.
-  // * -------------------------------------------------------------------------
+  //*---------------------------------------------------------------------------
+  //* Call registerNFT to rentMarket contract.
+  //*---------------------------------------------------------------------------
   for (let i = startTokenId; i <= endTokenId; i++) {
     const transaction = await rentMarketContract
       .connect(testNFTContractOwnerSigner)
@@ -466,9 +465,9 @@ const registerNFT = async ({
     transactionArray.push(transaction.wait());
   }
 
-  // * -------------------------------------------------------------------------
-  // * Wait until the transaction is mined.
-  // * -------------------------------------------------------------------------
+  //*---------------------------------------------------------------------------
+  //* Wait until the transaction is mined.
+  //*---------------------------------------------------------------------------
   const response = await Promise.all(transactionArray);
 };
 
