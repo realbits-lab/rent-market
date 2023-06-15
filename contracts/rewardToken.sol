@@ -47,13 +47,20 @@ contract rewardToken is ERC20, ERC20Permit {
         );
 
         _rewardTokenShareContractAddress = rewardTokenShareContractAddress_;
-        //* TODO: Set later.
+
+        //* Set the start time of vesting.
         _start = block.timestamp;
+
+        //* Set the total duration of vesting.
         _duration = 250 weeks;
+
+        //* Set total frequency of vesting.
         _frequency = 50;
 
-        //* TODO: Set later.
+        //* Mint the 20% of total supply to project team account.
         _mint(projectTeamAccountAddress_, 200_000_000 * (10 ** 18));
+
+        //* Mint the 80% of total supply to vesting schedule.
         _mint(address(this), 800_000_000 * (10 ** 18));
     }
 
