@@ -16,8 +16,8 @@ contract rewardToken is ERC20, ERC20Permit {
     /// @dev Reward token released event.
     event RewardTokenReleased(uint256 amount);
 
-    /// @dev Reward token released amount.
-    uint256 private _released;
+    /// @dev The total released amount of reward token.
+    uint256 private _totalReleased;
 
     /// @dev Share contract to which vesting would be sent.
     address private immutable _rewardTokenShareContractAddress;
@@ -85,18 +85,18 @@ contract rewardToken is ERC20, ERC20Permit {
     }
 
     /// @dev Amount of already released vesting.
-    function released() public view returns (uint256) {
-        return _released;
+    function totalReleased() public view returns (uint256) {
+        return _totalReleased;
     }
 
     /// @dev Getter for the amount of releasable reward token vesting.
-    function releasable() public view returns (uint256) {
-        return vestedAmount(uint256(block.timestamp)) - released();
+    function currentReleasable() public view returns (uint256) {
+        return totalVestedAmount(uint256(block.timestamp)) - totalReleased();
     }
 
     /// @dev Getter for the total token allocation.
     function totalAllocation() public view returns (uint256) {
-        return IERC20(address(this)).balanceOf(address(this)) + released();
+        return IERC20(address(this)).balanceOf(address(this)) + totalReleased();
     }
 
     /// @dev Getter for the amount of minimum releasable reward token vesting.
@@ -125,26 +125,28 @@ contract rewardToken is ERC20, ERC20Permit {
 
     /// @dev Release the tokens that have already vested.
     function release() public {
-        uint256 amount = releasable();
+        uint256 amount = currentReleasable();
         require(
-            amount > totalAllocation() / frequency(),
-            "rewardToken: Releasable amount is smaller than the vesting minimum amount."
+            amount > minimumReleasable(),
+            "rewardToken: Releasable amount is smaller than the minimumReleasable."
         );
-
-        _released += amount;
-
-        emit RewardTokenReleased(amount);
 
         SafeERC20.safeTransfer(
             IERC20(address(this)),
             rewardTokenShareContractAddress(),
             amount
         );
+
+        _totalReleased += amount;
+
+        emit RewardTokenReleased(amount);
     }
 
     /// @dev Calculates the amount of ether that has already vested.
     /// Default implementation is a linear vesting curve.
-    function vestedAmount(uint256 timestamp_) public view returns (uint256) {
+    function totalVestedAmount(
+        uint256 timestamp_
+    ) public view returns (uint256) {
         return _vestingSchedule(totalAllocation(), timestamp_);
     }
 
