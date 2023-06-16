@@ -7,6 +7,7 @@ const {
   encryptSafely,
   getEncryptionPublicKey,
 } = require("@metamask/eth-sig-util");
+const { getContractAt } = require("@nomiclabs/hardhat-ethers/internal/helpers");
 const {
   getNFTContract,
   changeIPFSToGateway,
@@ -53,4 +54,52 @@ task("deployRewardTokenShareContract", "Deploys the rewardTokenShare contract")
     });
 
     console.log("Contract address: ", response.address);
+  });
+
+task(
+  "getRewardTokenBalance",
+  "Get reward token balance of reward token share contract"
+)
+  .addParam("contract", "The contract name")
+  .setAction(async function (taskArguments, hre) {
+    const contract = await getContractAt(
+      hre,
+      taskArguments.contract,
+      getEnvVariable("REWARD_TOKEN_SHARE_CONTRACT_ADDRESS"),
+      getAccount()
+    );
+    // console.log("contract: ", contract);
+    const response = await contract.getRewardTokenBalance();
+    console.log("response: ", response);
+  });
+
+task("setRewardTokenContractAddress", "Set reward token contract address")
+  .addParam("contract", "The contract name")
+  .addParam("address", "The reward token address")
+  .setAction(async function (taskArguments, hre) {
+    const contract = await getContractAt(
+      hre,
+      taskArguments.contract,
+      getEnvVariable("REWARD_TOKEN_SHARE_CONTRACT_ADDRESS"),
+      getAccount()
+    );
+    // console.log("contract: ", contract);
+    const response = await contract.setRewardTokenContractAddress(
+      taskArguments.address
+    );
+    console.log("response: ", response);
+  });
+
+task("getRewardTokenContractAddress", "Get reward token contract address")
+  .addParam("contract", "The contract name")
+  .setAction(async function (taskArguments, hre) {
+    const contract = await getContractAt(
+      hre,
+      taskArguments.contract,
+      getEnvVariable("REWARD_TOKEN_SHARE_CONTRACT_ADDRESS"),
+      getAccount()
+    );
+    // console.log("contract: ", contract);
+    const response = await contract.getRewardTokenContractAddress();
+    console.log("response: ", response);
   });

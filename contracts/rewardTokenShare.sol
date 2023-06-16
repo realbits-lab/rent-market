@@ -51,6 +51,12 @@ contract rewardTokenShare is Ownable {
         view
         returns (uint256 rewardTokenBalance_)
     {
+        //* Check reward token contract address is zero.
+        require(
+            _rewardTokenContractAddress != address(0),
+            "Reward token contract address is zero."
+        );
+
         return IERC20(_rewardTokenContractAddress).balanceOf(address(this));
     }
 
@@ -144,6 +150,12 @@ contract rewardTokenShare is Ownable {
 
     /// @dev Check the rewardToken balance and if any, transfer.
     function release() public {
+        //* Check reward token contract address is zero.
+        require(
+            _rewardTokenContractAddress != address(0),
+            "Reward token contract address is zero."
+        );
+
         //* Check the reward token balance of this contract.
         uint256 vestingTokenAmount = IERC20(_rewardTokenContractAddress)
             .balanceOf(address(this));
