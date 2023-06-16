@@ -108,19 +108,10 @@ contract rewardToken is ERC20, ERC20Permit {
     function remainingTimestampToNextVesting() public view returns (uint256) {
         uint256 currentBlockTimestamp = block.timestamp;
         uint256 vestingUnitTimestamp = duration() / frequency();
-        uint256 remainingTimestamp = 0;
+        uint256 remainingTimestamp = (currentBlockTimestamp - start()) %
+            vestingUnitTimestamp;
 
-        for (uint256 i = 0; i < frequency(); i++) {
-            remainingTimestamp =
-                currentBlockTimestamp -
-                vestingUnitTimestamp *
-                i;
-            if (remainingTimestamp < vestingUnitTimestamp) {
-                return remainingTimestamp;
-            }
-        }
-
-        return vestingUnitTimestamp;
+        return vestingUnitTimestamp - remainingTimestamp;
     }
 
     /// @dev Release the tokens that have already vested.
