@@ -100,6 +100,40 @@ task("getRewardTokenContractAddress", "Get reward token contract address")
       getAccount()
     );
     // console.log("contract: ", contract);
-    const response = await contract.getRewardTokenContractAddress();
-    console.log("response: ", response);
+    const tx = await contract.getRewardTokenContractAddress();
+    console.log("tx.hash: ", tx.hash);
+  });
+
+task("addRentMarketContractAddress", "Add rent market contract address")
+  .addParam("contract", "The contract name")
+  .addParam("address", "The rent market contract address")
+  .setAction(async function (taskArguments, hre) {
+    const contract = await getContractAt(
+      hre,
+      taskArguments.contract,
+      getEnvVariable("REWARD_TOKEN_SHARE_CONTRACT_ADDRESS"),
+      getAccount()
+    );
+    // console.log("contract: ", contract);
+    const tx = await contract.addRentMarketContractAddress(
+      taskArguments.address
+    );
+    console.log("tx.hash: ", tx.hash);
+  });
+
+task("removeRentMarketContractAddress", "Remove rent market contract address")
+  .addParam("contract", "The contract name")
+  .addParam("address", "The rent market contract address")
+  .setAction(async function (taskArguments, hre) {
+    const contract = await getContractAt(
+      hre,
+      taskArguments.contract,
+      getEnvVariable("REWARD_TOKEN_SHARE_CONTRACT_ADDRESS"),
+      getAccount()
+    );
+    // console.log("contract: ", contract);
+    const tx = await contract.removeRentMarketContractAddress(
+      taskArguments.address
+    );
+    console.log("tx.hash: ", tx.hash);
   });
