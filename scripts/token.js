@@ -42,20 +42,15 @@ task("deployRewardTokenContract", "Deploys the rewardToken contract")
 task("deployRewardTokenShareContract", "Deploys the rewardTokenShare contract")
   .addParam("contract", "The contract name")
   .addParam("team", "The project team account address")
-  .addParam("pool", "The token pool contract")
   .setAction(async function (taskArguments, hre) {
     const contractFactory = await hre.ethers.getContractFactory(
       taskArguments.contract,
       getAccount()
     );
-    const response = await contractFactory.deploy(
-      taskArguments.team,
-      taskArguments.pool,
-      {
-        // gasPrice: hre.ethers.utils.parseUnits("50", "gwei"),
-        // gasLimit: hre.ethers.utils.parseUnits("70", "gwei"),
-      }
-    );
+    const response = await contractFactory.deploy(taskArguments.team, {
+      // gasPrice: hre.ethers.utils.parseUnits("50", "gwei"),
+      // gasLimit: hre.ethers.utils.parseUnits("70", "gwei"),
+    });
 
     console.log("Contract address: ", response.address);
   });
