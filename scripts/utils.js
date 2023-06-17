@@ -109,7 +109,7 @@ function getProvider() {
 }
 
 // Helper method for fetching a wallet account using an environment variable for the PK
-function getAccount(alchemyKey) {
+function getAccount() {
   return new ethers.Wallet(
     getEnvVariable("ACCOUNT_PRIVATE_KEY"),
     getProvider()

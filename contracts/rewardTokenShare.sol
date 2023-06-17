@@ -5,7 +5,8 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-import "hardhat/console.sol";
+
+// import "hardhat/console.sol";
 
 interface IRentMarket {
     function getTotalAccountBalance(
@@ -20,9 +21,8 @@ interface IRentMarket {
 /// @dev Receive vesting token from rewardToken contract and distribute to project contributors.
 ///
 /// Receive token vesting from rewardToken contract by release function.
-/// Send 40% of the vesting token to project team wallet.
-/// Send 15% of the vesting token to token swap pool (ex: uniswap incentives).
-/// Send 45% of the vesting token to rentMarket contracts as to their total balance.
+/// Send 50% of the vesting token to project team wallet.
+/// Send 50% of the vesting token to rentMarket contracts as to their total balance.
 /// each rentMarket contract distribute the receive vesting token to each balance account.
 contract rewardTokenShare is Ownable {
     /// @dev rewardToken contract address.
@@ -31,30 +31,19 @@ contract rewardTokenShare is Ownable {
     /// @dev Project team account address which is used for sending the vesting token.
     address private immutable _projectTeamAccountAddress;
 
-    /// @dev Token pool contract address.
-    address private immutable _tokenPoolContractAddress;
-
     /// @dev rentMarket contract address array.
     address[] private _rentMarketContractAddressArray;
 
     /// @dev Project team account share.
-    uint256 private immutable PROJECT_TEAM_ACCOUNT_SHARE = 40;
-
-    /// @dev Token pool contract share.
-    uint256 private immutable TOKEN_POOL_CONTRACT_SHARE = 15;
+    uint256 private immutable PROJECT_TEAM_ACCOUNT_SHARE = 50;
 
     /// @dev Rent market contract share.
-    uint256 private immutable RENT_MARKET_CONTRACT_SHARE = 45;
+    uint256 private immutable RENT_MARKET_CONTRACT_SHARE = 50;
 
     /// @dev Set the initial values.
     /// @param projectTeamAccountAddress_ Address for project team account.
-    /// @param tokenPoolContractAddress_ Address for token pool contract.
-    constructor(
-        address projectTeamAccountAddress_,
-        address tokenPoolContractAddress_
-    ) {
+    constructor(address projectTeamAccountAddress_) {
         _projectTeamAccountAddress = projectTeamAccountAddress_;
-        _tokenPoolContractAddress = tokenPoolContractAddress_;
     }
 
     function getRewardTokenBalance()
@@ -62,6 +51,12 @@ contract rewardTokenShare is Ownable {
         view
         returns (uint256 rewardTokenBalance_)
     {
+        //* Check reward token contract address is zero.
+        require(
+            _rewardTokenContractAddress != address(0),
+            "Reward token contract address is zero."
+        );
+
         return IERC20(_rewardTokenContractAddress).balanceOf(address(this));
     }
 
@@ -85,14 +80,6 @@ contract rewardTokenShare is Ownable {
         returns (address projectTeamAccountAddress_)
     {
         return _projectTeamAccountAddress;
-    }
-
-    function getTokenPoolContractAddress()
-        public
-        view
-        returns (address tokenPoolContractAddress_)
-    {
-        return _tokenPoolContractAddress;
     }
 
     function getRentMarketContractAddressArray()
@@ -163,6 +150,12 @@ contract rewardTokenShare is Ownable {
 
     /// @dev Check the rewardToken balance and if any, transfer.
     function release() public {
+        //* Check reward token contract address is zero.
+        require(
+            _rewardTokenContractAddress != address(0),
+            "Reward token contract address is zero."
+        );
+
         //* Check the reward token balance of this contract.
         uint256 vestingTokenAmount = IERC20(_rewardTokenContractAddress)
             .balanceOf(address(this));
@@ -171,7 +164,7 @@ contract rewardTokenShare is Ownable {
             return;
         }
 
-        //* Send 40% of reward token balance to the project team wallet account address.
+        //* Send 50% of reward token balance to the project team wallet account address.
         uint256 projectTeamAccountAmount = SafeMath.div(
             vestingTokenAmount * PROJECT_TEAM_ACCOUNT_SHARE,
             100
@@ -181,21 +174,9 @@ contract rewardTokenShare is Ownable {
             projectTeamAccountAmount
         );
 
-        //* Send 15% of reward token balance to the token swap pool.
-        uint256 tokenPoolContractAmount = SafeMath.div(
-            vestingTokenAmount * TOKEN_POOL_CONTRACT_SHARE,
-            100
-        );
-        console.log("tokenPoolContractAmount: ", tokenPoolContractAmount);
-        IERC20(_rewardTokenContractAddress).transfer(
-            _tokenPoolContractAddress,
-            tokenPoolContractAmount
-        );
-
-        //* Send 45% of reward token balance to rentMarket contracts as to their total balance rate.
+        //* Send 50% of reward token balance to rentMarket contracts as to their total balance rate.
         uint256 rentMarketContractShare = vestingTokenAmount -
-            projectTeamAccountAmount -
-            tokenPoolContractAmount;
+            projectTeamAccountAmount;
         uint256[] memory rentMarketTotalBalanceArray = new uint256[](
             _rentMarketContractAddressArray.length
         );
@@ -208,7 +189,7 @@ contract rewardTokenShare is Ownable {
             rentMarketTotalBalanceArray[i] = totalAccountBalance;
             totalRentMarketBalance += totalAccountBalance;
         }
-        console.log("totalRentMarketBalance: ", totalRentMarketBalance);
+        // console.log("totalRentMarketBalance: ", totalRentMarketBalance);
 
         for (uint256 i = 0; i < _rentMarketContractAddressArray.length; i++) {
             uint256 share = 0;
