@@ -41,3 +41,7 @@ foo@bar:~$ npm run build:production
 # Hardhat test
 
 - Set NETWORK in .env to localhost
+
+# Deploy rent market contract
+
+- hh deploy
