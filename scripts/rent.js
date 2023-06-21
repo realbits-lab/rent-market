@@ -591,7 +591,7 @@ task("rentNFT", "Rent NFT from rentMarket")
   .addParam("fee", "rent fee")
   .setAction(async function (taskArguments, hre) {
     const contract = await getRentMarketContract(taskArguments.contract, hre);
-    const response = await contract.rentNFT(
+    const tx = await contract.rentNFT(
       taskArguments.address,
       taskArguments.token,
       taskArguments.service,
@@ -610,8 +610,9 @@ task("rentNFT", "Rent NFT from rentMarket")
         // gasLimit: 500_000,
       }
     );
-
-    console.log(`response: ${response}`);
+    console.log("tx: ", tx);
+    const response = await tx.wait();
+    console.log("response: ", response);
   });
 
 task("unrentNFT", "Unrent NFT from rentMarket")

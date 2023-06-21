@@ -109,10 +109,10 @@ const prepareContract = async ([wallet, other], provider) => {
   );
   const rentDataIterableMapLibrary = await rentDataIterableMapContract.deploy();
 
-  const balanceSnapshotLibContract = await ethers.getContractFactory(
-    "balanceSnapshotLib"
-  );
-  const balanceSnapshotLibrary = await balanceSnapshotLibContract.deploy();
+  // const balanceSnapshotLibContract = await ethers.getContractFactory(
+  //   "balanceSnapshotLib"
+  // );
+  // const balanceSnapshotLibrary = await balanceSnapshotLibContract.deploy();
 
   await pendingRentFeeIterableMapLibrary.deployed();
   await tokenDataIterableMapLibrary.deployed();
@@ -121,7 +121,7 @@ const prepareContract = async ([wallet, other], provider) => {
   await serviceDataIterableMapLibrary.deployed();
   await registerDataIterableMapLibrary.deployed();
   await rentDataIterableMapLibrary.deployed();
-  await balanceSnapshotLibrary.deployed();
+  // await balanceSnapshotLibrary.deployed();
 
   //*---------------------------------------------------------------------------
   //* Deploy rentMarket smart contract.
@@ -144,7 +144,7 @@ const prepareContract = async ([wallet, other], provider) => {
           registerDataIterableMapLibrary.deployTransaction.creates,
         rentDataIterableMap:
           rentDataIterableMapLibrary.deployTransaction.creates,
-        balanceSnapshotLib: balanceSnapshotLibrary.deployTransaction.creates,
+        // balanceSnapshotLib: balanceSnapshotLibrary.deployTransaction.creates,
       },
     }
   );
@@ -362,7 +362,7 @@ const removeAllData = async ({
 
 const initializeBeforeEach = async () => {
   let transaction;
-  let transactionArray = [];
+  let txArray = [];
 
   //*---------------------------------------------------------------------------
   //* Deploy smart contracts with fixture and mint NFT.
@@ -411,7 +411,7 @@ const initializeBeforeEach = async () => {
   transaction = await rentMarketContract
     .connect(rentMarketContractOwnerSigner)
     .registerToken(testTokenContract.address, TEST_TOKEN_NAME);
-  transactionArray.push(transaction.wait());
+  txArray.push(transaction.wait());
 
   //*---------------------------------------------------------------------------
   //* Register collection.
@@ -419,7 +419,7 @@ const initializeBeforeEach = async () => {
   transaction = await rentMarketContract
     .connect(rentMarketContractOwnerSigner)
     .registerCollection(testNFTContract.address, COLLECTION_URI);
-  transactionArray.push(transaction.wait());
+  txArray.push(transaction.wait());
 
   //*---------------------------------------------------------------------------
   //* Register service.
@@ -427,9 +427,9 @@ const initializeBeforeEach = async () => {
   transaction = await rentMarketContract
     .connect(rentMarketContractOwnerSigner)
     .registerService(serviceContractOwnerSigner.address, SERVICE_URI);
-  transactionArray.push(transaction.wait());
+  txArray.push(transaction.wait());
 
-  const response = await Promise.all(transactionArray);
+  const response = await Promise.all(txArray);
   // console.log("Promise.all response: ", response)
 
   return {
@@ -453,22 +453,18 @@ const registerNFT = async ({
   startTokenId,
   endTokenId,
 }) => {
-  let transactionArray = [];
+  let txArray = [];
 
-  //*---------------------------------------------------------------------------
   //* Call registerNFT to rentMarket contract.
-  //*---------------------------------------------------------------------------
   for (let i = startTokenId; i <= endTokenId; i++) {
-    const transaction = await rentMarketContract
+    const tx = await rentMarketContract
       .connect(testNFTContractOwnerSigner)
       .registerNFT(testNFTContract.address, i);
-    transactionArray.push(transaction.wait());
+    txArray.push(tx.wait());
   }
 
-  //*---------------------------------------------------------------------------
   //* Wait until the transaction is mined.
-  //*---------------------------------------------------------------------------
-  const response = await Promise.all(transactionArray);
+  const response = await Promise.all(txArray);
 };
 
 async function mineBlocks(count, provider) {

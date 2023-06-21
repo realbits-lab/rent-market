@@ -10,9 +10,7 @@ const {
 } = require("./utility-function");
 
 describe("test rentNFT true case.", function () {
-  /*****************************************************************************
-   * Define variables.
-   ****************************************************************************/
+  //* Define variables.
   let // Signer values.
     rentMarketContractOwnerSigner,
     testNFTContractOwnerSigner,
@@ -25,20 +23,16 @@ describe("test rentNFT true case.", function () {
     testTokenContract;
 
   beforeEach(async function () {
-    /***************************************************************************
-     * Initialize contract and data.
-     * - Deploy smart contracts with fixture and mint NFT.
-     * - Remove all data and register service and collection.
-     * - Register token.
-     * - Register collection.
-     * - Register service.
-     **************************************************************************/
+    //* Initialize contract and data.
+    //* - Deploy smart contracts with fixture and mint NFT.
+    //* - Remove all data and register service and collection.
+    //* - Register token.
+    //* - Register collection.
+    //* - Register service.
     const response = await initializeBeforeEach();
     // print({ response });
 
-    /***************************************************************************
-     * Set each returned value.
-     **************************************************************************/
+    //* Set each returned value.
     ({
       // Signer values.
       rentMarketContractOwnerSigner,
@@ -53,17 +47,12 @@ describe("test rentNFT true case.", function () {
     } = response);
   });
 
-  it("test rentNFT with base token and check rent data.", async function () {
-    /***************************************************************************
-     * Define variables.
-     **************************************************************************/
+  it("Check rent result.", async function () {
     let tx;
     const startTokenId = 1;
     const endTokenId = 1;
 
-    /***************************************************************************
-     * Register NFT to rent market.
-     **************************************************************************/
+    //* Register NFT to rent market.
     await registerNFT({
       rentMarketContract,
       testNFTContract,
@@ -72,9 +61,7 @@ describe("test rentNFT true case.", function () {
       endTokenId: endTokenId,
     });
 
-    /***************************************************************************
-     * Get rent fee.
-     **************************************************************************/
+    //* Get rent fee.
     response = await rentMarketContract
       .connect(userSigner)
       .getRegisterData(testNFTContract.address, startTokenId);
@@ -82,9 +69,7 @@ describe("test rentNFT true case.", function () {
       value: response["rentFee"],
     };
 
-    /***************************************************************************
-     * Rent NFT.
-     **************************************************************************/
+    //* Rent NFT.
     tx = await rentMarketContract
       .connect(userSigner)
       .rentNFT(
@@ -95,16 +80,13 @@ describe("test rentNFT true case.", function () {
       );
     await tx.wait();
 
-    /***************************************************************************
-     * Set renStartTimestamp.
-     **************************************************************************/
+    //* Get rentStartTimestamp.
     const rentStartTimestamp = BigNumber.from(
       (await ethers.provider.getBlock("latest")).timestamp
     );
+    console.log("rentStartTimestamp: ", rentStartTimestamp);
 
-    /***************************************************************************
-     * Check rent data.
-     **************************************************************************/
+    //* Check rent data.
     response = await rentMarketContract
       .connect(userSigner)
       .getRentData(testNFTContract.address, startTokenId);
@@ -136,7 +118,7 @@ describe("test rentNFT true case.", function () {
     ]);
   });
 
-  it("rentNFT with base token and check event.", async function () {
+  it("Check event.", async function () {
     /***************************************************************************
      * Define variables.
      **************************************************************************/
