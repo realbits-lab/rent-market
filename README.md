@@ -37,3 +37,7 @@ foo@bar:~$ npm run build:production
 # Use ethernal
 
 - https://app.tryethernal.com/
+
+# Hardhat test
+
+- Set NETWORK in .env to localhost

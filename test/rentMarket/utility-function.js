@@ -150,7 +150,7 @@ const prepareContract = async ([wallet, other], provider) => {
   );
 
   // https://docs.ethers.io/v4/api-contract.html
-  const exclusive = true;
+  const exclusive = false;
   rentMarketContract = await rentMarketContractFactory
     .connect(rentMarketContractOwnerSigner)
     .deploy(exclusive);

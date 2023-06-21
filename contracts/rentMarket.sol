@@ -101,6 +101,13 @@ contract rentMarket is Ownable, Pausable {
     //* In case of renting prompt NFT, the same NFT can be rented many times simultaneously.
     bool public exclusive;
 
+    //* Use to avoid stack too deep compile error.
+    struct Variable {
+        uint256 previousRentDuration;
+        address ownerAddress;
+        bool response;
+    }
+
     //*-------------------------------------------------------------------------
     //* TOKEN FLOW
     //* COLLECTION FLOW
@@ -775,6 +782,8 @@ contract rentMarket is Ownable, Pausable {
         uint256 tokenId,
         address serviceAddress
     ) public payable whenNotPaused returns (bool success) {
+        Variable memory variable;
+
         //* Check the nftAddress and tokenId is registered.
         require(registerDataItMap.contains(nftAddress, tokenId) == true, "RM7");
 
@@ -801,9 +810,17 @@ contract rentMarket is Ownable, Pausable {
         registerDataIterableMap.registerData memory data = registerDataItMap
             .getByNFT(nftAddress, tokenId);
 
+        variable.previousRentDuration = 0;
+        if (rentDataItMap.contains(nftAddress, tokenId) == true) {
+            rentDataIterableMap.rentData memory previousRentData = rentDataItMap
+                .getByNFT(nftAddress, tokenId);
+            variable.previousRentDuration = previousRentData.rentDuration;
+            rentDataItMap.remove(nftAddress, tokenId);
+        }
+
         //* Add rentDataItMap.
         //* Set isRentByToken to be false.
-        address ownerAddress = getNFTOwner(nftAddress, tokenId);
+        variable.ownerAddress = getNFTOwner(nftAddress, tokenId);
         rentDataIterableMap.rentData memory rentData;
         rentData.nftAddress = nftAddress;
         rentData.tokenId = tokenId;
@@ -811,18 +828,20 @@ contract rentMarket is Ownable, Pausable {
         rentData.feeTokenAddress = data.feeTokenAddress;
         rentData.rentFeeByToken = data.rentFeeByToken;
         rentData.isRentByToken = false;
-        rentData.rentDuration = data.rentDuration;
-        rentData.renterAddress = ownerAddress;
+        rentData.rentDuration =
+            data.rentDuration +
+            variable.previousRentDuration;
+        rentData.renterAddress = variable.ownerAddress;
         rentData.renteeAddress = msg.sender;
         rentData.serviceAddress = serviceAddress;
         rentData.rentStartTimestamp = block.timestamp;
 
-        bool response = rentDataItMap.insert(rentData);
+        variable.response = rentDataItMap.insert(rentData);
 
-        if (response == true) {
+        if (variable.response == true) {
             //* Add pendingRentFeeMap.
             pendingRentFeeMap.add(
-                ownerAddress,
+                variable.ownerAddress,
                 serviceAddress,
                 address(0),
                 msg.value
@@ -837,7 +856,7 @@ contract rentMarket is Ownable, Pausable {
                 data.rentFeeByToken,
                 false,
                 data.rentDuration,
-                ownerAddress,
+                variable.ownerAddress,
                 msg.sender,
                 serviceAddress,
                 rentData.rentStartTimestamp
