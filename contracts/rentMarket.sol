@@ -524,7 +524,9 @@ contract rentMarket is Ownable, Pausable {
     //* NFT REQUEST-REGISTER/CHANGE/UNREGISTER FUNCTION
     //*-------------------------------------------------------------------------
 
-    /// @dev Request to register NFT. Sender should be an owner of NFT and NFT collection is already registered.
+    /// @dev Register NFT.
+    ///     Sender should be an owner of NFT or have register role.
+    ///     NFT collection(address) should be already registered.
     /// @param nftAddress NFT address
     /// @param tokenId NFT token ID
     /// @return success or failture (bool).
@@ -540,13 +542,16 @@ contract rentMarket is Ownable, Pausable {
 
         //* Check msg.sender requirement.
         //* - Check msg.sender has register role in NFT with IRentNFT.
-        //* - Check NFT owner is same as msg.sender.
-        //* - In case of prompt NFT, NFT contract is a msg.sender.
+        //* - Check msg.sender is an owner.
         bool isRegister = checkRegister(nftAddress, msg.sender);
-        address ownerAddress = getNFTOwner(nftAddress, tokenId);
         // console.log("isRegister: ", isRegister);
+        address ownerAddress = getNFTOwner(nftAddress, tokenId);
         // console.log("ownerAddress: ", ownerAddress);
         // console.log("msg.sender: ", msg.sender);
+
+        //* Check token is exists.
+        require(ownerAddress != address(0), "RM21");
+
         require(
             isRegister == true ||
                 ownerAddress == msg.sender ||
@@ -554,11 +559,9 @@ contract rentMarket is Ownable, Pausable {
             "RM4"
         );
 
+        //* Check msg.sender is NFT contract (prompt NFT case).
         //* Check msg.sender is one of collection. (call by nft contract.)
         require(collectionItMap.contains(nftAddress) == true, "RM22");
-
-        //* Check token is exists.
-        require(ownerAddress != address(0), "RM21");
 
         // struct registerData {
         //     address nftAddress;
