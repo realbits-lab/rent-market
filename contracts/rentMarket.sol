@@ -295,9 +295,10 @@ contract rentMarket is Ownable, Pausable {
     //* COLLECTION REGISTER/UNREGISTER FUNCTION
     //*-------------------------------------------------------------------------
 
-    /// @dev Register collection
+    /// @dev Register NFT collection.
     /// @param collectionAddress collection address
     /// @param uri collection metadata uri
+    /// @return success or failure of registering NFT collection
     function registerCollection(
         address collectionAddress,
         string memory uri
