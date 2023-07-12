@@ -101,6 +101,13 @@ contract rentMarket is Ownable, Pausable {
     //* In case of renting prompt NFT, the same NFT can be rented many times simultaneously.
     bool public exclusive;
 
+    //* Use to avoid stack too deep compile error.
+    struct Variable {
+        uint256 previousRentDuration;
+        address ownerAddress;
+        bool response;
+    }
+
     //*-------------------------------------------------------------------------
     //* TOKEN FLOW
     //* COLLECTION FLOW
@@ -288,9 +295,10 @@ contract rentMarket is Ownable, Pausable {
     //* COLLECTION REGISTER/UNREGISTER FUNCTION
     //*-------------------------------------------------------------------------
 
-    /// @dev Register collection
+    /// @dev Register NFT collection.
     /// @param collectionAddress collection address
     /// @param uri collection metadata uri
+    /// @return success or failure of registering NFT collection
     function registerCollection(
         address collectionAddress,
         string memory uri
@@ -517,7 +525,9 @@ contract rentMarket is Ownable, Pausable {
     //* NFT REQUEST-REGISTER/CHANGE/UNREGISTER FUNCTION
     //*-------------------------------------------------------------------------
 
-    /// @dev Request to register NFT. Sender should be an owner of NFT and NFT collection is already registered.
+    /// @dev Register NFT.
+    ///     Sender should be an owner of NFT or have register role.
+    ///     NFT collection(address) should be already registered.
     /// @param nftAddress NFT address
     /// @param tokenId NFT token ID
     /// @return success or failture (bool).
@@ -533,13 +543,16 @@ contract rentMarket is Ownable, Pausable {
 
         //* Check msg.sender requirement.
         //* - Check msg.sender has register role in NFT with IRentNFT.
-        //* - Check NFT owner is same as msg.sender.
-        //* - In case of prompt NFT, NFT contract is a msg.sender.
+        //* - Check msg.sender is an owner.
         bool isRegister = checkRegister(nftAddress, msg.sender);
-        address ownerAddress = getNFTOwner(nftAddress, tokenId);
         // console.log("isRegister: ", isRegister);
+        address ownerAddress = getNFTOwner(nftAddress, tokenId);
         // console.log("ownerAddress: ", ownerAddress);
         // console.log("msg.sender: ", msg.sender);
+
+        //* Check token is exists.
+        require(ownerAddress != address(0), "RM21");
+
         require(
             isRegister == true ||
                 ownerAddress == msg.sender ||
@@ -547,11 +560,9 @@ contract rentMarket is Ownable, Pausable {
             "RM4"
         );
 
+        //* Check msg.sender is NFT contract (prompt NFT case).
         //* Check msg.sender is one of collection. (call by nft contract.)
         require(collectionItMap.contains(nftAddress) == true, "RM22");
-
-        //* Check token is exists.
-        require(ownerAddress != address(0), "RM21");
 
         // struct registerData {
         //     address nftAddress;
@@ -775,6 +786,8 @@ contract rentMarket is Ownable, Pausable {
         uint256 tokenId,
         address serviceAddress
     ) public payable whenNotPaused returns (bool success) {
+        Variable memory variable;
+
         //* Check the nftAddress and tokenId is registered.
         require(registerDataItMap.contains(nftAddress, tokenId) == true, "RM7");
 
@@ -801,9 +814,17 @@ contract rentMarket is Ownable, Pausable {
         registerDataIterableMap.registerData memory data = registerDataItMap
             .getByNFT(nftAddress, tokenId);
 
+        variable.previousRentDuration = 0;
+        if (rentDataItMap.contains(nftAddress, tokenId) == true) {
+            rentDataIterableMap.rentData memory previousRentData = rentDataItMap
+                .getByNFT(nftAddress, tokenId);
+            variable.previousRentDuration = previousRentData.rentDuration;
+            rentDataItMap.remove(nftAddress, tokenId);
+        }
+
         //* Add rentDataItMap.
         //* Set isRentByToken to be false.
-        address ownerAddress = getNFTOwner(nftAddress, tokenId);
+        variable.ownerAddress = getNFTOwner(nftAddress, tokenId);
         rentDataIterableMap.rentData memory rentData;
         rentData.nftAddress = nftAddress;
         rentData.tokenId = tokenId;
@@ -811,18 +832,20 @@ contract rentMarket is Ownable, Pausable {
         rentData.feeTokenAddress = data.feeTokenAddress;
         rentData.rentFeeByToken = data.rentFeeByToken;
         rentData.isRentByToken = false;
-        rentData.rentDuration = data.rentDuration;
-        rentData.renterAddress = ownerAddress;
+        rentData.rentDuration =
+            data.rentDuration +
+            variable.previousRentDuration;
+        rentData.renterAddress = variable.ownerAddress;
         rentData.renteeAddress = msg.sender;
         rentData.serviceAddress = serviceAddress;
         rentData.rentStartTimestamp = block.timestamp;
 
-        bool response = rentDataItMap.insert(rentData);
+        variable.response = rentDataItMap.insert(rentData);
 
-        if (response == true) {
+        if (variable.response == true) {
             //* Add pendingRentFeeMap.
             pendingRentFeeMap.add(
-                ownerAddress,
+                variable.ownerAddress,
                 serviceAddress,
                 address(0),
                 msg.value
@@ -837,7 +860,7 @@ contract rentMarket is Ownable, Pausable {
                 data.rentFeeByToken,
                 false,
                 data.rentDuration,
-                ownerAddress,
+                variable.ownerAddress,
                 msg.sender,
                 serviceAddress,
                 rentData.rentStartTimestamp

@@ -37,3 +37,13 @@ foo@bar:~$ npm run build:production
 # Use ethernal
 
 - https://app.tryethernal.com/
+
+# Hardhat test
+
+- Set NETWORK in .env to localhost
+
+# Deploy rent market contract
+
+- check NETWORK in .env
+- hh deployRentMarket --contract rentMarket --exclusive {true|false}
+- Change NEXT_PUBLIC_RENT_MARKET_CONTRACT_ADDRESS in rent-content .env

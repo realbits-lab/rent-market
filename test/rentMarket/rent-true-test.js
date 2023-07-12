@@ -10,9 +10,7 @@ const {
 } = require("./utility-function");
 
 describe("test rentNFT true case.", function () {
-  /*****************************************************************************
-   * Define variables.
-   ****************************************************************************/
+  //* Define variables.
   let // Signer values.
     rentMarketContractOwnerSigner,
     testNFTContractOwnerSigner,
@@ -25,20 +23,16 @@ describe("test rentNFT true case.", function () {
     testTokenContract;
 
   beforeEach(async function () {
-    /***************************************************************************
-     * Initialize contract and data.
-     * - Deploy smart contracts with fixture and mint NFT.
-     * - Remove all data and register service and collection.
-     * - Register token.
-     * - Register collection.
-     * - Register service.
-     **************************************************************************/
+    //* Initialize contract and data.
+    //* - Deploy smart contracts with fixture and mint NFT.
+    //* - Remove all data and register service and collection.
+    //* - Register token.
+    //* - Register collection.
+    //* - Register service.
     const response = await initializeBeforeEach();
     // print({ response });
 
-    /***************************************************************************
-     * Set each returned value.
-     **************************************************************************/
+    //* Set each returned value.
     ({
       // Signer values.
       rentMarketContractOwnerSigner,
@@ -53,17 +47,12 @@ describe("test rentNFT true case.", function () {
     } = response);
   });
 
-  it("test rentNFT with base token and check rent data.", async function () {
-    /***************************************************************************
-     * Define variables.
-     **************************************************************************/
+  it("Check rent result.", async function () {
     let tx;
     const startTokenId = 1;
     const endTokenId = 1;
 
-    /***************************************************************************
-     * Register NFT to rent market.
-     **************************************************************************/
+    //* Register NFT to rent market.
     await registerNFT({
       rentMarketContract,
       testNFTContract,
@@ -72,19 +61,16 @@ describe("test rentNFT true case.", function () {
       endTokenId: endTokenId,
     });
 
-    /***************************************************************************
-     * Get rent fee.
-     **************************************************************************/
+    //* Get rent fee.
     response = await rentMarketContract
       .connect(userSigner)
       .getRegisterData(testNFTContract.address, startTokenId);
+    // console.log("getRegisterData response: ", response);
     const options = {
       value: response["rentFee"],
     };
 
-    /***************************************************************************
-     * Rent NFT.
-     **************************************************************************/
+    //* Rent NFT.
     tx = await rentMarketContract
       .connect(userSigner)
       .rentNFT(
@@ -95,16 +81,13 @@ describe("test rentNFT true case.", function () {
       );
     await tx.wait();
 
-    /***************************************************************************
-     * Set renStartTimestamp.
-     **************************************************************************/
+    //* Get rentStartTimestamp.
     const rentStartTimestamp = BigNumber.from(
       (await ethers.provider.getBlock("latest")).timestamp
     );
+    // console.log("rentStartTimestamp: ", rentStartTimestamp);
 
-    /***************************************************************************
-     * Check rent data.
-     **************************************************************************/
+    //* Check rent data.
     response = await rentMarketContract
       .connect(userSigner)
       .getRentData(testNFTContract.address, startTokenId);
@@ -121,6 +104,7 @@ describe("test rentNFT true case.", function () {
     //     address serviceAddress;
     //     uint256 rentStartTimestamp;
     // }
+    // console.log("getRentData response: ", response);
     expect(response).to.deep.equal([
       testNFTContract.address,
       BigNumber.from(startTokenId),
@@ -136,17 +120,12 @@ describe("test rentNFT true case.", function () {
     ]);
   });
 
-  it("rentNFT with base token and check event.", async function () {
-    /***************************************************************************
-     * Define variables.
-     **************************************************************************/
+  it("Check duplicate rent result.", async function () {
     let tx;
     const startTokenId = 1;
     const endTokenId = 1;
 
-    /***************************************************************************
-     * Register NFT to rent market.
-     **************************************************************************/
+    //* Register NFT to rent market.
     await registerNFT({
       rentMarketContract,
       testNFTContract,
@@ -155,9 +134,77 @@ describe("test rentNFT true case.", function () {
       endTokenId: endTokenId,
     });
 
-    /***************************************************************************
-     * Get rent fee.
-     **************************************************************************/
+    //* Get rent fee.
+    response = await rentMarketContract
+      .connect(userSigner)
+      .getRegisterData(testNFTContract.address, startTokenId);
+    // console.log("getRegisterData response: ", response);
+    const options = {
+      value: response["rentFee"],
+    };
+
+    //* Rent NFT.
+    tx = await rentMarketContract
+      .connect(userSigner)
+      .rentNFT(
+        testNFTContract.address,
+        startTokenId,
+        serviceContractOwnerSigner.address,
+        options
+      );
+    await tx.wait();
+
+    //* Get rent duration.
+    response = await rentMarketContract
+      .connect(userSigner)
+      .getRentData(testNFTContract.address, startTokenId);
+    // console.log("getRentData response: ", response);
+    let rentDuration = response["rentDuration"];
+    // console.log("rentDuration: ", rentDuration);
+
+    //* Check the default rent duration.
+    expect(rentDuration).to.equal(defaultRentDuration);
+
+    //* Rent the same NFT again.
+    tx = await rentMarketContract
+      .connect(userSigner)
+      .rentNFT(
+        testNFTContract.address,
+        startTokenId,
+        serviceContractOwnerSigner.address,
+        options
+      );
+    await tx.wait();
+
+    //* Get rent duration.
+    const previousRentDuration = rentDuration;
+    response = await rentMarketContract
+      .connect(userSigner)
+      .getRentData(testNFTContract.address, startTokenId);
+    // console.log("getRentData response: ", response);
+    rentDuration = response["rentDuration"];
+    // console.log("rentDuration: ", rentDuration);
+
+    //* Check the default rent duration.
+    expect(rentDuration).to.equal(previousRentDuration.mul(2));
+  });
+
+  it("Check event.", async function () {
+    //* Define variables.
+    let tx;
+    const startTokenId = 1;
+    const endTokenId = 1;
+
+    //* Register NFT to rent market.
+    await registerNFT({
+      rentMarketContract,
+      testNFTContract,
+      testNFTContractOwnerSigner,
+      startTokenId: startTokenId,
+      endTokenId: endTokenId,
+    });
+
+    //* Get rent fee.
     response = await rentMarketContract
       .connect(userSigner)
       .getRegisterData(testNFTContract.address, startTokenId);
@@ -165,15 +212,13 @@ describe("test rentNFT true case.", function () {
       value: response["rentFee"],
     };
 
-    // 3. Get block number.
+    //* Get start time stamp.
     const rentStartTimestamp = BigNumber.from(
       (await ethers.provider.getBlock("latest")).timestamp
     );
     // console.log("rentStartTimestamp: ", rentStartTimestamp);
 
-    /***************************************************************************
-     * Check event.
-     **************************************************************************/
+    //* Check event.
     // event RentNFT(
     //     address indexed nftAddress,
     //     uint256 indexed tokenId,
@@ -189,7 +234,7 @@ describe("test rentNFT true case.", function () {
     // );
     // TODO: Handle predicate function later.
     function checkRentStartTimestamp(eventRentStartTimestamp, test) {
-      console.log("eventRentStartTimestamp: ", eventRentStartTimestamp);
+      // console.log("eventRentStartTimestamp: ", eventRentStartTimestamp);
       if (
         eventRentStartTimestamp.lt(rentStartTimestamp) === true &&
         eventRentStartTimestamp.gt(rentStartTimestamp.add(10))
@@ -200,9 +245,7 @@ describe("test rentNFT true case.", function () {
       return false;
     }
 
-    /***************************************************************************
-     * Check data.
-     **************************************************************************/
+    //* Check data.
     await expect(
       rentMarketContract
         .connect(userSigner)
