@@ -1,4 +1,8 @@
-# Install npm
+# Rent market
+
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](CODE_OF_CONDUCT.md)
+
+## Install npm
 
 ```console
 foo@bar:~$ npm i --legacy-peer-deps
@@ -6,7 +10,7 @@ foo@bar:~$ npm i --legacy-peer-deps
 
 - hardhat-ethernal@3.1.0 package has a problem in resolving dependency
 
-# Use remix
+## Use remix
 
 - If you want to use [REMIX](https://remix.ethereum.org/) IDE, install remixd and run.
 
@@ -14,11 +18,11 @@ foo@bar:~$ npm i --legacy-peer-deps
 foo@bar:~$ remixd
 ```
 
-# Use hardhat
+## Use hardhat
 
 - If you want to use hardhat, use hardhat command.
 
-# Build package
+## Build package
 
 - For development.
 
@@ -34,15 +38,15 @@ foo@bar:~$ cd package
 foo@bar:~$ npm run build:production
 ```
 
-# Use ethernal
+## Use ethernal
 
 - https://app.tryethernal.com/
 
-# Hardhat test
+## Hardhat test
 
 - Set NETWORK in .env to localhost
 
-# Deploy rent market contract
+## Deploy rent market contract
 
 - check NETWORK in .env
 - hh deployRentMarket --contract rentMarket --exclusive {true|false}
