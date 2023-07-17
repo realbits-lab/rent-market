@@ -1,11 +1,12 @@
 {
   "name": "rent-market",
-  "version": "2.0.7",
+  "version": "2.0.17",
   "description": "The rent market contract package for realbits.",
   "main": "dist/index.js",
   "scripts": {
     "build:production": "rm -rf dist && NODE_ENV=production babel components --out-dir dist --copy-files",
-    "build:development": "babel components --watch --out-dir dist --copy-files"
+    "build:development": "rm -rf dist && babel components --watch --out-dir dist --copy-files",
+    "check-types": "rm -rf components/*.d.ts && tsc"
   },
   "keywords": [
     "realbits",
@@ -33,9 +34,9 @@
     "axios": "^1.2.3",
     "core-js": "^3.27.0",
     "ethers": "^5.7.2",
+    "keccak256": "^1.0.6",
     "moment": "^2.29.4",
     "react-device-detect": "^2.2.2",
-    "recoil": "^0.7.6",
     "utf-8-validate": "^6.0.0",
     "uuid": "^9.0.0",
     "wagmi": "^0.10.15"

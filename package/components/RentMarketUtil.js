@@ -1,13 +1,6 @@
 import React from "react";
 import { Link, Portal, Snackbar, Alert as MuiAlert } from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
-import {
-  RecoilRoot,
-  atom,
-  selector,
-  useRecoilState,
-  useRecoilValue,
-} from "recoil";
 
 /**
  * Format bytes as human-readable text.
@@ -20,7 +13,7 @@ import {
  * @return Formatted string.
  */
 // https://stackoverflow.com/questions/10420352/converting-file-size-in-bytes-to-human-readable-string
-export const humanFileSize = (bytes, si = false, dp = 1) => {
+export function humanFileSize(bytes, si = false, dp = 1) {
   const thresh = si ? 1000 : 1024;
 
   if (Math.abs(bytes) < thresh) {
@@ -42,10 +35,10 @@ export const humanFileSize = (bytes, si = false, dp = 1) => {
   );
 
   return bytes.toFixed(dp) + " " + units[u];
-};
+}
 
 // * Switch to localhost network.
-export const switchNetworkLocalhost = async (provider) => {
+export async function switchNetworkLocalhost(provider) {
   // console.log("call switchNetworkLocalhost()");
 
   let response;
@@ -109,10 +102,10 @@ export const switchNetworkLocalhost = async (provider) => {
 
     throw switchError;
   }
-};
+}
 
 // * Switch to mumbai network.
-export const switchNetworkMumbai = async (provider) => {
+export async function switchNetworkMumbai(provider) {
   // console.log("call switchNetworkMumbai()");
   // console.log("Try to wallet_switchEthereumChain");
 
@@ -173,10 +166,10 @@ export const switchNetworkMumbai = async (provider) => {
 
     throw switchError;
   }
-};
+}
 
 // * Switch to polygon network.
-export const switchNetworkPolygon = async (provider) => {
+export async function switchNetworkPolygon(provider) {
   // console.log("call switchNetworkPolygon()");
 
   let response;
@@ -236,10 +229,10 @@ export const switchNetworkPolygon = async (provider) => {
 
     throw switchError;
   }
-};
+}
 
 // * Change ipfs url to gateway url.
-export const changeIPFSToGateway = (ipfsUrl) => {
+export function changeIPFSToGateway(ipfsUrl) {
   if (
     typeof ipfsUrl === "string" &&
     ipfsUrl.length > 6 &&
@@ -254,9 +247,9 @@ export const changeIPFSToGateway = (ipfsUrl) => {
   } else {
     return ipfsUrl;
   }
-};
+}
 
-export const checkMobile = () => {
+export function checkMobile() {
   let check = false;
   (function (a) {
     if (
@@ -270,13 +263,32 @@ export const checkMobile = () => {
       check = true;
   })(navigator.userAgent || navigator.vendor);
   return check;
-};
+}
 
-export const shortenAddress = (address, number = 4, withLink = true) => {
-  const POLYGON_SCAN_URL = "https://mumbai.polygonscan.com/address/";
-  const polygonScanUrl = `${POLYGON_SCAN_URL}${address}`;
+export function shortenAddress({ address, number = 4, withLink = "" }) {
+  // console.log("address: ", address);
+  // console.log("withLink: ", withLink);
+
+  const POLYGON_MATICMUM_SCAN_URL = "https://mumbai.polygonscan.com/address/";
+  const POLYGON_MATIC_SCAN_URL = "https://polygonscan.com/address/";
+  const OPENSEA_MATIC_URL = "https://opensea.io/assets?search[query]=";
+  const OPENSEA_MATICMUM_URL =
+    "https://testnets.opensea.io/assets?search[query]=";
   let stringLength = 0;
   let middleString = "";
+
+  let openseaUrl;
+  let polygonScanUrl;
+  if (process.env.NEXT_PUBLIC_BLOCKCHAIN_NETWORK === "matic") {
+    openseaUrl = OPENSEA_MATIC_URL;
+    polygonScanUrl = `${POLYGON_MATIC_SCAN_URL}${address}`;
+  } else if (process.env.NEXT_PUBLIC_BLOCKCHAIN_NETWORK === "maticmum") {
+    openseaUrl = OPENSEA_MATICMUM_URL;
+    polygonScanUrl = `${POLYGON_MATICMUM_SCAN_URL}${address}`;
+  } else {
+    openseaUrl = "";
+    polygonScanUrl = "";
+  }
 
   // Check number maximum.
   if (number > 19 || number < 1) {
@@ -291,25 +303,40 @@ export const shortenAddress = (address, number = 4, withLink = true) => {
     (typeof address === "string" || address instanceof String) &&
     address.length > 0
   ) {
-    if (withLink === true) {
-      return (
-        <Link href={polygonScanUrl} target="_blank">
-          {`${address.substring(
-            0,
-            number + 2
-          )}${middleString}${address.substring(address.length - number)}`}
-        </Link>
-      );
-    } else {
-      return `${address.substring(
-        0,
-        number + 2
-      )}${middleString}${address.substring(address.length - number)}`;
+    switch (withLink) {
+      case "maticscan":
+      case "scan":
+        return (
+          <Link href={polygonScanUrl} target="_blank">
+            {`${address.substring(
+              0,
+              number + 2
+            )}${middleString}${address.substring(address.length - number)}`}
+          </Link>
+        );
+
+      case "opensea_matic":
+      case "opensea_maticmum":
+      case "opensea":
+        return (
+          <Link href={`${openseaUrl}${address}`} target="_blank">
+            {`${address.substring(
+              0,
+              number + 2
+            )}${middleString}${address.substring(address.length - number)}`}
+          </Link>
+        );
+
+      default:
+        return `${address.substring(
+          0,
+          number + 2
+        )}${middleString}${address.substring(address.length - number)}`;
     }
   } else {
     return "";
   }
-};
+}
 
 export const ConnectStatus = {
   connect: "connect",
@@ -385,12 +412,67 @@ export function RBSnackbar({ open, message, severity, currentTime }) {
   );
 }
 
-export const getUniqueKey = () => {
+export async function signMessage({ rentMarket, message }) {
+  // console.log("call signMessage()");
+  // console.log("rentMarket: ", rentMarket);
+  // console.log("message: ", message);
+
+  if (rentMarket === undefined) {
+    return false;
+  }
+
+  // console.log("rentMarket.signer: ", rentMarket.signer);
+  let response;
+  try {
+    response = await rentMarket.signer.signMessage(message || "");
+  } catch (error) {
+    throw error;
+  }
+  // console.log("response: ", response);
+
+  return response;
+}
+
+export async function isUserAllowed({ rentMarket, address }) {
+  console.log("call isUserAllowed()");
+  console.log("rentMarket: ", rentMarket);
+  console.log("address: ", address);
+
+  // if (rentMarket === undefined || address === undefined) {
+  //   return false;
+  // }
+
+  let checkAddress;
+  if (address) {
+    checkAddress = address;
+  } else {
+    checkAddress = rentMarket.signerAddress;
+  }
+  console.log("checkAddress: ", checkAddress);
+
+  // console.log("rentMarket.signerAddress: ", rentMarket.signerAddress);
+  let response;
+  try {
+    // response = await rentMarket.isOwnerOrRenter(checkAddress);
+    response = await rentMarket.isOwnerOrRenter(
+      "0x3851dacd8fA9F3eB64D69151A3597F33E5960A2F"
+    );
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+  console.log("response: ", response);
+
+  // * response type is bool (success or failure).
+  return response;
+}
+
+export function getUniqueKey() {
   // return Math.random().toString(16).slice(2);
   return uuidv4();
-};
+}
 
-export const getErrorDescription = ({ errorString }) => {
+export function getErrorDescription({ errorString }) {
   const errorCode = {
     RM1: "The same element is already request.",
     RM2: "The same element is already register.",
@@ -415,9 +497,9 @@ export const getErrorDescription = ({ errorString }) => {
   };
 
   return errorCode[errorString];
-};
+}
 
-export const getChainName = ({ chainId }) => {
+export function getChainName({ chainId }) {
   // console.log("-- chainId: ", chainId);
 
   // https://github.com/DefiLlama/chainlist/blob/main/constants/chainIds.js
@@ -507,15 +589,15 @@ export const getChainName = ({ chainId }) => {
   } else if (isInt(chainId) === true) {
     return chainIds[chainId];
   }
-};
+}
 
 // https://levelup.gitconnected.com/how-to-check-for-an-object-in-javascript-object-null-check-3b2632330296
-export const isObject = (value) => typeof value === "object" && value !== null;
+export function isObject(value) {
+  return typeof value === "object" && value !== null;
+}
 
 // https://stackoverflow.com/questions/14636536/how-to-check-if-a-variable-is-an-integer-in-javascript
-export const isInt = (value) => {
+export function isInt(value) {
   const x = parseFloat(value);
   return !isNaN(value) && (x | 0) === x;
-};
-
-export const LOCAL_CHAIN_ID = "0x539";
+}

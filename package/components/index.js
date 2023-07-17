@@ -1,3 +1,5 @@
+import My from "./My";
+import Market from "./Market";
 import Metamask from "./Metamask";
 import {
   humanFileSize,
@@ -14,10 +16,14 @@ import {
   RBSnackbar,
   getUniqueKey,
   getChainName,
+  isUserAllowed,
+  signMessage,
 } from "./RentMarketUtil";
 import RentMarket from "./RentMarket";
 
 export {
+  My,
+  Market,
   Metamask,
   humanFileSize,
   switchNetworkLocalhost,
@@ -34,4 +40,6 @@ export {
   RBSnackbar,
   getUniqueKey,
   getChainName,
+  isUserAllowed,
+  signMessage,
 };

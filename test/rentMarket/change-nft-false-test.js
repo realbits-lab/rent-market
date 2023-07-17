@@ -15,20 +15,20 @@ describe("test changeNFT false case.", function () {
     testTokenContract;
 
   beforeEach(async function () {
-    // * -----------------------------------------------------------------------
-    // * Initialize contract and data.
-    // * - Deploy smart contracts with fixture and mint NFT.
-    // * - Remove all data and register service and collection.
-    // * - Register token.
-    // * - Register collection.
-    // * - Register service.
-    // * -----------------------------------------------------------------------
+    //*-------------------------------------------------------------------------
+    //* Initialize contract and data.
+    //* - Deploy smart contracts with fixture and mint NFT.
+    //* - Remove all data and register service and collection.
+    //* - Register token.
+    //* - Register collection.
+    //* - Register service.
+    //*-------------------------------------------------------------------------
     const response = await initializeBeforeEach();
     // print({ response });
 
-    // * -----------------------------------------------------------------------
-    // * Set each returned value.
-    // * -----------------------------------------------------------------------
+    //*-------------------------------------------------------------------------
+    //* Set each returned value.
+    //*-------------------------------------------------------------------------
     ({
       // Signer values.
       rentMarketContractOwnerSigner,
@@ -44,9 +44,9 @@ describe("test changeNFT false case.", function () {
   });
 
   it("test changeNFT with wrong nftAddress.", async function () {
-    // * -----------------------------------------------------------------------
-    // * Define variables.
-    // * -----------------------------------------------------------------------
+    //*-------------------------------------------------------------------------
+    //* Define variables.
+    //*-------------------------------------------------------------------------
     let tx;
     const startTokenId = 1;
     const endTokenId = 1;
@@ -55,9 +55,9 @@ describe("test changeNFT false case.", function () {
     let rentFeeByToken = BigNumber.from(5);
     const serviceName = "testServiceName";
 
-    // * -----------------------------------------------------------------------
-    // * Register NFT to rent market.
-    // * -----------------------------------------------------------------------
+    //*-------------------------------------------------------------------------
+    //* Register NFT to rent market.
+    //*-------------------------------------------------------------------------
     await registerNFT({
       rentMarketContract,
       testNFTContract,
@@ -66,17 +66,17 @@ describe("test changeNFT false case.", function () {
       endTokenId: endTokenId,
     });
 
-    // * -----------------------------------------------------------------------
-    // * Register token to rent market.
-    // * -----------------------------------------------------------------------
+    //*-------------------------------------------------------------------------
+    //* Register token to rent market.
+    //*-------------------------------------------------------------------------
     tx = await rentMarketContract
       .connect(rentMarketContractOwnerSigner)
       .registerToken(remainSignerArray[0].address, serviceName);
     await tx.wait();
 
-    // * -----------------------------------------------------------------------
-    // * Input wrong token contarct address with remainSignerArray[0].address.
-    // * -----------------------------------------------------------------------
+    //*-------------------------------------------------------------------------
+    //* Input wrong token contarct address with remainSignerArray[0].address.
+    //*-------------------------------------------------------------------------
     await expect(
       rentMarketContract
         .connect(rentMarketContractOwnerSigner)
@@ -90,9 +90,9 @@ describe("test changeNFT false case.", function () {
         )
     ).to.be.reverted;
 
-    // * -----------------------------------------------------------------------
-    // * Input wrong token contarct address with remainSignerArray[0].address.
-    // * -----------------------------------------------------------------------
+    //*-------------------------------------------------------------------------
+    //* Input wrong token contarct address with remainSignerArray[0].address.
+    //*-------------------------------------------------------------------------
     await expect(
       rentMarketContract
         .connect(testNFTContractOwnerSigner)

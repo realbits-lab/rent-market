@@ -3,11 +3,12 @@ require("@nomiclabs/hardhat-ethers");
 require("@nomiclabs/hardhat-etherscan");
 require("@nomiclabs/hardhat-waffle");
 require("solidity-docgen");
-require("hardhat-ethernal");
+// require("hardhat-ethernal");
 
 require("./scripts/deploy.js");
 require("./scripts/nft.js");
 require("./scripts/rent.js");
+require("./scripts/token.js");
 
 const {
   ALCHEMY_KEY_ETHEREUM,
@@ -30,6 +31,9 @@ module.exports = {
         runs: 1,
       },
     },
+  },
+  mocha: {
+    timeout: 100000000,
   },
   ethernal: {
     email: process.env.ETHERNAL_EMAIL,
