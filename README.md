@@ -2,19 +2,29 @@
 
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](CODE_OF_CONDUCT.md)
 
+## Getting started
+
 ## Install npm
 
-```console
+```bash
 foo@bar:~$ npm i --legacy-peer-deps
 ```
 
-- hardhat-ethernal@3.1.0 package has a problem in resolving dependency
+## Contributing
+
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+
+## Acknowledgments
 
 ## Use remix
 
 - If you want to use [REMIX](https://remix.ethereum.org/) IDE, install remixd and run.
 
-```console
+```bash
 foo@bar:~$ remixd
 ```
 
@@ -26,14 +36,14 @@ foo@bar:~$ remixd
 
 - For development.
 
-```console
+```bash
 foo@bar:~$ cd package
 foo@bar:~$ npm run build:development
 ```
 
 - For production.
 
-```console
+```bash
 foo@bar:~$ cd package
 foo@bar:~$ npm run build:production
 ```
@@ -45,6 +55,7 @@ foo@bar:~$ npm run build:production
 ## Hardhat test
 
 - Set NETWORK in .env to localhost
+- hardhat-ethernal@3.1.0 package has a problem in resolving dependency
 
 ## Deploy rent market contract
 
