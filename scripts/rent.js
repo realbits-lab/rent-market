@@ -1,4 +1,5 @@
 const { task } = require("hardhat/config");
+const { BigNumber } = require("ethers");
 const { getRentMarketContract, isEmpty } = require("./utils");
 
 //------------------------------------------------------------------------------
@@ -49,7 +50,8 @@ task("removeToken", "Remove token.")
   .addParam("address", "Token address")
   .setAction(async function (taskArguments, hre) {
     const contract = await getRentMarketContract(taskArguments.contract, hre);
-    const response = await contract.removeToken(taskArguments.address);
+    const tx = await contract.removeToken(taskArguments.address);
+    const response = await tx.wait();
 
     if (isEmpty(response)) {
       console.log("No rent record from this owner address.");
@@ -68,7 +70,7 @@ task("registerToken", "Register token")
   .addParam("token", "token name")
   .setAction(async function (taskArguments, hre) {
     const contract = await getRentMarketContract(taskArguments.contract, hre);
-    const response = await contract.registerToken(
+    const tx = await contract.registerToken(
       taskArguments.address,
       taskArguments.token,
       {
@@ -76,6 +78,7 @@ task("registerToken", "Register token")
         // gasLimit: 500_000,
       }
     );
+    const response = await tx.wait();
 
     console.log("response: ", response);
   });
@@ -85,10 +88,11 @@ task("unregisterToken", "Unregister token")
   .addParam("address", "token contract address")
   .setAction(async function (taskArguments, hre) {
     const contract = await getRentMarketContract(taskArguments.contract, hre);
-    const response = await contract.unregisterToken(taskArguments.address, {
+    const tx = await contract.unregisterToken(taskArguments.address, {
       // gasPrice: hre.ethers.utils.parseUnits('50', 'gwei'),
       // gasLimit: 500_000,
     });
+    const response = await tx.wait();
 
     console.log(`response: ${response}`);
   });
@@ -134,7 +138,7 @@ task("registerCollection", "Register collection")
   .addParam("uri", "collection uri")
   .setAction(async function (taskArguments, hre) {
     const contract = await getRentMarketContract(taskArguments.contract, hre);
-    const response = await contract.registerCollection(
+    const tx = await contract.registerCollection(
       taskArguments.address,
       taskArguments.uri,
       {
@@ -142,6 +146,7 @@ task("registerCollection", "Register collection")
         // gasLimit: 500_000,
       }
     );
+    const response = await tx.wait();
 
     console.log(`response: ${response}`);
   });
@@ -151,13 +156,11 @@ task("unregisterCollection", "Unregister collection")
   .addParam("address", "collection contract address")
   .setAction(async function (taskArguments, hre) {
     const contract = await getRentMarketContract(taskArguments.contract, hre);
-    const response = await contract.unregisterCollection(
-      taskArguments.address,
-      {
-        // gasPrice: hre.ethers.utils.parseUnits('50', 'gwei'),
-        // gasLimit: 500_000,
-      }
-    );
+    const tx = await contract.unregisterCollection(taskArguments.address, {
+      // gasPrice: hre.ethers.utils.parseUnits('50', 'gwei'),
+      // gasLimit: 500_000,
+    });
+    const response = await tx.wait();
 
     console.log(`response: ${response}`);
   });
@@ -203,7 +206,7 @@ task("registerService", "Register service")
   .addParam("uri", "service uri")
   .setAction(async function (taskArguments, hre) {
     const contract = await getRentMarketContract(taskArguments.contract, hre);
-    const response = await contract.registerService(
+    const tx = await contract.registerService(
       taskArguments.address,
       taskArguments.uri,
       {
@@ -211,6 +214,7 @@ task("registerService", "Register service")
         // gasLimit: 500_000,
       }
     );
+    const response = await tx.wait();
 
     console.log(`response: ${response}`);
   });
@@ -220,10 +224,11 @@ task("unregisterService", "Unregister service")
   .addParam("address", "service contract address")
   .setAction(async function (taskArguments, hre) {
     const contract = await getRentMarketContract(taskArguments.contract, hre);
-    const response = await contract.unregisterService(taskArguments.address, {
+    const tx = await contract.unregisterService(taskArguments.address, {
       // gasPrice: hre.ethers.utils.parseUnits('50', 'gwei'),
       // gasLimit: 500_000,
     });
+    const response = await tx.wait();
 
     console.log(`response: ${response}`);
   });
@@ -289,7 +294,8 @@ task("removeAllRequestData", "Remove all request data.")
   .addParam("contract", "contract name")
   .setAction(async function (taskArguments, hre) {
     const contract = await getRentMarketContract(taskArguments.contract, hre);
-    const response = await contract.removeAllRequestData();
+    const tx = await contract.removeAllRequestData();
+    const response = await tx.wait();
 
     if (isEmpty(response)) {
       console.log("No rent record from this owner address.");
@@ -370,7 +376,8 @@ task("removeAllRegisterData", "Remove all register data.")
   .addParam("contract", "contract name")
   .setAction(async function (taskArguments, hre) {
     const contract = await getRentMarketContract(taskArguments.contract, hre);
-    const response = await contract.removeAllRegisterData();
+    const tx = await contract.removeAllRegisterData();
+    const response = await tx.wait();
 
     if (isEmpty(response)) {
       console.log("No register record from this owner address.");
@@ -389,10 +396,11 @@ task("registerNFT", "Register NFT")
   .addParam("token", "Token ID")
   .setAction(async function (taskArguments, hre) {
     const contract = await getRentMarketContract(taskArguments.contract, hre);
-    const response = await contract.registerNFT(
+    const tx = await contract.registerNFT(
       taskArguments.address,
       taskArguments.token
     );
+    const response = await tx.wait();
 
     console.log(`response: ${response}`);
   });
@@ -403,10 +411,11 @@ task("acceptRegisterNFT", "Accept request register NFT")
   .addParam("token", "Token ID")
   .setAction(async function (taskArguments, hre) {
     const contract = await getRentMarketContract(taskArguments.contract, hre);
-    const response = await contract.acceptRegisterNFT(
+    const tx = await contract.acceptRegisterNFT(
       taskArguments.address,
       taskArguments.token
     );
+    const response = await tx.wait();
 
     console.log(`response: ${response}`);
   });
@@ -415,8 +424,9 @@ task("changeNFT", "Change NFT.")
   .addParam("contract", "rentMarket contract name")
   .addParam("address", "nftAddress")
   .addParam("token", "token ID")
-  .addParam("taddress", "Fee token address")
-  .addParam("fee", "Rent fee by token")
+  // .addParam("taddress", "Fee token address")
+  // .addParam("fee", "Rent fee by token")
+  .addParam("duration", "Rent duration")
   .setAction(async function (taskArguments, hre) {
     const contract = await getRentMarketContract(taskArguments.contract, hre);
     const element = await contract.getRegisterData(
@@ -424,14 +434,17 @@ task("changeNFT", "Change NFT.")
       taskArguments.token
     );
     console.log("element: ", element);
-    const response = await contract.changeNFT(
+    const tx = await contract.changeNFT(
       taskArguments.address,
       taskArguments.token,
       element["rentFee"],
-      taskArguments.taddress,
-      taskArguments.fee,
-      element["rentDuration"]
+      // taskArguments.taddress,
+      // BigNumber.from(taskArguments.fee),
+      element["feeTokenAddress"],
+      element["rentFeeByToken"],
+      BigNumber.from(taskArguments.duration)
     );
+    const response = await tx.wait();
 
     console.log(`response: ${response}`);
   });
@@ -442,7 +455,7 @@ task("unregisterNFT", "Unregister NFT to rentMarket")
   .addParam("token", "Token ID")
   .setAction(async function (taskArguments, hre) {
     const contract = await getRentMarketContract(taskArguments.contract, hre);
-    const response = await contract.unregisterNFT(
+    const tx = await contract.unregisterNFT(
       taskArguments.address,
       taskArguments.token,
       {
@@ -450,6 +463,7 @@ task("unregisterNFT", "Unregister NFT to rentMarket")
         // gasLimit: 500_000,
       }
     );
+    const response = await tx.wait();
 
     console.log(`response: ${response}`);
   });
@@ -521,49 +535,15 @@ task("getAllRentData", "Get all rented NFT.")
 task("getRentData", "Get all rented NFT data with rent owner's address.")
   .addParam("contract", "rentMarket contract name")
   .addParam("address", "rent NFT owner's address")
+  .addParam("token", "rent NFT owner's token")
   .setAction(async function (taskArguments, hre) {
     const contract = await getRentMarketContract(taskArguments.contract, hre);
-    const response = await contract.getRentData(taskArguments.address);
+    const response = await contract.getRentData(
+      taskArguments.address,
+      taskArguments.token
+    );
 
-    if (isEmpty(response)) {
-      console.log("No rent record from this owner address.");
-    } else {
-      // console.log(`response: |${response}|`);
-      console.log(`response.length: |${response.length}|`);
-
-      for (let i = 0; i < response.length; i++) {
-        const [
-          nftAddress,
-          tokenId,
-          rentFee,
-          feeTokenAddress,
-          rentFeeByToken,
-          isRentByToken,
-          rentDurationBlock,
-          renterAddress,
-          renteeAddress,
-          serviceAddress,
-          rentStartTimestamp,
-        ] = response[i];
-
-        console.log("----------------------------");
-        console.log(`index: ${i}`);
-        console.log(`nftAddress: ${nftAddress}`);
-        console.log(`tokenId: ${tokenId}`);
-        console.log(`rentFee: ${rentFee / Math.pow(10, 18)} ether unit`);
-        console.log(`feeTokenAddress: ${feeTokenAddress}`);
-        console.log(
-          `rentFeeByToken: ${rentFeeByToken / Math.pow(10, 18)} ether unit`
-        );
-        console.log(`isRentByToken: ${isRentByToken}`);
-        console.log(`rentDurationBlock: ${rentDurationBlock}`);
-        console.log(`renterAddress: ${renterAddress}`);
-        console.log(`renteeAddress: ${renteeAddress}`);
-        console.log(`serviceAddress: ${serviceAddress}`);
-        console.log(`rentStartTimestamp: ${rentStartTimestamp}`);
-        console.log("----------------------------");
-      }
-    }
+    console.log("response: ", response);
   });
 
 task("removeAllRentData", "Remove all rent data.")
@@ -621,10 +601,11 @@ task("unrentNFT", "Unrent NFT from rentMarket")
   .addParam("token", "Token ID")
   .setAction(async function (taskArguments, hre) {
     const contract = await getRentMarketContract(taskArguments.contract, hre);
-    const response = await contract.unrentNFT(
+    const tx = await contract.unrentNFT(
       taskArguments.address,
       taskArguments.token
     );
+    const response = await tx.wait();
 
     console.log("response: ", response);
   });
@@ -644,7 +625,7 @@ task("settleRentData", "Settle rent data.")
   .setAction(async function (taskArguments, hre) {
     const contract = await getRentMarketContract(taskArguments.contract, hre);
     // console.log("contract: ", contract);
-    const response = await contract.settleRentData(
+    const tx = await contract.settleRentData(
       taskArguments.address,
       taskArguments.token,
       {
@@ -652,6 +633,7 @@ task("settleRentData", "Settle rent data.")
         gasLimit: 5_000_000,
       }
     );
+    const response = await tx.wait();
 
     console.log("response: ", response);
   });
