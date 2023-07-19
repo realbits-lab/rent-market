@@ -342,3 +342,26 @@ task("decryptByContarctOwner", "Decyrypt prompt by contract owner private key.")
     });
     console.log("contractOwnerDecryptResult: ", contractOwnerDecryptResult);
   });
+
+task("hasRole", "Check role ownership.")
+  .addParam("contract", "The contract name.")
+  .addParam("role", "Role name.")
+  .addParam("account", "Account address.")
+  .setAction(async function (taskArguments, hre) {
+    const contract = await getNFTContract(taskArguments.contract, hre);
+    const response = await contract.hasRole(
+      taskArguments.role,
+      taskArguments.account
+    );
+
+    console.log("response: ", response);
+  });
+
+task("PROMPTER_ROLE", "Check role ownership.")
+  .addParam("contract", "The contract name.")
+  .setAction(async function (taskArguments, hre) {
+    const contract = await getNFTContract(taskArguments.contract, hre);
+    const response = await contract.PROMPTER_ROLE();
+
+    console.log("response: ", response);
+  });
