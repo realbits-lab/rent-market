@@ -1,18 +1,10 @@
 const { ethers } = require("hardhat");
 const { BigNumber } = ethers;
-const { parseEther, formatEther, splitSignature } = ethers.utils;
-const {
-  signTypedData,
-  SignTypedDataVersion,
-} = require("@metamask/eth-sig-util");
-const { loadFixture, deployContract } = require("ethereum-waffle");
+const { splitSignature } = ethers.utils;
+const { loadFixture } = require("ethereum-waffle");
 
 //* We suppose that.
 //* - rentNFT contract owner(deployer) is the same as rentNFT token owner.
-
-const TOKEN_ID = 1;
-const RENT_FEE = "2";
-const RENT_DURATION = 100;
 const TEST_TOKEN_NAME = "testToken";
 
 //* Define service, collection, and nft uri value.
@@ -72,7 +64,7 @@ const prepareContract = async ([wallet, other], provider) => {
   //*---------------------------------------------------------------------------
   //* Deploy iterableMap library smart contract.
   //*---------------------------------------------------------------------------
-  console.log("Start to deploy rentMarket.");
+  // console.log("Start to deploy rentMarket.");
   const pendingRentFeeIterableMapContract = await ethers.getContractFactory(
     "pendingRentFeeIterableMap"
   );
@@ -491,73 +483,41 @@ async function erc20PermitSignature({
     const transactionDeadline = Date.now() + 20 * 60;
     // console.log("transactionDeadline: ", transactionDeadline);
     const nonce = await contract.nonces(owner);
-    console.log("nonce: ", nonce);
+    // console.log("nonce: ", nonce);
     const contractName = await contract.name();
-    console.log("contractName: ", contractName);
-    const EIP712Domain = [
-      { name: "name", type: "string" },
-      { name: "version", type: "string" },
-      { name: "chainId", type: "uint256" },
-      { name: "verifyingContract", type: "address" },
-    ];
-    // console.log("chain: ", chain);
+    // console.log("contractName: ", contractName);
+
     const domain = {
       name: contractName,
       version: "1",
       chainId: 1337,
       verifyingContract: contract.address,
     };
-    const Permit = [
-      { name: "owner", type: "address" },
-      { name: "spender", type: "address" },
-      { name: "value", type: "uint256" },
-      { name: "nonce", type: "uint256" },
-      { name: "deadline", type: "uint256" },
-    ];
-    const message = {
+    const types = {
+      Permit: [
+        { name: "owner", type: "address" },
+        { name: "spender", type: "address" },
+        { name: "value", type: "uint256" },
+        { name: "nonce", type: "uint256" },
+        { name: "deadline", type: "uint256" },
+      ],
+    };
+    const value = {
       owner,
       spender,
       value: amount.toString(),
       nonce: nonce.toHexString(),
       deadline: transactionDeadline,
     };
-    const msgParams = JSON.stringify({
-      types: {
-        EIP712Domain,
-        Permit,
-      },
-      domain,
-      primaryType: "Permit",
-      message,
-    });
 
-    // const params = [owner, msgParams];
-    // const method = "eth_signTypedData_v4";
-    // // console.log("params: ", params);
-    // // console.log("method: ", method);
-    // const signature = await ethereum.request({
-    //   method,
-    //   params,
-    // });
-
-    const signature = signTypedData({
-      privateKey: process.env.ACCOUNT_PRIVATE_KEY,
-      data: {
-        types: {
-          EIP712Domain,
-          Permit,
-        },
-        domain,
-        primaryType: "Permit",
-        message,
-      },
-      version: SignTypedDataVersion.V4,
-    });
-    console.log("signature: ", signature);
+    const signature = await signer._signTypedData(domain, types, value);
+    // console.log("signature: ", signature);
 
     const signData = splitSignature(signature);
-    console.log("signData: ", signData);
+    // console.log("signData: ", signData);
+
     const { r, s, v } = signData;
+
     return {
       r,
       s,
