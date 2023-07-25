@@ -90,17 +90,14 @@ loop_count=5
 
 if [ "$mode" = "prompt" ]; then
 	echo "-- prompt mode"
-	exclusive=false
 	nft_name="promptNFT"
 	nft_symbol="PNT"
 elif [ "$mode" = "rent" ]; then
 	echo "-- rent mode"
-	exclusive=true
 	nft_name="rentNFT"
 	nft_symbol="RNT"
 else
 	echo "-- else mode"
-	exclusive=true
 	nft_name="rentNFT"
 	nft_symbol="RNT"
 fi
@@ -109,7 +106,7 @@ token_symbol="TTT"
 
 # Deploy rentMarket and testNFT contract.
 echo "-- Deploy rentMarket"
-hh deployRentMarket --contract rentMarket --exclusive $exclusive
+hh deployRentMarket --contract rentMarket
 #hh verify $deployed_contract_address
 
 echo "-- Deploy NFT"

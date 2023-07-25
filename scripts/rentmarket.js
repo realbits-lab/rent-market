@@ -3,18 +3,6 @@ const { BigNumber } = require("ethers");
 const { getRentMarketContract, isEmpty } = require("./utils");
 
 //------------------------------------------------------------------------------
-//---------------------------------- CONSTRUCTOR -------------------------------
-//------------------------------------------------------------------------------
-
-task("exclusive", "Get exclusive bool flag.")
-  .addParam("contract", "Contract name")
-  .setAction(async function (taskArguments, hre) {
-    const contract = await getRentMarketContract(taskArguments.contract, hre);
-    const response = await contract.exclusive();
-    console.log("exclusive: ", response);
-  });
-
-//------------------------------------------------------------------------------
 //---------------------------------- TOKEN FLOW ------------------------------
 //------------------------------------------------------------------------------
 

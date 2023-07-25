@@ -157,10 +157,9 @@ const prepareContract = async ([wallet, other], provider) => {
     }
   );
 
-  const exclusive = true;
   const rentMarketContract = await rentMarketContractFactory
     .connect(rentMarketContractSigner)
-    .deploy(exclusive);
+    .deploy();
   const rentMarketContractDeployedResponse =
     await rentMarketContract.deployed();
   // console.log(
