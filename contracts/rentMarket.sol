@@ -103,14 +103,9 @@ contract rentMarket is Ownable, Pausable {
     struct Variable {
         uint256 previousRentDuration;
         uint256 balance;
+        address serviceAddress;
         address ownerAddress;
         bool response;
-    }
-
-    struct Signature {
-        uint8 v;
-        bytes32 r;
-        bytes32 s;
     }
 
     //*-------------------------------------------------------------------------
@@ -875,7 +870,9 @@ contract rentMarket is Ownable, Pausable {
         uint256 tokenId,
         address serviceAddress,
         uint256 deadline,
-        Signature memory signature
+        uint8 v,
+        bytes32 r,
+        bytes32 s
     ) public payable whenNotPaused {
         //* Check the nftAddress and tokenId containing in register NFT data.
         require(registerDataItMap.contains(nftAddress, tokenId) == true, "RM7");
@@ -887,6 +884,7 @@ contract rentMarket is Ownable, Pausable {
         require(msg.value == 0, "RM13");
 
         Variable memory variable;
+        variable.serviceAddress = serviceAddress;
 
         //* Get data.
         variable.ownerAddress = getNFTOwner(nftAddress, tokenId);
@@ -903,9 +901,9 @@ contract rentMarket is Ownable, Pausable {
             address(this),
             data.rentFeeByToken,
             deadline,
-            signature.v,
-            signature.r,
-            signature.s
+            v,
+            r,
+            s
         );
 
         //* Send erc20 token to rentMarket contract.
@@ -953,7 +951,7 @@ contract rentMarket is Ownable, Pausable {
             data.rentDuration,
             variable.ownerAddress,
             msg.sender,
-            serviceAddress,
+            variable.serviceAddress,
             rentData.rentStartTimestamp
         );
     }
