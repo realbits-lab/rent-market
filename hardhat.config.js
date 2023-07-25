@@ -7,7 +7,7 @@ require("solidity-docgen");
 
 require("./scripts/deploy.js");
 require("./scripts/nft.js");
-require("./scripts/rent.js");
+require("./scripts/rentmarket.js");
 require("./scripts/token.js");
 
 const {

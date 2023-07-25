@@ -1,6 +1,10 @@
 const { ethers } = require("hardhat");
 const { BigNumber } = ethers;
-const { parseEther, formatEther } = ethers.utils;
+const { parseEther, formatEther, splitSignature } = ethers.utils;
+const {
+  signTypedData,
+  SignTypedDataVersion,
+} = require("@metamask/eth-sig-util");
 const { loadFixture, deployContract } = require("ethereum-waffle");
 
 //* We suppose that.
@@ -68,6 +72,7 @@ const prepareContract = async ([wallet, other], provider) => {
   //*---------------------------------------------------------------------------
   //* Deploy iterableMap library smart contract.
   //*---------------------------------------------------------------------------
+  console.log("Start to deploy rentMarket.");
   const pendingRentFeeIterableMapContract = await ethers.getContractFactory(
     "pendingRentFeeIterableMap"
   );
@@ -109,11 +114,6 @@ const prepareContract = async ([wallet, other], provider) => {
   );
   const rentDataIterableMapLibrary = await rentDataIterableMapContract.deploy();
 
-  // const balanceSnapshotLibContract = await ethers.getContractFactory(
-  //   "balanceSnapshotLib"
-  // );
-  // const balanceSnapshotLibrary = await balanceSnapshotLibContract.deploy();
-
   await pendingRentFeeIterableMapLibrary.deployed();
   await tokenDataIterableMapLibrary.deployed();
   await accountBalanceIterableMapLibrary.deployed();
@@ -121,7 +121,6 @@ const prepareContract = async ([wallet, other], provider) => {
   await serviceDataIterableMapLibrary.deployed();
   await registerDataIterableMapLibrary.deployed();
   await rentDataIterableMapLibrary.deployed();
-  // await balanceSnapshotLibrary.deployed();
 
   //*---------------------------------------------------------------------------
   //* Deploy rentMarket smart contract.
@@ -150,10 +149,9 @@ const prepareContract = async ([wallet, other], provider) => {
   );
 
   // https://docs.ethers.io/v4/api-contract.html
-  const exclusive = false;
   rentMarketContract = await rentMarketContractFactory
     .connect(rentMarketContractOwnerSigner)
-    .deploy(exclusive);
+    .deploy();
   response = await rentMarketContract.deployed();
   // console.log("rentMarket deployed address: ", response.address);
 
@@ -166,7 +164,6 @@ const prepareContract = async ([wallet, other], provider) => {
     .connect(testNFTContractOwnerSigner)
     .deploy(NFT_NAME, NFT_SYMBOL, NFT_BASE_URI);
   response = await testNFTContract.deployed();
-  // console.log("testNFT deployed address: ", response.address);
 
   //*---------------------------------------------------------------------------
   //* Deploy testToken contract.
@@ -477,6 +474,102 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+async function erc20PermitSignature({
+  owner,
+  spender,
+  amount,
+  contract,
+  signer,
+}) {
+  // console.log("call erc20PermitSignature()");
+  // console.log("owner: ", owner);
+  // console.log("spender: ", spender);
+  // console.log("amount: ", amount);
+
+  try {
+    //* Deadline is 20 minutes later from current timestamp.
+    const transactionDeadline = Date.now() + 20 * 60;
+    // console.log("transactionDeadline: ", transactionDeadline);
+    const nonce = await contract.nonces(owner);
+    console.log("nonce: ", nonce);
+    const contractName = await contract.name();
+    console.log("contractName: ", contractName);
+    const EIP712Domain = [
+      { name: "name", type: "string" },
+      { name: "version", type: "string" },
+      { name: "chainId", type: "uint256" },
+      { name: "verifyingContract", type: "address" },
+    ];
+    // console.log("chain: ", chain);
+    const domain = {
+      name: contractName,
+      version: "1",
+      chainId: 1337,
+      verifyingContract: contract.address,
+    };
+    const Permit = [
+      { name: "owner", type: "address" },
+      { name: "spender", type: "address" },
+      { name: "value", type: "uint256" },
+      { name: "nonce", type: "uint256" },
+      { name: "deadline", type: "uint256" },
+    ];
+    const message = {
+      owner,
+      spender,
+      value: amount.toString(),
+      nonce: nonce.toHexString(),
+      deadline: transactionDeadline,
+    };
+    const msgParams = JSON.stringify({
+      types: {
+        EIP712Domain,
+        Permit,
+      },
+      domain,
+      primaryType: "Permit",
+      message,
+    });
+
+    // const params = [owner, msgParams];
+    // const method = "eth_signTypedData_v4";
+    // // console.log("params: ", params);
+    // // console.log("method: ", method);
+    // const signature = await ethereum.request({
+    //   method,
+    //   params,
+    // });
+
+    const signature = signTypedData({
+      privateKey: process.env.ACCOUNT_PRIVATE_KEY,
+      data: {
+        types: {
+          EIP712Domain,
+          Permit,
+        },
+        domain,
+        primaryType: "Permit",
+        message,
+      },
+      version: SignTypedDataVersion.V4,
+    });
+    console.log("signature: ", signature);
+
+    const signData = splitSignature(signature);
+    console.log("signData: ", signData);
+    const { r, s, v } = signData;
+    return {
+      r,
+      s,
+      v,
+      deadline: transactionDeadline,
+    };
+  } catch (error) {
+    console.error("error: ", error);
+    return error;
+  }
+}
+
 module.exports = {
   initializeBeforeEach,
   registerNFT,
@@ -486,4 +579,5 @@ module.exports = {
   defaultFeeToken,
   defaultRentFeeByToken,
   defaultRentDuration,
+  erc20PermitSignature,
 };

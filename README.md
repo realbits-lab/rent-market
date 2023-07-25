@@ -61,5 +61,5 @@ foo@bar:~$ npm run build:production
 ## Deploy rent market contract
 
 - check NETWORK in .env
-- hh deployRentMarket --contract rentMarket --exclusive {true|false}
+- hh deployRentMarket --contract rentMarket
 - Change NEXT_PUBLIC_RENT_MARKET_CONTRACT_ADDRESS in rent-content .env
