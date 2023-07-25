@@ -37,7 +37,7 @@ import "./balanceSnapshotLib.sol";
 //* RM20 : Fee token address is not registered.
 //* RM21 : NFT token is not existed.
 //* RM22 : NFT should be registered to market as collection.
-//* RM23 : Allowance is under the rent fee by token.
+//* RM23 : Balance is under the rent fee by token.
 
 /// @title A rentMarket class.
 /// @author A realbits dev team.
@@ -102,7 +102,7 @@ contract rentMarket is Ownable, Pausable {
     //* Use to avoid stack too deep compile error.
     struct Variable {
         uint256 previousRentDuration;
-        uint256 allowance;
+        uint256 balance;
         address ownerAddress;
         bool response;
     }
@@ -894,6 +894,9 @@ contract rentMarket is Ownable, Pausable {
             .getByNFT(nftAddress, tokenId);
         require(data.feeTokenAddress != address(0), "RM20");
 
+        variable.balance = IERC20(data.feeTokenAddress).balanceOf(msg.sender);
+        require(variable.balance >= data.rentFeeByToken, "RM23");
+
         //* Permit.
         IERC20Permit(data.feeTokenAddress).permit(
             msg.sender,
@@ -1540,85 +1543,4 @@ contract rentMarket is Ownable, Pausable {
             return address(0);
         }
     }
-
-    function isOwnerOrRenter(
-        address account
-    ) public view returns (bool success) {
-        bool response;
-        bytes memory responseData;
-        uint256 totalBalance = 0;
-
-        //* Get all collection and check account's balance per each collection.
-        collectionDataIterableMap.collectionData[]
-            memory collectionArray = getAllCollection();
-        for (uint256 i = 0; i < collectionArray.length; i++) {
-            address nftAddress = collectionArray[i].collectionAddress;
-            (response, responseData) = nftAddress.staticcall(
-                abi.encodeWithSignature("balanceOf(address)", account)
-            );
-            uint256 balance = abi.decode(responseData, (uint256));
-            totalBalance += balance;
-        }
-
-        if (totalBalance > 0) {
-            //* Account has ownership of one of collection NFT, at least.
-            return true;
-        }
-
-        //* Get all rent data and check account is included in them.
-        rentDataIterableMap.rentData[] memory rentDataArray = getAllRentData();
-        // console.log("account: ", account);
-        for (uint256 i = 0; i < rentDataArray.length; i++) {
-            address renteeAddress = rentDataArray[i].renteeAddress;
-            // console.log("renteeAddress: ", renteeAddress);
-            if (renteeAddress == account) {
-                // Account has rent one of registered NFT, at least.
-                return true;
-            }
-        }
-
-        //* Return result.
-        return false;
-    }
-
-    //* TODO: Handle later.
-    //* TODO: The vesting distribution algorithm does not use snapshot.
-    // function getCurrentSnapshotId() public view returns (uint256) {
-    //     return balanceSnapshot.getCurrentSnapshotId();
-    // }
-
-    // function makeSnapshot() public onlyOwner whenNotPaused returns (uint256) {
-    //     return balanceSnapshot.makeSnapshot();
-    // }
-
-    // function updateAccountBalance(
-    //     bool isRentByToken,
-    //     address accountAddress,
-    //     address tokenAddress
-    // ) private {
-    //     if (isRentByToken == true) {
-    //         balanceSnapshot.updateAccountBalance(
-    //             accountAddress,
-    //             0,
-    //             accountBalanceItMap.getAmount(accountAddress, tokenAddress)
-    //         );
-    //     } else {
-    //         balanceSnapshot.updateAccountBalance(
-    //             accountAddress,
-    //             accountBalanceItMap.getAmount(accountAddress, address(0)),
-    //             0
-    //         );
-    //     }
-    // }
-
-    // function balanceOfAt(
-    //     address accountAddress,
-    //     uint256 snapshotId
-    // )
-    //     public
-    //     view
-    //     returns (bool found, uint256 balance, uint256 balanceByToken)
-    // {
-    //     return balanceSnapshot.balanceOfAt(accountAddress, snapshotId);
-    // }
 }
