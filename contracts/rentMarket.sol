@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/draft-IERC20Permit.sol";
 import "hardhat/console.sol";
 import "./iterableMapLib.sol";
 import "./IRentNFT.sol";
@@ -104,6 +105,12 @@ contract rentMarket is Ownable, Pausable {
         uint256 allowance;
         address ownerAddress;
         bool response;
+    }
+
+    struct Signature {
+        uint8 v;
+        bytes32 r;
+        bytes32 s;
     }
 
     //*-------------------------------------------------------------------------
@@ -866,8 +873,10 @@ contract rentMarket is Ownable, Pausable {
     function rentNFTByToken(
         address nftAddress,
         uint256 tokenId,
-        address serviceAddress
-    ) public payable whenNotPaused returns (bool success) {
+        address serviceAddress,
+        uint256 deadline,
+        Signature memory signature
+    ) public payable whenNotPaused {
         //* Check the nftAddress and tokenId containing in register NFT data.
         require(registerDataItMap.contains(nftAddress, tokenId) == true, "RM7");
 
@@ -885,24 +894,23 @@ contract rentMarket is Ownable, Pausable {
             .getByNFT(nftAddress, tokenId);
         require(data.feeTokenAddress != address(0), "RM20");
 
-        //* Check the data.rentFeeByToken amount of msg.sender in data.rentFeeByToken.
-        variable.allowance = IERC20(data.feeTokenAddress).allowance(
+        //* Permit.
+        IERC20Permit(data.feeTokenAddress).permit(
             msg.sender,
-            address(this)
+            address(this),
+            data.rentFeeByToken,
+            deadline,
+            signature.v,
+            signature.r,
+            signature.s
         );
-        require(variable.allowance >= data.rentFeeByToken, "RM23");
 
-        //* Send erc20 token to rentMarket contract
-        variable.response = IERC20(data.feeTokenAddress).transferFrom(
+        //* Send erc20 token to rentMarket contract.
+        IERC20(data.feeTokenAddress).transferFrom(
             msg.sender,
             address(this),
             data.rentFeeByToken
         );
-        // console.log("variable.response: ", variable.response);
-
-        if (variable.response == false) {
-            return false;
-        }
 
         //* Add rentDataItMap.
         //* Set isRentByToken to be true.
@@ -945,8 +953,6 @@ contract rentMarket is Ownable, Pausable {
             serviceAddress,
             rentData.rentStartTimestamp
         );
-
-        return true;
     }
 
     /// @dev Unrent NFT
