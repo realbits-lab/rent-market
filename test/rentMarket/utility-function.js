@@ -1,6 +1,10 @@
 const { ethers } = require("hardhat");
 const { BigNumber } = ethers;
-const { parseEther, formatEther } = ethers.utils;
+const { parseEther, formatEther, splitSignature } = ethers.utils;
+const {
+  signTypedData,
+  SignTypedDataVersion,
+} = require("@metamask/eth-sig-util");
 const { loadFixture, deployContract } = require("ethereum-waffle");
 
 //* We suppose that.
@@ -470,7 +474,13 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function erc20PermitSignature({ owner, spender, amount, contract }) {
+async function erc20PermitSignature({
+  owner,
+  spender,
+  amount,
+  contract,
+  signer,
+}) {
   // console.log("call erc20PermitSignature()");
   // console.log("owner: ", owner);
   // console.log("spender: ", spender);
@@ -480,10 +490,10 @@ async function erc20PermitSignature({ owner, spender, amount, contract }) {
     //* Deadline is 20 minutes later from current timestamp.
     const transactionDeadline = Date.now() + 20 * 60;
     // console.log("transactionDeadline: ", transactionDeadline);
-    const nonce = await contract.nonces({ args: [owner] });
-    // console.log("nonce: ", nonce);
+    const nonce = await contract.nonces(owner);
+    console.log("nonce: ", nonce);
     const contractName = await contract.name();
-    // console.log("contractName: ", contractName);
+    console.log("contractName: ", contractName);
     const EIP712Domain = [
       { name: "name", type: "string" },
       { name: "version", type: "string" },
@@ -494,7 +504,7 @@ async function erc20PermitSignature({ owner, spender, amount, contract }) {
     const domain = {
       name: contractName,
       version: "1",
-      chainId: chain.id,
+      chainId: 1337,
       verifyingContract: contract.address,
     };
     const Permit = [
@@ -508,7 +518,7 @@ async function erc20PermitSignature({ owner, spender, amount, contract }) {
       owner,
       spender,
       value: amount.toString(),
-      nonce: nonce.toString(16),
+      nonce: nonce.toHexString(),
       deadline: transactionDeadline,
     };
     const msgParams = JSON.stringify({
@@ -521,16 +531,32 @@ async function erc20PermitSignature({ owner, spender, amount, contract }) {
       message,
     });
 
-    const params = [address, msgParams];
-    const method = "eth_signTypedData_v4";
-    // console.log("params: ", params);
-    // console.log("method: ", method);
-    const signature = await ethereum.request({
-      method,
-      params,
+    // const params = [owner, msgParams];
+    // const method = "eth_signTypedData_v4";
+    // // console.log("params: ", params);
+    // // console.log("method: ", method);
+    // const signature = await ethereum.request({
+    //   method,
+    //   params,
+    // });
+
+    const signature = signTypedData({
+      privateKey: process.env.ACCOUNT_PRIVATE_KEY,
+      data: {
+        types: {
+          EIP712Domain,
+          Permit,
+        },
+        domain,
+        primaryType: "Permit",
+        message,
+      },
+      version: SignTypedDataVersion.V4,
     });
-    // console.log("signature: ", signature);
-    const signData = utils.splitSignature(signature);
+    console.log("signature: ", signature);
+
+    const signData = splitSignature(signature);
+    console.log("signData: ", signData);
     const { r, s, v } = signData;
     return {
       r,

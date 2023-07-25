@@ -108,6 +108,7 @@ describe("test rentNFTByToken true case.", function () {
       spender: rentMarketContract.address,
       amount: rentFeeByToken,
       contract: testTokenContract,
+      signer: userSigner,
     });
 
     console.log("Start to rentNFTByToken");
