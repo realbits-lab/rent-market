@@ -92,6 +92,7 @@ describe("test rentNFTByToken true case.", function () {
       .transfer(userSigner.address, rentFeeByToken);
     await tx.wait();
 
+		//* TODO: Change approve to permit.
     tx = await testTokenContract
       .connect(rentMarketContractOwnerSigner)
       .approve(rentMarketContract.address, rentFeeByToken);

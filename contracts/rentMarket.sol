@@ -36,6 +36,7 @@ import "./balanceSnapshotLib.sol";
 //* RM20 : Fee token address is not registered.
 //* RM21 : NFT token is not existed.
 //* RM22 : NFT should be registered to market as collection.
+//* RM23 : Allowance is under the rent fee by token.
 
 /// @title A rentMarket class.
 /// @author A realbits dev team.
@@ -97,13 +98,10 @@ contract rentMarket is Ownable, Pausable {
     //* Data for balance snapshot of renter, service, and market account.
     balanceSnapshotLib.balanceSnapshotData balanceSnapshot;
 
-    //* Exclusive rent flag.
-    //* In case of renting prompt NFT, the same NFT can be rented many times simultaneously.
-    bool public exclusive;
-
     //* Use to avoid stack too deep compile error.
     struct Variable {
         uint256 previousRentDuration;
+        uint256 allowance;
         address ownerAddress;
         bool response;
     }
@@ -128,10 +126,8 @@ contract rentMarket is Ownable, Pausable {
     //*-------------------------------------------------------------------------
 
     //* Set market share address to this self contract address.
-    constructor(bool exclusive_) {
+    constructor() {
         MARKET_SHARE_ADDRESS = msg.sender;
-        // console.log("exclusive_: ", exclusive_);
-        exclusive = exclusive_;
     }
 
     event Fallback(address indexed sender);
@@ -794,14 +790,6 @@ contract rentMarket is Ownable, Pausable {
         //* Check the service address is registered.
         require(serviceItMap.contains(serviceAddress) == true, "RM6");
 
-        //* Check the nftAddress and tokenId is rented only in case of exclusive rent mode.
-        if (exclusive == true) {
-            require(
-                rentDataItMap.contains(nftAddress, tokenId) == false,
-                "RM9"
-            );
-        }
-
         //* Check rent fee is the same as rentFee.
         //* msg.value is on wei unit.
         require(
@@ -882,28 +870,37 @@ contract rentMarket is Ownable, Pausable {
     ) public payable whenNotPaused returns (bool success) {
         //* Check the nftAddress and tokenId containing in register NFT data.
         require(registerDataItMap.contains(nftAddress, tokenId) == true, "RM7");
+
         //* Check the service address containing in service data.
         require(serviceItMap.contains(serviceAddress) == true, "RM6");
-        //* Check the nftAddress and tokenId containing in rent NFT data.
-        require(rentDataItMap.contains(nftAddress, tokenId) == false, "RM9");
+
         //* In case of erc20 payment, msg.value should zero.
         require(msg.value == 0, "RM13");
 
+        Variable memory variable;
+
         //* Get data.
-        address ownerAddress = getNFTOwner(nftAddress, tokenId);
+        variable.ownerAddress = getNFTOwner(nftAddress, tokenId);
         registerDataIterableMap.registerData memory data = registerDataItMap
             .getByNFT(nftAddress, tokenId);
         require(data.feeTokenAddress != address(0), "RM20");
 
+        //* Check the data.rentFeeByToken amount of msg.sender in data.rentFeeByToken.
+        variable.allowance = IERC20(data.feeTokenAddress).allowance(
+            msg.sender,
+            address(this)
+        );
+        require(variable.allowance >= data.rentFeeByToken, "RM23");
+
         //* Send erc20 token to rentMarket contract
-        bool transferFromResponse = IERC20(data.feeTokenAddress).transferFrom(
+        variable.response = IERC20(data.feeTokenAddress).transferFrom(
             msg.sender,
             address(this),
             data.rentFeeByToken
         );
-        // console.log("transferFromResponse: ", transferFromResponse);
+        // console.log("variable.response: ", variable.response);
 
-        if (transferFromResponse == false) {
+        if (variable.response == false) {
             return false;
         }
 
@@ -917,7 +914,7 @@ contract rentMarket is Ownable, Pausable {
         rentData.rentFeeByToken = data.rentFeeByToken;
         rentData.isRentByToken = true;
         rentData.rentDuration = data.rentDuration;
-        rentData.renterAddress = ownerAddress;
+        rentData.renterAddress = variable.ownerAddress;
         rentData.renteeAddress = msg.sender;
         rentData.serviceAddress = serviceAddress;
         rentData.rentStartTimestamp = block.timestamp;
@@ -928,7 +925,7 @@ contract rentMarket is Ownable, Pausable {
         // console.log("data.feeTokenAddress: ", data.feeTokenAddress);
         // console.log("data.rentFeeByToken: ", data.rentFeeByToken);
         pendingRentFeeMap.add(
-            ownerAddress,
+            variable.ownerAddress,
             serviceAddress,
             data.feeTokenAddress,
             data.rentFeeByToken
@@ -943,7 +940,7 @@ contract rentMarket is Ownable, Pausable {
             data.rentFeeByToken,
             true,
             data.rentDuration,
-            ownerAddress,
+            variable.ownerAddress,
             msg.sender,
             serviceAddress,
             rentData.rentStartTimestamp
