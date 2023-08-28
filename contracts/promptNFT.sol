@@ -22,13 +22,15 @@ contract promptNFT is
     ERC721Burnable
 {
     using Counters for Counters.Counter;
-    
+
     /// @dev Version.
     string public VERSION = "0.0.5";
 
     Counters.Counter private _tokenIdCounter;
 
     rentMarket private rentMarketContract;
+
+    address private rentMarketContractAddress;
 
     struct encryptData {
         string version;
@@ -73,11 +75,17 @@ contract promptNFT is
         string memory symbol_,
         address payable rentMarketContractAddress_
     ) ERC721(name_, symbol_) {
-        rentMarketContract = rentMarket(rentMarketContractAddress_);
-
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(PAUSER_ROLE, msg.sender);
+        _grantRole(CHANGER_ROLE, msg.sender);
         _grantRole(PROMPTER_ROLE, msg.sender);
+
+        changeRentMarketContract(rentMarketContractAddress_);
+    }
+
+    /// @dev Get rent market contract address.
+    function getRentMarketContractAddress() public view returns (address) {
+        return rentMarketContractAddress;
     }
 
     /// @notice Change rent market contract with input address
@@ -87,6 +95,7 @@ contract promptNFT is
         address payable rentMarketContractAddress_
     ) public onlyRole(CHANGER_ROLE) {
         rentMarketContract = rentMarket(rentMarketContractAddress_);
+        rentMarketContractAddress = rentMarketContractAddress_;
     }
 
     /// @notice Pause this NFT
