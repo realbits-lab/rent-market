@@ -13,6 +13,9 @@ import "@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol";
 ///
 /// The total 1 billion tokens are made when deployer calls constructor.
 contract rewardToken is ERC20, ERC20Permit {
+    /// @dev Version.
+    string public VERSION = "0.0.5";
+
     /// @dev Reward token released event.
     event RewardTokenReleased(uint256 amount);
 

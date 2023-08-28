@@ -2273,6 +2273,7 @@ contract rentNFT is
         _grantRole(REGISTER_ROLE, msg.sender);
     }
 
+    /// @notice Register can register NFT even though register is not the owner of the NFT.
     function checkRegisterRole(address registerAddress)
         public
         view

@@ -22,6 +22,9 @@ contract promptNFT is
     ERC721Burnable
 {
     using Counters for Counters.Counter;
+    
+    /// @dev Version.
+    string public VERSION = "0.0.5";
 
     Counters.Counter private _tokenIdCounter;
 

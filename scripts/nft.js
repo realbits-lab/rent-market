@@ -342,3 +342,50 @@ task("decryptByContarctOwner", "Decyrypt prompt by contract owner private key.")
     });
     console.log("contractOwnerDecryptResult: ", contractOwnerDecryptResult);
   });
+
+task("hasRole", "Check role ownership.")
+  .addParam("contract", "The contract name.")
+  .addParam("role", "Role hex value.")
+  .addParam("account", "Account address.")
+  .setAction(async function (taskArguments, hre) {
+    const contract = await getNFTContract(taskArguments.contract, hre);
+    const response = await contract.hasRole(
+      taskArguments.role,
+      taskArguments.account
+    );
+
+    console.log("response: ", response);
+  });
+
+task("grantRole", "Grant role ownership.")
+  .addParam("contract", "The contract name.")
+  .addParam("role", "Role hex value.")
+  .addParam("account", "Account address.")
+  .setAction(async function (taskArguments, hre) {
+    const contract = await getNFTContract(taskArguments.contract, hre);
+    const tx = await contract.grantRole(
+      taskArguments.role,
+      taskArguments.account
+    );
+    const receipt = await tx.wait();
+
+    console.log("receipt: ", receipt);
+  });
+
+task("PROMPTER_ROLE", "Get prompter role.")
+  .addParam("contract", "The contract name.")
+  .setAction(async function (taskArguments, hre) {
+    const contract = await getNFTContract(taskArguments.contract, hre);
+    const response = await contract.PROMPTER_ROLE();
+
+    console.log("response: ", response);
+  });
+
+task("REGISTER_ROLE", "Get register role.")
+  .addParam("contract", "The contract name.")
+  .setAction(async function (taskArguments, hre) {
+    const contract = await getNFTContract(taskArguments.contract, hre);
+    const response = await contract.REGISTER_ROLE();
+
+    console.log("response: ", response);
+  });

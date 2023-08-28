@@ -9,6 +9,7 @@ import "./rewardToken.sol";
 /// @dev All function calls are currently being tested.
 contract faucetToken is rewardToken {
     uint256 private immutable FAUCET_AMOUNT = 100 ether;
+
     event Faucet(uint256 amount);
 
     constructor(

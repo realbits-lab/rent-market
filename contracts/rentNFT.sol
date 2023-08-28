@@ -23,6 +23,9 @@ contract rentNFT is
 {
     using Counters for Counters.Counter;
 
+    /// @dev Version.
+    string public VERSION = "0.0.5";
+
     /// @notice Token ID counter variable
     /// @dev Token ID counter variable
     Counters.Counter private _tokenIdCounter;

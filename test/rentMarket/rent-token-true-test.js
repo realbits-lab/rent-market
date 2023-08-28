@@ -1,6 +1,10 @@
 const { expect } = require("chai");
 const { BigNumber } = require("ethers");
-const { initializeBeforeEach, registerNFT } = require("./utility-function");
+const {
+  initializeBeforeEach,
+  registerNFT,
+  erc20PermitSignature,
+} = require("./utility-function");
 
 describe("test rentNFTByToken true case.", function () {
   let // Signer values.
@@ -15,18 +19,17 @@ describe("test rentNFTByToken true case.", function () {
     testTokenContract;
 
   beforeEach(async function () {
-    // 1. Initialize contract and data.
-    // - 1-1. Deploy smart contracts with fixture and mint NFT.
-    // - 1-2. Remove all data and register service and collection.
-    // - 1-3. Register token.
-    // - 1-4. Register collection.
-    // - 1-5. Register service.
+    //* Initialize contract and data.
+    //* - Deploy smart contracts with fixture and mint NFT.
+    //* - Remove all data and register service and collection.
+    //* - Register token.
+    //* - Register collection.
+    //* - Register service.
     const response = await initializeBeforeEach();
-    // print({ response });
 
-    // 2. Set each returned value.
+    //* Set each returned value.
     ({
-      // Signer values.
+      //* Signer values.
       rentMarketContractOwnerSigner,
       testNFTContractOwnerSigner,
       serviceContractOwnerSigner,
@@ -45,7 +48,7 @@ describe("test rentNFTByToken true case.", function () {
     const endTokenId = 1;
     const rentFeeByToken = BigNumber.from(100);
 
-    // 1. Register NFT to rent market.
+    //* Register NFT to rent market.
     await registerNFT({
       rentMarketContract,
       testNFTContract,
@@ -54,7 +57,7 @@ describe("test rentNFTByToken true case.", function () {
       endTokenId: endTokenId,
     });
 
-    // Get register NFT data.
+    //* Get register NFT data.
     response = await rentMarketContract
       .connect(userSigner)
       .getRegisterData(testNFTContract.address, startTokenId);
@@ -67,7 +70,7 @@ describe("test rentNFTByToken true case.", function () {
     //     uint256 rentDuration;
     // }
 
-    // Change NFT.
+    //* Set rent fee by token with rentFeeByToken.
     await rentMarketContract
       .connect(testNFTContractOwnerSigner)
       .changeNFT(
@@ -78,6 +81,8 @@ describe("test rentNFTByToken true case.", function () {
         rentFeeByToken,
         response["rentDuration"]
       );
+    const rentFee = response["rentFee"];
+    const rentDuration = response["rentDuration"];
 
     // const ownerBalance = await testToken
     //   .connect(owner)
@@ -85,49 +90,65 @@ describe("test rentNFTByToken true case.", function () {
     // const totalSupply = await testToken.connect(owner).totalSupply();
     // const userBalance = await testToken.connect(owner).balanceOf(user.address);
 
-    // Rent NFT.
-    // test token owner is equal to market owner.
+    //* Send rentFeeByToken amount to userSigner from testTokenContract.
+    // console.log("Start to transfer");
     tx = await testTokenContract
       .connect(rentMarketContractOwnerSigner)
       .transfer(userSigner.address, rentFeeByToken);
     await tx.wait();
 
-    tx = await testTokenContract
-      .connect(rentMarketContractOwnerSigner)
-      .approve(rentMarketContract.address, rentFeeByToken);
-    await tx.wait();
+    //* Make signature.
+    // console.log("Start to sign");
+    const { r, s, v, deadline } = await erc20PermitSignature({
+      owner: userSigner.address,
+      spender: rentMarketContract.address,
+      amount: rentFeeByToken,
+      contract: testTokenContract,
+      signer: userSigner,
+    });
 
+    //* Rent NFT by token.
+    // console.log("Start to rentNFTByToken");
     tx = await rentMarketContract
       .connect(userSigner)
       .rentNFTByToken(
         testNFTContract.address,
         startTokenId,
-        serviceContractOwnerSigner.address
+        serviceContractOwnerSigner.address,
+        deadline,
+        v,
+        r,
+        s
       );
     await tx.wait();
 
-    // user spend all token.
-    // erc20 approve should be zero.
-    expect(
-      await testTokenContract.allowance(
-        userSigner.address,
-        rentMarketContract.address
-      )
-    ).to.be.equal(BigNumber.from(0));
+    //* Check allowance is zero.
+    const allowance = await testTokenContract.allowance(
+      userSigner.address,
+      rentMarketContract.address
+    );
+    // console.log("allowance: ", allowance);
+    expect(allowance).to.be.equal(BigNumber.from(0));
 
-    // Set renStartTimestamp.
+    //* Check balance is zero.
+    const balance = await testTokenContract.balanceOf(userSigner.address);
+    // console.log("balance: ", balance);
+    expect(balance).to.be.equal(BigNumber.from(0));
+
+    //* Set renStartTimestamp.
     const rentStartTimestamp = BigNumber.from(
       (await ethers.provider.getBlock("latest")).timestamp
     );
 
-    // Check rent data.
+    //* Check rent data.
     response = await rentMarketContract
       .connect(userSigner)
       .getRentData(testNFTContract.address, startTokenId);
     // console.log("response: ", response);
+
     expect(response).to.deep.equal([
       testNFTContract.address,
-      startTokenId,
+      BigNumber.from(startTokenId),
       rentFee,
       testTokenContract.address,
       rentFeeByToken,

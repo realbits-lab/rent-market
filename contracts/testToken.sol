@@ -5,14 +5,19 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol";
 import "hardhat/console.sol";
 
-contract testToken is ERC20, ERC20Burnable, Pausable, Ownable {
-    constructor(string memory name_, string memory symbol_)
-        ERC20(name_, symbol_)
-    {
+contract testToken is ERC20, ERC20Burnable, Pausable, Ownable, ERC20Permit {
+    /// @dev Version.
+    string public VERSION = "0.0.5";
+
+    constructor(
+        string memory name_,
+        string memory symbol_
+    ) ERC20(name_, symbol_) ERC20Permit(name_) {
         // console.log("msg.sender: ", msg.sender);
-        mint(msg.sender, 1_000_000_000 * (10**18));
+        mint(msg.sender, 1_000_000_000 * (10 ** 18));
     }
 
     function pause() public onlyOwner {

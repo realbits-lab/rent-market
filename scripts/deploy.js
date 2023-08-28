@@ -52,9 +52,6 @@ task(
 )
   .addParam("contract", "The contract name.")
   .setAction(async function (taskArguments, hre) {
-    // Sample constructor argument data.
-    const exclusive = false;
-
     // Deploy iterableMap library smart contract.
     console.log("Try to deploy a pendingRentFeeIterableMap.");
     const pendingRentFeeIterableMapContract =
@@ -138,7 +135,7 @@ task(
 
     console.log("Try to get an estimated gas fee.");
     const estimatedGas = await hre.ethers.provider.estimateGas(
-      contractFactory.getDeployTransaction(exclusive)
+      contractFactory.getDeployTransaction()
     );
 
     console.log("estimatedGas: ", estimatedGas);
@@ -221,7 +218,6 @@ task("deployPromptNftContract", "Deploys the promptNFT contract")
 //* Deploy a rentMarket contract with iterableMap libraries.
 task("deployRentMarket", "Deploy the rentMarket contract")
   .addParam("contract", "The contract name to be deployed.")
-  .addParam("exclusive", "The exclusive bool type flag.")
   .setAction(async function (taskArguments, hre) {
     //* Deploy iterableMap library smart contract.
     console.log("Try to deploy a pendingRentFeeIterableMap.");
@@ -305,19 +301,11 @@ task("deployRentMarket", "Deploy the rentMarket contract")
     );
 
     console.log("Try to deploy a rentMarketContract.");
-    console.log("taskArguments.exclusive: ", taskArguments.exclusive);
     let rentMarketContract;
-    if (taskArguments.exclusive === true) {
-      rentMarketContract = await contractFactory.deploy(true, {
-        // gasPrice: hre.ethers.utils.parseUnits("50", "gwei"),
-        // gasLimit: hre.ethers.utils.parseUnits("100", "gwei"),
-      });
-    } else {
-      rentMarketContract = await contractFactory.deploy(false, {
-        // gasPrice: hre.ethers.utils.parseUnits("50", "gwei"),
-        // gasLimit: hre.ethers.utils.parseUnits("100", "gwei"),
-      });
-    }
+    rentMarketContract = await contractFactory.deploy({
+      // gasPrice: hre.ethers.utils.parseUnits("50", "gwei"),
+      // gasLimit: hre.ethers.utils.parseUnits("100", "gwei"),
+    });
 
     console.log(`Contract deployed to address: ${rentMarketContract.address}`);
   });

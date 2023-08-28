@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/draft-IERC20Permit.sol";
 import "hardhat/console.sol";
 import "./iterableMapLib.sol";
 import "./IRentNFT.sol";
@@ -36,6 +37,7 @@ import "./balanceSnapshotLib.sol";
 //* RM20 : Fee token address is not registered.
 //* RM21 : NFT token is not existed.
 //* RM22 : NFT should be registered to market as collection.
+//* RM23 : Balance is under the rent fee by token.
 
 /// @title A rentMarket class.
 /// @author A realbits dev team.
@@ -52,58 +54,59 @@ contract rentMarket is Ownable, Pausable {
     using ERC165Checker for address;
     using balanceSnapshotLib for balanceSnapshotLib.balanceSnapshotData;
 
-    //* Market fee receiver address.
+    /// @dev Version.
+    string public VERSION = "0.0.5";
+
+    /// @dev Market fee receiver address.
     address private MARKET_SHARE_ADDRESS;
 
-    //* Default rent fee 1 ether as ether (1e18) unit.
+    /// @dev Default rent fee 1 ether as ether (1e18) unit.
     uint256 private RENT_FEE = 1 ether;
 
-    //* Default value is 1 day which 60 seconds * 60 minutes * 24 hours.
+    /// @dev Default value is 1 day which 60 seconds * 60 minutes * 24 hours.
     uint256 private RENT_DURATION = 60 * 60 * 24;
 
-    //* Default renter fee quota.
+    /// @dev Default renter fee quota.
     uint256 private RENTER_FEE_QUOTA = 35;
 
-    //* Default service fee quota.
+    /// @dev Default service fee quota.
     uint256 private SERVICE_FEE_QUOTA = 35;
 
-    //* Default market fee quota.
+    /// @dev Default market fee quota.
     uint256 private MARKET_FEE_QUOTA = 30;
 
-    //* Default vesting distribute threshold.
+    /// @dev Default vesting distribute threshold.
     uint256 private _threshold = 100;
 
-    //* Data for token.
+    /// @dev Data for token.
     tokenDataIterableMap.tokenDataMap tokenItMap;
 
-    //* Data for NFT collection.
+    /// @dev Data for NFT collection.
     collectionDataIterableMap.collectionDataMap collectionItMap;
 
-    //* Data for service.
+    /// @dev Data for service.
     serviceDataIterableMap.serviceDataMap serviceItMap;
 
-    //* Data for register and unregister.
+    /// @dev Data for register and unregister.
     registerDataIterableMap.registerDataMap registerDataItMap;
 
-    //* Data for rent and unrent.
+    /// @dev Data for rent and unrent.
     rentDataIterableMap.rentDataMap rentDataItMap;
 
-    //* Accumulated rent fee record map per renter address.
+    /// @dev Accumulated rent fee record map per renter address.
     pendingRentFeeIterableMap.pendingRentFeeMap pendingRentFeeMap;
 
-    //* Data for account balance data when settleRentData.
+    /// @dev Data for account balance data when settleRentData.
     accountBalanceIterableMap.accountBalanceMap accountBalanceItMap;
 
-    //* Data for balance snapshot of renter, service, and market account.
+    /// @dev Data for balance snapshot of renter, service, and market account.
     balanceSnapshotLib.balanceSnapshotData balanceSnapshot;
 
-    //* Exclusive rent flag.
-    //* In case of renting prompt NFT, the same NFT can be rented many times simultaneously.
-    bool public exclusive;
-
-    //* Use to avoid stack too deep compile error.
+    /// @dev Use to avoid stack too deep compile error.
     struct Variable {
         uint256 previousRentDuration;
+        uint256 balance;
+        address serviceAddress;
         address ownerAddress;
         bool response;
     }
@@ -128,10 +131,8 @@ contract rentMarket is Ownable, Pausable {
     //*-------------------------------------------------------------------------
 
     //* Set market share address to this self contract address.
-    constructor(bool exclusive_) {
+    constructor() {
         MARKET_SHARE_ADDRESS = msg.sender;
-        // console.log("exclusive_: ", exclusive_);
-        exclusive = exclusive_;
     }
 
     event Fallback(address indexed sender);
@@ -794,14 +795,6 @@ contract rentMarket is Ownable, Pausable {
         //* Check the service address is registered.
         require(serviceItMap.contains(serviceAddress) == true, "RM6");
 
-        //* Check the nftAddress and tokenId is rented only in case of exclusive rent mode.
-        if (exclusive == true) {
-            require(
-                rentDataItMap.contains(nftAddress, tokenId) == false,
-                "RM9"
-            );
-        }
-
         //* Check rent fee is the same as rentFee.
         //* msg.value is on wei unit.
         require(
@@ -878,34 +871,50 @@ contract rentMarket is Ownable, Pausable {
     function rentNFTByToken(
         address nftAddress,
         uint256 tokenId,
-        address serviceAddress
-    ) public payable whenNotPaused returns (bool success) {
+        address serviceAddress,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) public payable whenNotPaused {
         //* Check the nftAddress and tokenId containing in register NFT data.
         require(registerDataItMap.contains(nftAddress, tokenId) == true, "RM7");
+
         //* Check the service address containing in service data.
         require(serviceItMap.contains(serviceAddress) == true, "RM6");
-        //* Check the nftAddress and tokenId containing in rent NFT data.
-        require(rentDataItMap.contains(nftAddress, tokenId) == false, "RM9");
+
         //* In case of erc20 payment, msg.value should zero.
         require(msg.value == 0, "RM13");
 
+        Variable memory variable;
+        variable.serviceAddress = serviceAddress;
+
         //* Get data.
-        address ownerAddress = getNFTOwner(nftAddress, tokenId);
+        variable.ownerAddress = getNFTOwner(nftAddress, tokenId);
         registerDataIterableMap.registerData memory data = registerDataItMap
             .getByNFT(nftAddress, tokenId);
         require(data.feeTokenAddress != address(0), "RM20");
 
-        //* Send erc20 token to rentMarket contract
-        bool transferFromResponse = IERC20(data.feeTokenAddress).transferFrom(
+        variable.balance = IERC20(data.feeTokenAddress).balanceOf(msg.sender);
+        require(variable.balance >= data.rentFeeByToken, "RM23");
+
+        //* Permit.
+        IERC20Permit(data.feeTokenAddress).permit(
+            msg.sender,
+            address(this),
+            data.rentFeeByToken,
+            deadline,
+            v,
+            r,
+            s
+        );
+
+        //* Send erc20 token to rentMarket contract.
+        IERC20(data.feeTokenAddress).transferFrom(
             msg.sender,
             address(this),
             data.rentFeeByToken
         );
-        // console.log("transferFromResponse: ", transferFromResponse);
-
-        if (transferFromResponse == false) {
-            return false;
-        }
 
         //* Add rentDataItMap.
         //* Set isRentByToken to be true.
@@ -917,7 +926,7 @@ contract rentMarket is Ownable, Pausable {
         rentData.rentFeeByToken = data.rentFeeByToken;
         rentData.isRentByToken = true;
         rentData.rentDuration = data.rentDuration;
-        rentData.renterAddress = ownerAddress;
+        rentData.renterAddress = variable.ownerAddress;
         rentData.renteeAddress = msg.sender;
         rentData.serviceAddress = serviceAddress;
         rentData.rentStartTimestamp = block.timestamp;
@@ -928,7 +937,7 @@ contract rentMarket is Ownable, Pausable {
         // console.log("data.feeTokenAddress: ", data.feeTokenAddress);
         // console.log("data.rentFeeByToken: ", data.rentFeeByToken);
         pendingRentFeeMap.add(
-            ownerAddress,
+            variable.ownerAddress,
             serviceAddress,
             data.feeTokenAddress,
             data.rentFeeByToken
@@ -943,13 +952,11 @@ contract rentMarket is Ownable, Pausable {
             data.rentFeeByToken,
             true,
             data.rentDuration,
-            ownerAddress,
+            variable.ownerAddress,
             msg.sender,
-            serviceAddress,
+            variable.serviceAddress,
             rentData.rentStartTimestamp
         );
-
-        return true;
     }
 
     /// @dev Unrent NFT
@@ -1537,85 +1544,4 @@ contract rentMarket is Ownable, Pausable {
             return address(0);
         }
     }
-
-    function isOwnerOrRenter(
-        address account
-    ) public view returns (bool success) {
-        bool response;
-        bytes memory responseData;
-        uint256 totalBalance = 0;
-
-        //* Get all collection and check account's balance per each collection.
-        collectionDataIterableMap.collectionData[]
-            memory collectionArray = getAllCollection();
-        for (uint256 i = 0; i < collectionArray.length; i++) {
-            address nftAddress = collectionArray[i].collectionAddress;
-            (response, responseData) = nftAddress.staticcall(
-                abi.encodeWithSignature("balanceOf(address)", account)
-            );
-            uint256 balance = abi.decode(responseData, (uint256));
-            totalBalance += balance;
-        }
-
-        if (totalBalance > 0) {
-            //* Account has ownership of one of collection NFT, at least.
-            return true;
-        }
-
-        //* Get all rent data and check account is included in them.
-        rentDataIterableMap.rentData[] memory rentDataArray = getAllRentData();
-        // console.log("account: ", account);
-        for (uint256 i = 0; i < rentDataArray.length; i++) {
-            address renteeAddress = rentDataArray[i].renteeAddress;
-            // console.log("renteeAddress: ", renteeAddress);
-            if (renteeAddress == account) {
-                // Account has rent one of registered NFT, at least.
-                return true;
-            }
-        }
-
-        //* Return result.
-        return false;
-    }
-
-    //* TODO: Handle later.
-    //* TODO: The vesting distribution algorithm does not use snapshot.
-    // function getCurrentSnapshotId() public view returns (uint256) {
-    //     return balanceSnapshot.getCurrentSnapshotId();
-    // }
-
-    // function makeSnapshot() public onlyOwner whenNotPaused returns (uint256) {
-    //     return balanceSnapshot.makeSnapshot();
-    // }
-
-    // function updateAccountBalance(
-    //     bool isRentByToken,
-    //     address accountAddress,
-    //     address tokenAddress
-    // ) private {
-    //     if (isRentByToken == true) {
-    //         balanceSnapshot.updateAccountBalance(
-    //             accountAddress,
-    //             0,
-    //             accountBalanceItMap.getAmount(accountAddress, tokenAddress)
-    //         );
-    //     } else {
-    //         balanceSnapshot.updateAccountBalance(
-    //             accountAddress,
-    //             accountBalanceItMap.getAmount(accountAddress, address(0)),
-    //             0
-    //         );
-    //     }
-    // }
-
-    // function balanceOfAt(
-    //     address accountAddress,
-    //     uint256 snapshotId
-    // )
-    //     public
-    //     view
-    //     returns (bool found, uint256 balance, uint256 balanceByToken)
-    // {
-    //     return balanceSnapshot.balanceOfAt(accountAddress, snapshotId);
-    // }
 }

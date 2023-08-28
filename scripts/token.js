@@ -1,4 +1,5 @@
 const { task } = require("hardhat/config");
+const { utils } = require("ethers");
 const axios = require("axios");
 const {
   decrypt,
@@ -136,4 +137,24 @@ task("removeRentMarketContractAddress", "Remove rent market contract address")
       taskArguments.address
     );
     console.log("tx.hash: ", tx.hash);
+  });
+
+task("allowance", "Get allowance of spender from owner")
+  .addParam("contract", "The contract name")
+  .addParam("owner", "Owner address")
+  .addParam("spender", "Spender address")
+  .setAction(async function (taskArguments, hre) {
+    const contract = await getContractAt(
+      hre,
+      taskArguments.contract,
+      getEnvVariable("REWARD_TOKEN_CONTRACT_ADDRESS"),
+      getAccount()
+    );
+    // console.log("contract: ", contract);
+    const response = await contract.allowance(
+      taskArguments.owner,
+      taskArguments.spender
+    );
+    console.log("response: ", response);
+    console.log("utils.formatEther(response): ", utils.formatEther(response));
   });
