@@ -54,52 +54,55 @@ contract rentMarket is Ownable, Pausable {
     using ERC165Checker for address;
     using balanceSnapshotLib for balanceSnapshotLib.balanceSnapshotData;
 
-    //* Market fee receiver address.
+    /// @dev Version.
+    string public VERSION = "0.0.5";
+
+    /// @dev Market fee receiver address.
     address private MARKET_SHARE_ADDRESS;
 
-    //* Default rent fee 1 ether as ether (1e18) unit.
+    /// @dev Default rent fee 1 ether as ether (1e18) unit.
     uint256 private RENT_FEE = 1 ether;
 
-    //* Default value is 1 day which 60 seconds * 60 minutes * 24 hours.
+    /// @dev Default value is 1 day which 60 seconds * 60 minutes * 24 hours.
     uint256 private RENT_DURATION = 60 * 60 * 24;
 
-    //* Default renter fee quota.
+    /// @dev Default renter fee quota.
     uint256 private RENTER_FEE_QUOTA = 35;
 
-    //* Default service fee quota.
+    /// @dev Default service fee quota.
     uint256 private SERVICE_FEE_QUOTA = 35;
 
-    //* Default market fee quota.
+    /// @dev Default market fee quota.
     uint256 private MARKET_FEE_QUOTA = 30;
 
-    //* Default vesting distribute threshold.
+    /// @dev Default vesting distribute threshold.
     uint256 private _threshold = 100;
 
-    //* Data for token.
+    /// @dev Data for token.
     tokenDataIterableMap.tokenDataMap tokenItMap;
 
-    //* Data for NFT collection.
+    /// @dev Data for NFT collection.
     collectionDataIterableMap.collectionDataMap collectionItMap;
 
-    //* Data for service.
+    /// @dev Data for service.
     serviceDataIterableMap.serviceDataMap serviceItMap;
 
-    //* Data for register and unregister.
+    /// @dev Data for register and unregister.
     registerDataIterableMap.registerDataMap registerDataItMap;
 
-    //* Data for rent and unrent.
+    /// @dev Data for rent and unrent.
     rentDataIterableMap.rentDataMap rentDataItMap;
 
-    //* Accumulated rent fee record map per renter address.
+    /// @dev Accumulated rent fee record map per renter address.
     pendingRentFeeIterableMap.pendingRentFeeMap pendingRentFeeMap;
 
-    //* Data for account balance data when settleRentData.
+    /// @dev Data for account balance data when settleRentData.
     accountBalanceIterableMap.accountBalanceMap accountBalanceItMap;
 
-    //* Data for balance snapshot of renter, service, and market account.
+    /// @dev Data for balance snapshot of renter, service, and market account.
     balanceSnapshotLib.balanceSnapshotData balanceSnapshot;
 
-    //* Use to avoid stack too deep compile error.
+    /// @dev Use to avoid stack too deep compile error.
     struct Variable {
         uint256 previousRentDuration;
         uint256 balance;

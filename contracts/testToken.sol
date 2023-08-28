@@ -9,6 +9,9 @@ import "@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol";
 import "hardhat/console.sol";
 
 contract testToken is ERC20, ERC20Burnable, Pausable, Ownable, ERC20Permit {
+    /// @dev Version.
+    string public VERSION = "0.0.5";
+
     constructor(
         string memory name_,
         string memory symbol_

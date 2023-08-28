@@ -25,6 +25,9 @@ interface IRentMarket {
 /// Send 50% of the vesting token to rentMarket contracts as to their total balance.
 /// each rentMarket contract distribute the receive vesting token to each balance account.
 contract rewardTokenShare is Ownable {
+    /// @dev Version.
+    string public VERSION = "0.0.5";
+
     /// @dev rewardToken contract address.
     address private _rewardTokenContractAddress;
 
