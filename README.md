@@ -63,3 +63,22 @@ foo@bar:~$ npm run build:production
 - check NETWORK in .env
 - hh deployRentMarket --contract rentMarket
 - Change NEXT_PUBLIC_RENT_MARKET_CONTRACT_ADDRESS in rent-content .env
+
+## If you change rent market contract
+
+- Change rent market contract address in prompt-nft .env
+- Change rent market contract address in rent-content .env
+- Change rent market contract address in rent-market .env
+
+- Re-register collection
+- Re-register service
+- Re-register token
+
+- Re-register payment nft
+- Re-register other nfts
+
+- Change rent market address in prompt nft
+
+- Change fictures service configuration
+- Change market service configuration
+- Change other services configuration

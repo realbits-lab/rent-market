@@ -389,3 +389,36 @@ task("REGISTER_ROLE", "Get register role.")
 
     console.log("response: ", response);
   });
+
+task("CHANGER_ROLE", "Get changer role.")
+  .addParam("contract", "The contract name.")
+  .setAction(async function (taskArguments, hre) {
+    const contract = await getNFTContract(taskArguments.contract, hre);
+    const response = await contract.CHANGER_ROLE();
+
+    console.log("response: ", response);
+  });
+
+task(
+  "getRentMarketContractAddress",
+  "Get rent market contract address of promptNFT."
+)
+  .addParam("contract", "The contract name.")
+  .setAction(async function (taskArguments, hre) {
+    const contract = await getNFTContract(taskArguments.contract, hre);
+    const response = await contract.getRentMarketContractAddress();
+
+    console.log("response: ", response);
+  });
+
+task("changeRentMarketContract", "Change rent market contract of promptNFT.")
+  .addParam("contract", "The contract name.")
+  .addParam("address", "The new rent market contract address.")
+  .setAction(async function (taskArguments, hre) {
+    const contract = await getNFTContract(taskArguments.contract, hre);
+    const response = await contract.changeRentMarketContract(
+      taskArguments.address
+    );
+
+    console.log("response: ", response);
+  });

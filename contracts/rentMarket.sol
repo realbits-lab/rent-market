@@ -67,13 +67,13 @@ contract rentMarket is Ownable, Pausable {
     uint256 private RENT_DURATION = 60 * 60 * 24;
 
     /// @dev Default renter fee quota.
-    uint256 private RENTER_FEE_QUOTA = 35;
+    uint256 private RENTER_FEE_QUOTA = 80;
 
     /// @dev Default service fee quota.
-    uint256 private SERVICE_FEE_QUOTA = 35;
+    uint256 private SERVICE_FEE_QUOTA = 10;
 
     /// @dev Default market fee quota.
-    uint256 private MARKET_FEE_QUOTA = 30;
+    uint256 private MARKET_FEE_QUOTA = 10;
 
     /// @dev Default vesting distribute threshold.
     uint256 private _threshold = 100;
