@@ -6077,52 +6077,55 @@ contract rentMarket is Ownable, Pausable {
     using ERC165Checker for address;
     using balanceSnapshotLib for balanceSnapshotLib.balanceSnapshotData;
 
-    //* Market fee receiver address.
+    /// @dev Version.
+    string public VERSION = "0.0.5";
+
+    /// @dev Market fee receiver address.
     address private MARKET_SHARE_ADDRESS;
 
-    //* Default rent fee 1 ether as ether (1e18) unit.
+    /// @dev Default rent fee 1 ether as ether (1e18) unit.
     uint256 private RENT_FEE = 1 ether;
 
-    //* Default value is 1 day which 60 seconds * 60 minutes * 24 hours.
+    /// @dev Default value is 1 day which 60 seconds * 60 minutes * 24 hours.
     uint256 private RENT_DURATION = 60 * 60 * 24;
 
-    //* Default renter fee quota.
-    uint256 private RENTER_FEE_QUOTA = 35;
+    /// @dev Default renter fee quota.
+    uint256 private RENTER_FEE_QUOTA = 80;
 
-    //* Default service fee quota.
-    uint256 private SERVICE_FEE_QUOTA = 35;
+    /// @dev Default service fee quota.
+    uint256 private SERVICE_FEE_QUOTA = 10;
 
-    //* Default market fee quota.
-    uint256 private MARKET_FEE_QUOTA = 30;
+    /// @dev Default market fee quota.
+    uint256 private MARKET_FEE_QUOTA = 10;
 
-    //* Default vesting distribute threshold.
+    /// @dev Default vesting distribute threshold.
     uint256 private _threshold = 100;
 
-    //* Data for token.
+    /// @dev Data for token.
     tokenDataIterableMap.tokenDataMap tokenItMap;
 
-    //* Data for NFT collection.
+    /// @dev Data for NFT collection.
     collectionDataIterableMap.collectionDataMap collectionItMap;
 
-    //* Data for service.
+    /// @dev Data for service.
     serviceDataIterableMap.serviceDataMap serviceItMap;
 
-    //* Data for register and unregister.
+    /// @dev Data for register and unregister.
     registerDataIterableMap.registerDataMap registerDataItMap;
 
-    //* Data for rent and unrent.
+    /// @dev Data for rent and unrent.
     rentDataIterableMap.rentDataMap rentDataItMap;
 
-    //* Accumulated rent fee record map per renter address.
+    /// @dev Accumulated rent fee record map per renter address.
     pendingRentFeeIterableMap.pendingRentFeeMap pendingRentFeeMap;
 
-    //* Data for account balance data when settleRentData.
+    /// @dev Data for account balance data when settleRentData.
     accountBalanceIterableMap.accountBalanceMap accountBalanceItMap;
 
-    //* Data for balance snapshot of renter, service, and market account.
+    /// @dev Data for balance snapshot of renter, service, and market account.
     balanceSnapshotLib.balanceSnapshotData balanceSnapshot;
 
-    //* Use to avoid stack too deep compile error.
+    /// @dev Use to avoid stack too deep compile error.
     struct Variable {
         uint256 previousRentDuration;
         uint256 balance;
@@ -7592,9 +7595,14 @@ contract promptNFT is
 {
     using Counters for Counters.Counter;
 
+    /// @dev Version.
+    string public VERSION = "0.0.5";
+
     Counters.Counter private _tokenIdCounter;
 
     rentMarket private rentMarketContract;
+
+    address private rentMarketContractAddress;
 
     struct encryptData {
         string version;
@@ -7639,11 +7647,17 @@ contract promptNFT is
         string memory symbol_,
         address payable rentMarketContractAddress_
     ) ERC721(name_, symbol_) {
-        rentMarketContract = rentMarket(rentMarketContractAddress_);
-
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(PAUSER_ROLE, msg.sender);
+        _grantRole(CHANGER_ROLE, msg.sender);
         _grantRole(PROMPTER_ROLE, msg.sender);
+
+        changeRentMarketContract(rentMarketContractAddress_);
+    }
+
+    /// @dev Get rent market contract address.
+    function getRentMarketContractAddress() public view returns (address) {
+        return rentMarketContractAddress;
     }
 
     /// @notice Change rent market contract with input address
@@ -7653,6 +7667,7 @@ contract promptNFT is
         address payable rentMarketContractAddress_
     ) public onlyRole(CHANGER_ROLE) {
         rentMarketContract = rentMarket(rentMarketContractAddress_);
+        rentMarketContractAddress = rentMarketContractAddress_;
     }
 
     /// @notice Pause this NFT
