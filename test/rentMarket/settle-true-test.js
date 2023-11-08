@@ -453,7 +453,7 @@ describe("test settleRentData true case.", function () {
      **************************************************************************/
     response = await rentMarketContract
       .connect(userSigner)
-      .getRentData(testNFTContract.address, startTokenId);
+      .getRentData(testNFTContract.address, startTokenId, userSigner.address);
     rentFee = response["rentFee"];
     rentDuration = response["rentDuration"];
     // console.log("rentFee: ", rentFee);

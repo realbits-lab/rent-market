@@ -524,11 +524,13 @@ task("getRentData", "Get all rented NFT data with rent owner's address.")
   .addParam("contract", "rentMarket contract name")
   .addParam("address", "rent NFT owner's address")
   .addParam("token", "rent NFT owner's token")
+  .addParam("rentee", "Rentee address")
   .setAction(async function (taskArguments, hre) {
     const contract = await getRentMarketContract(taskArguments.contract, hre);
     const response = await contract.getRentData(
       taskArguments.address,
-      taskArguments.token
+      taskArguments.token,
+      taskArguments.rentee
     );
 
     console.log("response: ", response);

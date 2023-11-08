@@ -143,7 +143,7 @@ describe("test rentNFTByToken true case.", function () {
     //* Check rent data.
     response = await rentMarketContract
       .connect(userSigner)
-      .getRentData(testNFTContract.address, startTokenId);
+      .getRentData(testNFTContract.address, startTokenId, userSigner.address);
     // console.log("response: ", response);
 
     expect(response).to.deep.equal([
