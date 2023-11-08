@@ -38,7 +38,10 @@ library pendingRentFeeIterableMap {
         return keyString;
     }
 
-    function decodeKey(pendingRentFeeMap storage self, string memory key)
+    function decodeKey(
+        pendingRentFeeMap storage self,
+        string memory key
+    )
         public
         view
         returns (
@@ -193,11 +196,9 @@ library pendingRentFeeIterableMap {
         return self.data[key].idx > 0;
     }
 
-    function size(pendingRentFeeMap storage self)
-        public
-        view
-        returns (uint256)
-    {
+    function size(
+        pendingRentFeeMap storage self
+    ) public view returns (uint256) {
         return self.keys.length;
     }
 
@@ -229,19 +230,17 @@ library pendingRentFeeIterableMap {
         return self.data[key].data;
     }
 
-    function getKeyByIndex(pendingRentFeeMap storage self, uint256 idx)
-        public
-        view
-        returns (string memory)
-    {
+    function getKeyByIndex(
+        pendingRentFeeMap storage self,
+        uint256 idx
+    ) public view returns (string memory) {
         return self.keys[idx];
     }
 
-    function getDataByIndex(pendingRentFeeMap storage self, uint256 idx)
-        public
-        view
-        returns (pendingRentFee memory)
-    {
+    function getDataByIndex(
+        pendingRentFeeMap storage self,
+        uint256 idx
+    ) public view returns (pendingRentFee memory) {
         return self.data[self.keys[idx]].data;
     }
 }
@@ -264,11 +263,10 @@ library accountBalanceIterableMap {
         string[] keys;
     }
 
-    function encodeKey(address accountAddress, address tokenAddress)
-        public
-        pure
-        returns (string memory)
-    {
+    function encodeKey(
+        address accountAddress,
+        address tokenAddress
+    ) public pure returns (string memory) {
         string memory keyString = string(
             abi.encodePacked(
                 Strings.toHexString(uint256(uint160(accountAddress)), 20),
@@ -279,11 +277,10 @@ library accountBalanceIterableMap {
         return keyString;
     }
 
-    function decodeKey(accountBalanceMap storage self, string memory key)
-        public
-        view
-        returns (address accountAddress, address tokenAddress)
-    {
+    function decodeKey(
+        accountBalanceMap storage self,
+        string memory key
+    ) public view returns (address accountAddress, address tokenAddress) {
         accountBalanceEntry memory e = self.data[key];
 
         return (e.data.accountAddress, e.data.tokenAddress);
@@ -378,11 +375,9 @@ library accountBalanceIterableMap {
         return self.data[key].idx > 0;
     }
 
-    function size(accountBalanceMap storage self)
-        public
-        view
-        returns (uint256)
-    {
+    function size(
+        accountBalanceMap storage self
+    ) public view returns (uint256) {
         return self.keys.length;
     }
 
@@ -404,19 +399,17 @@ library accountBalanceIterableMap {
         return self.data[key].data;
     }
 
-    function getKeyByIndex(accountBalanceMap storage self, uint256 idx)
-        public
-        view
-        returns (string memory)
-    {
+    function getKeyByIndex(
+        accountBalanceMap storage self,
+        uint256 idx
+    ) public view returns (string memory) {
         return self.keys[idx];
     }
 
-    function getDataByIndex(accountBalanceMap storage self, uint256 idx)
-        public
-        view
-        returns (accountBalance memory)
-    {
+    function getDataByIndex(
+        accountBalanceMap storage self,
+        uint256 idx
+    ) public view returns (accountBalance memory) {
         return self.data[self.keys[idx]].data;
     }
 }
@@ -438,11 +431,9 @@ library tokenDataIterableMap {
         string[] keys;
     }
 
-    function encodeKey(address tokenAddress)
-        public
-        pure
-        returns (string memory)
-    {
+    function encodeKey(
+        address tokenAddress
+    ) public pure returns (string memory) {
         string memory keyString = string(
             abi.encodePacked(
                 Strings.toHexString(uint256(uint160(tokenAddress)), 20)
@@ -452,11 +443,10 @@ library tokenDataIterableMap {
         return keyString;
     }
 
-    function decodeKey(tokenDataMap storage self, string memory key)
-        public
-        view
-        returns (address tokenAddress)
-    {
+    function decodeKey(
+        tokenDataMap storage self,
+        string memory key
+    ) public view returns (address tokenAddress) {
         tokenDataEntry memory e = self.data[key];
 
         return e.data.tokenAddress;
@@ -485,10 +475,10 @@ library tokenDataIterableMap {
         }
     }
 
-    function remove(tokenDataMap storage self, address tokenAddress)
-        public
-        returns (bool success)
-    {
+    function remove(
+        tokenDataMap storage self,
+        address tokenAddress
+    ) public returns (bool success) {
         string memory key = encodeKey(tokenAddress);
         tokenDataEntry storage e = self.data[key];
 
@@ -514,11 +504,10 @@ library tokenDataIterableMap {
         return true;
     }
 
-    function contains(tokenDataMap storage self, address tokenAddress)
-        public
-        view
-        returns (bool exists)
-    {
+    function contains(
+        tokenDataMap storage self,
+        address tokenAddress
+    ) public view returns (bool exists) {
         string memory key = encodeKey(tokenAddress);
         return self.data[key].idx > 0;
     }
@@ -527,37 +516,33 @@ library tokenDataIterableMap {
         return self.keys.length;
     }
 
-    function getName(tokenDataMap storage self, address tokenAddress)
-        public
-        view
-        returns (string memory)
-    {
+    function getName(
+        tokenDataMap storage self,
+        address tokenAddress
+    ) public view returns (string memory) {
         string memory key = encodeKey(tokenAddress);
         return self.data[key].data.name;
     }
 
-    function getByAddress(tokenDataMap storage self, address tokenAddress)
-        public
-        view
-        returns (tokenData memory)
-    {
+    function getByAddress(
+        tokenDataMap storage self,
+        address tokenAddress
+    ) public view returns (tokenData memory) {
         string memory key = encodeKey(tokenAddress);
         return self.data[key].data;
     }
 
-    function getKeyByIndex(tokenDataMap storage self, uint256 idx)
-        public
-        view
-        returns (string memory)
-    {
+    function getKeyByIndex(
+        tokenDataMap storage self,
+        uint256 idx
+    ) public view returns (string memory) {
         return self.keys[idx];
     }
 
-    function getDataByIndex(tokenDataMap storage self, uint256 idx)
-        public
-        view
-        returns (tokenData memory)
-    {
+    function getDataByIndex(
+        tokenDataMap storage self,
+        uint256 idx
+    ) public view returns (tokenData memory) {
         return self.data[self.keys[idx]].data;
     }
 }
@@ -579,11 +564,9 @@ library collectionDataIterableMap {
         string[] keys;
     }
 
-    function encodeKey(address collectionAddress)
-        public
-        pure
-        returns (string memory)
-    {
+    function encodeKey(
+        address collectionAddress
+    ) public pure returns (string memory) {
         string memory keyString = string(
             abi.encodePacked(
                 Strings.toHexString(uint256(uint160(collectionAddress)), 20)
@@ -593,11 +576,10 @@ library collectionDataIterableMap {
         return keyString;
     }
 
-    function decodeKey(collectionDataMap storage self, string memory key)
-        public
-        view
-        returns (address collectionAddress)
-    {
+    function decodeKey(
+        collectionDataMap storage self,
+        string memory key
+    ) public view returns (address collectionAddress) {
         collectionDataEntry memory e = self.data[key];
 
         return e.data.collectionAddress;
@@ -626,10 +608,10 @@ library collectionDataIterableMap {
         }
     }
 
-    function remove(collectionDataMap storage self, address collectionAddress)
-        public
-        returns (bool success)
-    {
+    function remove(
+        collectionDataMap storage self,
+        address collectionAddress
+    ) public returns (bool success) {
         string memory key = encodeKey(collectionAddress);
         collectionDataEntry storage e = self.data[key];
 
@@ -655,28 +637,24 @@ library collectionDataIterableMap {
         return true;
     }
 
-    function contains(collectionDataMap storage self, address collectionAddress)
-        public
-        view
-        returns (bool exists)
-    {
+    function contains(
+        collectionDataMap storage self,
+        address collectionAddress
+    ) public view returns (bool exists) {
         string memory key = encodeKey(collectionAddress);
         return self.data[key].idx > 0;
     }
 
-    function size(collectionDataMap storage self)
-        public
-        view
-        returns (uint256)
-    {
+    function size(
+        collectionDataMap storage self
+    ) public view returns (uint256) {
         return self.keys.length;
     }
 
-    function getUri(collectionDataMap storage self, address collectionAddress)
-        public
-        view
-        returns (string memory)
-    {
+    function getUri(
+        collectionDataMap storage self,
+        address collectionAddress
+    ) public view returns (string memory) {
         string memory key = encodeKey(collectionAddress);
         return self.data[key].data.uri;
     }
@@ -689,19 +667,17 @@ library collectionDataIterableMap {
         return self.data[key].data;
     }
 
-    function getKeyByIndex(collectionDataMap storage self, uint256 idx)
-        public
-        view
-        returns (string memory)
-    {
+    function getKeyByIndex(
+        collectionDataMap storage self,
+        uint256 idx
+    ) public view returns (string memory) {
         return self.keys[idx];
     }
 
-    function getDataByIndex(collectionDataMap storage self, uint256 idx)
-        public
-        view
-        returns (collectionData memory)
-    {
+    function getDataByIndex(
+        collectionDataMap storage self,
+        uint256 idx
+    ) public view returns (collectionData memory) {
         return self.data[self.keys[idx]].data;
     }
 }
@@ -723,11 +699,9 @@ library serviceDataIterableMap {
         string[] keys;
     }
 
-    function encodeKey(address serviceAddress)
-        public
-        pure
-        returns (string memory)
-    {
+    function encodeKey(
+        address serviceAddress
+    ) public pure returns (string memory) {
         string memory keyString = string(
             abi.encodePacked(
                 Strings.toHexString(uint256(uint160(serviceAddress)), 20)
@@ -737,11 +711,10 @@ library serviceDataIterableMap {
         return keyString;
     }
 
-    function decodeKey(serviceDataMap storage self, string memory key)
-        public
-        view
-        returns (address serviceAddress)
-    {
+    function decodeKey(
+        serviceDataMap storage self,
+        string memory key
+    ) public view returns (address serviceAddress) {
         serviceDataEntry memory e = self.data[key];
 
         return e.data.serviceAddress;
@@ -770,10 +743,10 @@ library serviceDataIterableMap {
         }
     }
 
-    function remove(serviceDataMap storage self, address serviceAddress)
-        public
-        returns (bool success)
-    {
+    function remove(
+        serviceDataMap storage self,
+        address serviceAddress
+    ) public returns (bool success) {
         string memory key = encodeKey(serviceAddress);
         serviceDataEntry storage e = self.data[key];
 
@@ -799,11 +772,10 @@ library serviceDataIterableMap {
         return true;
     }
 
-    function contains(serviceDataMap storage self, address serviceAddress)
-        public
-        view
-        returns (bool exists)
-    {
+    function contains(
+        serviceDataMap storage self,
+        address serviceAddress
+    ) public view returns (bool exists) {
         string memory key = encodeKey(serviceAddress);
         return self.data[key].idx > 0;
     }
@@ -812,171 +784,33 @@ library serviceDataIterableMap {
         return self.keys.length;
     }
 
-    function getUri(serviceDataMap storage self, address serviceAddress)
-        public
-        view
-        returns (string memory)
-    {
+    function getUri(
+        serviceDataMap storage self,
+        address serviceAddress
+    ) public view returns (string memory) {
         string memory key = encodeKey(serviceAddress);
         return self.data[key].data.uri;
     }
 
-    function getByAddress(serviceDataMap storage self, address serviceAddress)
-        public
-        view
-        returns (serviceData memory)
-    {
+    function getByAddress(
+        serviceDataMap storage self,
+        address serviceAddress
+    ) public view returns (serviceData memory) {
         string memory key = encodeKey(serviceAddress);
         return self.data[key].data;
     }
 
-    function getKeyByIndex(serviceDataMap storage self, uint256 idx)
-        public
-        view
-        returns (string memory)
-    {
+    function getKeyByIndex(
+        serviceDataMap storage self,
+        uint256 idx
+    ) public view returns (string memory) {
         return self.keys[idx];
     }
 
-    function getDataByIndex(serviceDataMap storage self, uint256 idx)
-        public
-        view
-        returns (serviceData memory)
-    {
-        return self.data[self.keys[idx]].data;
-    }
-}
-
-library requestDataIterableMap {
-    struct requestData {
-        address nftAddress;
-        uint256 tokenId;
-    }
-
-    struct requestDataEntry {
-        // idx should be same as the index of the key of this item in keys + 1.
-        uint256 idx;
-        requestData data;
-    }
-
-    struct requestDataMap {
-        mapping(string => requestDataEntry) data;
-        string[] keys;
-    }
-
-    function encodeKey(address nftAddress, uint256 tokenId)
-        public
-        pure
-        returns (string memory)
-    {
-        string memory keyString = string(
-            abi.encodePacked(
-                Strings.toHexString(uint256(uint160(nftAddress)), 20),
-                Strings.toString(tokenId)
-            )
-        );
-
-        return keyString;
-    }
-
-    function decodeKey(requestDataMap storage self, string memory key)
-        public
-        view
-        returns (address nftAddress, uint256 tokenId)
-    {
-        requestDataEntry memory e = self.data[key];
-
-        return (e.data.nftAddress, e.data.tokenId);
-    }
-
-    function insert(
-        requestDataMap storage self,
-        address nftAddress,
-        uint256 tokenId
-    ) public returns (bool success) {
-        string memory key = encodeKey(nftAddress, tokenId);
-        requestDataEntry storage e = self.data[key];
-
-        if (e.idx > 0) {
-            return false;
-        } else {
-            // Add self.keys.
-            self.keys.push(key);
-
-            // Add self.data.
-            e.idx = self.keys.length;
-            e.data.nftAddress = nftAddress;
-            e.data.tokenId = tokenId;
-
-            return true;
-        }
-    }
-
-    function remove(
-        requestDataMap storage self,
-        address nftAddress,
-        uint256 tokenId
-    ) public returns (bool success) {
-        string memory key = encodeKey(nftAddress, tokenId);
-        requestDataEntry storage e = self.data[key];
-
-        // Check if entry not exist or invalid idx value.
-        if (e.idx == 0 || e.idx > self.keys.length) {
-            return false;
-        }
-
-        // Move an existing element into the vacated key slot.
-        uint256 mapKeyArrayIndex = e.idx - 1;
-        uint256 keyArrayLastIndex = self.keys.length - 1;
-
-        // Move.
-        self.data[self.keys[keyArrayLastIndex]].idx = mapKeyArrayIndex + 1;
-        self.keys[mapKeyArrayIndex] = self.keys[keyArrayLastIndex];
-
-        // Delete self.keys.
-        self.keys.pop();
-
-        // Delete self.data.
-        delete self.data[key];
-
-        return true;
-    }
-
-    function contains(
-        requestDataMap storage self,
-        address nftAddress,
-        uint256 tokenId
-    ) public view returns (bool exists) {
-        string memory key = encodeKey(nftAddress, tokenId);
-        return self.data[key].idx > 0;
-    }
-
-    function size(requestDataMap storage self) public view returns (uint256) {
-        return self.keys.length;
-    }
-
-    function getByNFT(
-        requestDataMap storage self,
-        address nftAddress,
-        uint256 tokenId
-    ) public view returns (requestData memory) {
-        string memory key = encodeKey(nftAddress, tokenId);
-        return self.data[key].data;
-    }
-
-    function getKeyByIndex(requestDataMap storage self, uint256 idx)
-        public
-        view
-        returns (string memory)
-    {
-        return self.keys[idx];
-    }
-
-    function getDataByIndex(requestDataMap storage self, uint256 idx)
-        public
-        view
-        returns (requestData memory)
-    {
+    function getDataByIndex(
+        serviceDataMap storage self,
+        uint256 idx
+    ) public view returns (serviceData memory) {
         return self.data[self.keys[idx]].data;
     }
 }
@@ -1002,11 +836,10 @@ library registerDataIterableMap {
         string[] keys;
     }
 
-    function encodeKey(address nftAddress, uint256 tokenId)
-        public
-        pure
-        returns (string memory)
-    {
+    function encodeKey(
+        address nftAddress,
+        uint256 tokenId
+    ) public pure returns (string memory) {
         string memory keyString = string(
             abi.encodePacked(
                 Strings.toHexString(uint256(uint160(nftAddress)), 20),
@@ -1017,11 +850,10 @@ library registerDataIterableMap {
         return keyString;
     }
 
-    function decodeKey(registerDataMap storage self, string memory key)
-        public
-        view
-        returns (address nftAddress, uint256 tokenId)
-    {
+    function decodeKey(
+        registerDataMap storage self,
+        string memory key
+    ) public view returns (address nftAddress, uint256 tokenId) {
         registerDataEntry memory e = self.data[key];
 
         return (e.data.nftAddress, e.data.tokenId);
@@ -1136,19 +968,17 @@ library registerDataIterableMap {
         return self.data[key].data;
     }
 
-    function getKeyByIndex(registerDataMap storage self, uint256 idx)
-        public
-        view
-        returns (string memory)
-    {
+    function getKeyByIndex(
+        registerDataMap storage self,
+        uint256 idx
+    ) public view returns (string memory) {
         return self.keys[idx];
     }
 
-    function getDataByIndex(registerDataMap storage self, uint256 idx)
-        public
-        view
-        returns (registerData memory)
-    {
+    function getDataByIndex(
+        registerDataMap storage self,
+        uint256 idx
+    ) public view returns (registerData memory) {
         return self.data[self.keys[idx]].data;
     }
 }
@@ -1179,11 +1009,10 @@ library rentDataIterableMap {
         string[] keys;
     }
 
-    function encodeKey(address nftAddress, uint256 tokenId)
-        public
-        pure
-        returns (string memory)
-    {
+    function encodeKey(
+        address nftAddress,
+        uint256 tokenId
+    ) public pure returns (string memory) {
         string memory keyString = string(
             abi.encodePacked(
                 Strings.toHexString(uint256(uint160(nftAddress)), 20),
@@ -1194,20 +1023,19 @@ library rentDataIterableMap {
         return keyString;
     }
 
-    function decodeKey(rentDataMap storage self, string memory key)
-        public
-        view
-        returns (address nftAddress, uint256 tokenId)
-    {
+    function decodeKey(
+        rentDataMap storage self,
+        string memory key
+    ) public view returns (address nftAddress, uint256 tokenId) {
         rentDataEntry memory e = self.data[key];
 
         return (e.data.nftAddress, e.data.tokenId);
     }
 
-    function insert(rentDataMap storage self, rentData memory data)
-        public
-        returns (bool success)
-    {
+    function insert(
+        rentDataMap storage self,
+        rentData memory data
+    ) public returns (bool success) {
         string memory key = encodeKey(data.nftAddress, data.tokenId);
         rentDataEntry storage e = self.data[key];
 
@@ -1287,19 +1115,17 @@ library rentDataIterableMap {
         return self.data[key].data;
     }
 
-    function getKeyByIndex(rentDataMap storage self, uint256 idx)
-        public
-        view
-        returns (string memory)
-    {
+    function getKeyByIndex(
+        rentDataMap storage self,
+        uint256 idx
+    ) public view returns (string memory) {
         return self.keys[idx];
     }
 
-    function getDataByIndex(rentDataMap storage self, uint256 idx)
-        public
-        view
-        returns (rentData memory)
-    {
+    function getDataByIndex(
+        rentDataMap storage self,
+        uint256 idx
+    ) public view returns (rentData memory) {
         return self.data[self.keys[idx]].data;
     }
 }
