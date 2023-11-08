@@ -917,6 +917,14 @@ contract rentMarket is Ownable, Pausable {
             data.rentFeeByToken
         );
 
+        variable.previousRentDuration = 0;
+        if (rentDataItMap.contains(nftAddress, tokenId, msg.sender) == true) {
+            rentDataIterableMap.rentData memory previousRentData = rentDataItMap
+                .getByRentData(nftAddress, tokenId, msg.sender);
+            variable.previousRentDuration = previousRentData.rentDuration;
+            rentDataItMap.remove(nftAddress, tokenId, msg.sender);
+        }
+
         //* Add rentDataItMap.
         //* Set isRentByToken to be true.
         rentDataIterableMap.rentData memory rentData;
@@ -926,7 +934,9 @@ contract rentMarket is Ownable, Pausable {
         rentData.feeTokenAddress = data.feeTokenAddress;
         rentData.rentFeeByToken = data.rentFeeByToken;
         rentData.isRentByToken = true;
-        rentData.rentDuration = data.rentDuration;
+        rentData.rentDuration =
+            data.rentDuration +
+            variable.previousRentDuration;
         rentData.renterAddress = variable.ownerAddress;
         rentData.renteeAddress = msg.sender;
         rentData.serviceAddress = serviceAddress;
@@ -1203,34 +1213,6 @@ contract rentMarket is Ownable, Pausable {
         );
 
         rentDataItMap.remove(data.nftAddress, data.tokenId, data.renteeAddress);
-
-        //* TODO: Handle later.
-        //* TODO: The vesting distribution algorithm does not use snapshot.
-        //*---------------------------------------------------------------------
-        //* Update snapshot.
-        //*---------------------------------------------------------------------
-        //* TODO: Supposed that market use only one token except base coin.
-
-        // //* Update NFT owner balance snapshot.
-        // updateAccountBalance(
-        //     data.isRentByToken,
-        //     data.renterAddress,
-        //     data.feeTokenAddress
-        // );
-
-        // //* Update service owner balance snapshot.
-        // updateAccountBalance(
-        //     data.isRentByToken,
-        //     data.serviceAddress,
-        //     data.feeTokenAddress
-        // );
-
-        // //* Update market owner balance snapshot.
-        // updateAccountBalance(
-        //     data.isRentByToken,
-        //     MARKET_SHARE_ADDRESS,
-        //     data.feeTokenAddress
-        // );
 
         //* Emit SettleRentData event.
         emit SettleRentData(
