@@ -43,7 +43,7 @@ describe("test unrentNFTData false case.", function () {
     let tx;
     const startTokenId = 1;
     const endTokenId = 1;
-    const errorMessage = "RM10";
+    const errorMessage = "RM15";
 
     // 1. Register NFT to rent market.
     await registerNFT({
