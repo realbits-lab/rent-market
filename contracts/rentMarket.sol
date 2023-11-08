@@ -180,16 +180,18 @@ contract rentMarket is Ownable, Pausable {
         view
         returns (tokenDataIterableMap.tokenData[] memory)
     {
-        tokenDataIterableMap.tokenData[]
-            memory data = new tokenDataIterableMap.tokenData[](
-                tokenItMap.keys.length
-            );
+        return tokenItMap.getAllToken();
 
-        for (uint256 i = 0; i < tokenItMap.keys.length; i++) {
-            data[i] = tokenItMap.data[tokenItMap.keys[i]].data;
-        }
+        // tokenDataIterableMap.tokenData[]
+        //     memory data = new tokenDataIterableMap.tokenData[](
+        //         tokenItMap.keys.length
+        //     );
 
-        return data;
+        // for (uint256 i = 0; i < tokenItMap.keys.length; i++) {
+        //     data[i] = tokenItMap.data[tokenItMap.keys[i]].data;
+        // }
+
+        // return data;
     }
 
     //*-------------------------------------------------------------------------
