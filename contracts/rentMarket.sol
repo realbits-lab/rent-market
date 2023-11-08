@@ -7,10 +7,10 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/draft-IERC20Permit.sol";
-import "hardhat/console.sol";
+// import "hardhat/console.sol";
 import "./iterableMapLib.sol";
+import "./utilLib.sol";
 import "./IRentNFT.sol";
-import "./balanceSnapshotLib.sol";
 
 //*
 //* Error messages.
@@ -52,7 +52,6 @@ contract rentMarket is Ownable, Pausable {
     using registerDataIterableMap for registerDataIterableMap.registerDataMap;
     using rentDataIterableMap for rentDataIterableMap.rentDataMap;
     using ERC165Checker for address;
-    using balanceSnapshotLib for balanceSnapshotLib.balanceSnapshotData;
 
     /// @dev Version.
     string public VERSION = "0.0.5";
@@ -98,9 +97,6 @@ contract rentMarket is Ownable, Pausable {
 
     /// @dev Data for account balance data when settleRentData.
     accountBalanceIterableMap.accountBalanceMap accountBalanceItMap;
-
-    /// @dev Data for balance snapshot of renter, service, and market account.
-    balanceSnapshotLib.balanceSnapshotData balanceSnapshot;
 
     /// @dev Use to avoid stack too deep compile error.
     struct Variable {
