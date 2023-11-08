@@ -106,6 +106,11 @@ const prepareContract = async ([wallet, other], provider) => {
   );
   const rentDataIterableMapLibrary = await rentDataIterableMapContract.deploy();
 
+  const utilFunctionsContract = await ethers.getContractFactory(
+    "utilFunctions"
+  );
+  const utilFunctionsLibrary = await utilFunctionsContract.deploy();
+
   await pendingRentFeeIterableMapLibrary.deployed();
   await tokenDataIterableMapLibrary.deployed();
   await accountBalanceIterableMapLibrary.deployed();
@@ -113,6 +118,7 @@ const prepareContract = async ([wallet, other], provider) => {
   await serviceDataIterableMapLibrary.deployed();
   await registerDataIterableMapLibrary.deployed();
   await rentDataIterableMapLibrary.deployed();
+  await utilFunctionsLibrary.deployed();
 
   //*---------------------------------------------------------------------------
   //* Deploy rentMarket smart contract.
@@ -135,7 +141,7 @@ const prepareContract = async ([wallet, other], provider) => {
           registerDataIterableMapLibrary.deployTransaction.creates,
         rentDataIterableMap:
           rentDataIterableMapLibrary.deployTransaction.creates,
-        // balanceSnapshotLib: balanceSnapshotLibrary.deployTransaction.creates,
+        utilFunctions: utilFunctionsLibrary.deployTransaction.creates,
       },
     }
   );
@@ -261,7 +267,8 @@ const removeAllData = async ({
   for (element of allRentArray) {
     tx = await rentMarketContract.unrentNFT(
       element.nftAddress,
-      element.tokenId
+      element.tokenId,
+      element.renteeAddress
     );
     txArray.push(tx.wait());
   }
@@ -287,7 +294,8 @@ const removeAllData = async ({
     ) {
       tx = await rentMarketContract.settleRentData(
         element.nftAddress,
-        element.tokenId
+        element.tokenId,
+        element.renteeAddress
       );
       txArray.push(tx.wait());
     }

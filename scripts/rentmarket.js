@@ -524,11 +524,13 @@ task("getRentData", "Get all rented NFT data with rent owner's address.")
   .addParam("contract", "rentMarket contract name")
   .addParam("address", "rent NFT owner's address")
   .addParam("token", "rent NFT owner's token")
+  .addParam("rentee", "Rentee address")
   .setAction(async function (taskArguments, hre) {
     const contract = await getRentMarketContract(taskArguments.contract, hre);
     const response = await contract.getRentData(
       taskArguments.address,
-      taskArguments.token
+      taskArguments.token,
+      taskArguments.rentee
     );
 
     console.log("response: ", response);
@@ -587,11 +589,13 @@ task("unrentNFT", "Unrent NFT from rentMarket")
   .addParam("contract", "Contract name")
   .addParam("address", "NFT address")
   .addParam("token", "Token ID")
+  .addParam("rentee", "Rentee address")
   .setAction(async function (taskArguments, hre) {
     const contract = await getRentMarketContract(taskArguments.contract, hre);
     const tx = await contract.unrentNFT(
       taskArguments.address,
-      taskArguments.token
+      taskArguments.token,
+      taskArguments.renteeAddress
     );
     const response = await tx.wait();
 
@@ -610,12 +614,14 @@ task("settleRentData", "Settle rent data.")
   .addParam("contract", "rentMarket contract name")
   .addParam("address", "NFT address")
   .addParam("token", "Token ID")
+  .addParam("rentee", "Rentee address")
   .setAction(async function (taskArguments, hre) {
     const contract = await getRentMarketContract(taskArguments.contract, hre);
     // console.log("contract: ", contract);
     const tx = await contract.settleRentData(
       taskArguments.address,
       taskArguments.token,
+      taskArguments.rentee,
       {
         gasPrice: hre.ethers.utils.parseUnits("500", "gwei"),
         gasLimit: 5_000_000,
