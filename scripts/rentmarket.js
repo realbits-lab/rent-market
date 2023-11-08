@@ -587,11 +587,13 @@ task("unrentNFT", "Unrent NFT from rentMarket")
   .addParam("contract", "Contract name")
   .addParam("address", "NFT address")
   .addParam("token", "Token ID")
+  .addParam("rentee", "Rentee address")
   .setAction(async function (taskArguments, hre) {
     const contract = await getRentMarketContract(taskArguments.contract, hre);
     const tx = await contract.unrentNFT(
       taskArguments.address,
-      taskArguments.token
+      taskArguments.token,
+      taskArguments.renteeAddress
     );
     const response = await tx.wait();
 

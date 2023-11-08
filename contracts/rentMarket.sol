@@ -975,19 +975,11 @@ contract rentMarket is Ownable, Pausable {
 
         //* Check the duplicate element.
         require(
-            rentDataItMap.contains(nftAddress, tokenId, renteeAddress) == true,
-            "RM10"
+            (renteeAddress == msg.sender &&
+                rentDataItMap.contains(nftAddress, tokenId, msg.sender) ==
+                true) || owner() == msg.sender,
+            "RM15"
         );
-
-        //* Check msg.sender is same as renteeAddress.
-        //* Enable by only owner.
-        // require(
-        //     rentDataItMap.getByNFT(nftAddress, tokenId).renteeAddress ==
-        //         msg.sender ||
-        //         owner() == msg.sender,
-        //     "RM16"
-        // );
-        require(owner() == msg.sender, "RM16");
 
         rentDataIterableMap.rentData memory data = rentDataItMap.getByRentData(
             nftAddress,

@@ -261,7 +261,8 @@ const removeAllData = async ({
   for (element of allRentArray) {
     tx = await rentMarketContract.unrentNFT(
       element.nftAddress,
-      element.tokenId
+      element.tokenId,
+      element.renteeAddress
     );
     txArray.push(tx.wait());
   }
