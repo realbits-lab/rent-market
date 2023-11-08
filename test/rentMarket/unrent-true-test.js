@@ -39,7 +39,7 @@ describe("test unrentNFTData true case.", function () {
     } = response);
   });
 
-  it("test unrentNFTData with normal input.", async function () {
+  it("test unrentNFT function with normal case.", async function () {
     let tx;
     const startTokenId = 1;
     const endTokenId = 1;
@@ -74,7 +74,7 @@ describe("test unrentNFTData true case.", function () {
 
     // 4. Unrent NFT.
     tx = await rentMarketContract
-      .connect(userSigner)
+      .connect(rentMarketContractOwnerSigner)
       .unrentNFT(testNFTContract.address, startTokenId);
     await tx.wait();
 
