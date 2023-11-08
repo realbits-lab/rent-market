@@ -1011,12 +1011,20 @@ library rentDataIterableMap {
 
     function encodeKey(
         address nftAddress,
-        uint256 tokenId
+        uint256 tokenId,
+        address renteeAddress
     ) public pure returns (string memory) {
-        string memory keyString = string(
+        string memory nftString = string(
             abi.encodePacked(
                 Strings.toHexString(uint256(uint160(nftAddress)), 20),
                 Strings.toString(tokenId)
+            )
+        );
+
+        string memory keyString = string(
+            abi.encodePacked(
+                nftString,
+                Strings.toHexString(uint256(uint160(renteeAddress)), 20)
             )
         );
 
@@ -1036,7 +1044,11 @@ library rentDataIterableMap {
         rentDataMap storage self,
         rentData memory data
     ) public returns (bool success) {
-        string memory key = encodeKey(data.nftAddress, data.tokenId);
+        string memory key = encodeKey(
+            data.nftAddress,
+            data.tokenId,
+            data.renteeAddress
+        );
         rentDataEntry storage e = self.data[key];
 
         if (e.idx > 0) {
@@ -1066,9 +1078,10 @@ library rentDataIterableMap {
     function remove(
         rentDataMap storage self,
         address nftAddress,
-        uint256 tokenId
+        uint256 tokenId,
+        address renteeAddress
     ) public returns (bool success) {
-        string memory key = encodeKey(nftAddress, tokenId);
+        string memory key = encodeKey(nftAddress, tokenId, renteeAddress);
         rentDataEntry storage e = self.data[key];
 
         // Check if entry not exist or invalid idx value.
@@ -1096,9 +1109,10 @@ library rentDataIterableMap {
     function contains(
         rentDataMap storage self,
         address nftAddress,
-        uint256 tokenId
+        uint256 tokenId,
+        address renteeAddress
     ) public view returns (bool exists) {
-        string memory key = encodeKey(nftAddress, tokenId);
+        string memory key = encodeKey(nftAddress, tokenId, renteeAddress);
         return self.data[key].idx > 0;
     }
 
@@ -1106,12 +1120,13 @@ library rentDataIterableMap {
         return self.keys.length;
     }
 
-    function getByNFT(
+    function getByRentData(
         rentDataMap storage self,
         address nftAddress,
-        uint256 tokenId
+        uint256 tokenId,
+        address renteeAddress
     ) public view returns (rentData memory) {
-        string memory key = encodeKey(nftAddress, tokenId);
+        string memory key = encodeKey(nftAddress, tokenId, renteeAddress);
         return self.data[key].data;
     }
 

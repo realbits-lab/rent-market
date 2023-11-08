@@ -769,9 +769,10 @@ contract rentMarket is Ownable, Pausable {
     /// @return Matched rented data
     function getRentData(
         address nftAddress,
-        uint256 tokenId
+        uint256 tokenId,
+        address renteeAddress
     ) public view returns (rentDataIterableMap.rentData memory) {
-        return rentDataItMap.getByNFT(nftAddress, tokenId);
+        return rentDataItMap.getByRentData(nftAddress, tokenId, renteeAddress);
     }
 
     //*-------------------------------------------------------------------------
@@ -808,11 +809,11 @@ contract rentMarket is Ownable, Pausable {
             .getByNFT(nftAddress, tokenId);
 
         variable.previousRentDuration = 0;
-        if (rentDataItMap.contains(nftAddress, tokenId) == true) {
+        if (rentDataItMap.contains(nftAddress, tokenId, msg.sender) == true) {
             rentDataIterableMap.rentData memory previousRentData = rentDataItMap
-                .getByNFT(nftAddress, tokenId);
+                .getByRentData(nftAddress, tokenId, msg.sender);
             variable.previousRentDuration = previousRentData.rentDuration;
-            rentDataItMap.remove(nftAddress, tokenId);
+            rentDataItMap.remove(nftAddress, tokenId, msg.sender);
         }
 
         //* Add rentDataItMap.
@@ -962,16 +963,21 @@ contract rentMarket is Ownable, Pausable {
     /// @dev Unrent NFT
     /// @param nftAddress NFT address
     /// @param tokenId NFT token ID
+    /// @return success or failure as boolean
     function unrentNFT(
         address nftAddress,
-        uint256 tokenId
+        uint256 tokenId,
+        address renteeAddress
     ) public returns (bool success) {
         uint256 usedAmount = 0;
         uint256 unusedAmount = 0;
         uint256 rentFee = 0;
 
         //* Check the duplicate element.
-        require(rentDataItMap.contains(nftAddress, tokenId) == true, "RM10");
+        require(
+            rentDataItMap.contains(nftAddress, tokenId, renteeAddress) == true,
+            "RM10"
+        );
 
         //* Check msg.sender is same as renteeAddress.
         //* Enable by only owner.
@@ -983,9 +989,10 @@ contract rentMarket is Ownable, Pausable {
         // );
         require(owner() == msg.sender, "RM16");
 
-        rentDataIterableMap.rentData memory data = rentDataItMap.getByNFT(
+        rentDataIterableMap.rentData memory data = rentDataItMap.getByRentData(
             nftAddress,
-            tokenId
+            tokenId,
+            renteeAddress
         );
 
         if (data.isRentByToken == true) {
@@ -1056,12 +1063,14 @@ contract rentMarket is Ownable, Pausable {
         //* Remove rentDataItMap.
         //* For avoiding error.
         //* compilerError: Stack too deep, try removing local variables.
-        rentDataIterableMap.rentData memory eventData = rentDataItMap.getByNFT(
-            nftAddress,
-            tokenId
-        );
+        rentDataIterableMap.rentData memory eventData = rentDataItMap
+            .getByRentData(nftAddress, tokenId, renteeAddress);
 
-        bool response = rentDataItMap.remove(nftAddress, tokenId);
+        bool response = rentDataItMap.remove(
+            nftAddress,
+            tokenId,
+            renteeAddress
+        );
 
         if (response == true) {
             //* Emit UnrentNFT event.
@@ -1113,7 +1122,8 @@ contract rentMarket is Ownable, Pausable {
 
     function settleRentData(
         address nftAddress,
-        uint256 tokenId
+        uint256 tokenId,
+        address renteeAddress
     ) public returns (bool success) {
         // struct rentData {
         //     address nftAddress;
@@ -1130,13 +1140,17 @@ contract rentMarket is Ownable, Pausable {
         // }
 
         //* Check nftAddress and tokenId is in rent data.
-        require(rentDataItMap.contains(nftAddress, tokenId) == true, "RM10");
+        require(
+            rentDataItMap.contains(nftAddress, tokenId, renteeAddress) == true,
+            "RM10"
+        );
 
         //* Find the element which should be removed from rent data.
         //* - We checked this data (nftAddress, tokenId) is in rent data in the previous process.
-        rentDataIterableMap.rentData memory data = rentDataItMap.getByNFT(
+        rentDataIterableMap.rentData memory data = rentDataItMap.getByRentData(
             nftAddress,
-            tokenId
+            tokenId,
+            renteeAddress
         );
 
         //* Check current block number is over rent start block + rent duration block.
@@ -1196,7 +1210,7 @@ contract rentMarket is Ownable, Pausable {
             amountRentFee
         );
 
-        rentDataItMap.remove(data.nftAddress, data.tokenId);
+        rentDataItMap.remove(data.nftAddress, data.tokenId, data.renteeAddress);
 
         //* TODO: Handle later.
         //* TODO: The vesting distribution algorithm does not use snapshot.
