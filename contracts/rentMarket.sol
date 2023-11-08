@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/draft-IERC20Permit.sol";
 // import "hardhat/console.sol";
 import "./iterableMapLib.sol";
-import "./utilLib.sol";
+import "./utilFunctions.sol";
 import "./IRentNFT.sol";
 
 //*
@@ -1492,40 +1492,44 @@ contract rentMarket is Ownable, Pausable {
         address nftAddress_,
         address sender_
     ) private view returns (bool result) {
-        //* Check nftAddress_ has IRentNFT interface.
-        bool supportInterfaceResult = nftAddress_.supportsInterface(
-            type(IRentNFT).interfaceId
-        );
+        return utilFunctions.checkRegister(nftAddress_, sender_);
 
-        //* Call checkRegisterRole function and return result.
-        if (supportInterfaceResult == true) {
-            //* Get the owner address of NFT with token ID.
-            bool response = IRentNFT(nftAddress_).checkRegisterRole(sender_);
-            // console.log("response: ", response);
-            return response;
-        } else {
-            return false;
-        }
+        // //* Check nftAddress_ has IRentNFT interface.
+        // bool supportInterfaceResult = nftAddress_.supportsInterface(
+        //     type(IRentNFT).interfaceId
+        // );
+
+        // //* Call checkRegisterRole function and return result.
+        // if (supportInterfaceResult == true) {
+        //     //* Get the owner address of NFT with token ID.
+        //     bool response = IRentNFT(nftAddress_).checkRegisterRole(sender_);
+        //     // console.log("response: ", response);
+        //     return response;
+        // } else {
+        //     return false;
+        // }
     }
 
     function getNFTOwner(
         address nftAddress,
         uint256 tokenId
     ) private returns (address) {
-        bool response;
-        bytes memory responseData;
+        return utilFunctions.getNFTOwner(nftAddress, tokenId);
 
-        //* Get the owner address of NFT with token ID.
-        (response, responseData) = nftAddress.call(
-            abi.encodeWithSignature("ownerOf(uint256)", tokenId)
-        );
+        // bool response;
+        // bytes memory responseData;
 
-        // console.log("response: ", response);
-        //* Check sender address is same as owner address of NFT.
-        if (response == true) {
-            return abi.decode(responseData, (address));
-        } else {
-            return address(0);
-        }
+        // //* Get the owner address of NFT with token ID.
+        // (response, responseData) = nftAddress.call(
+        //     abi.encodeWithSignature("ownerOf(uint256)", tokenId)
+        // );
+
+        // // console.log("response: ", response);
+        // //* Check sender address is same as owner address of NFT.
+        // if (response == true) {
+        //     return abi.decode(responseData, (address));
+        // } else {
+        //     return address(0);
+        // }
     }
 }
