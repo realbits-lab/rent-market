@@ -126,7 +126,7 @@ describe("test rentNFT true case.", function () {
     const endTokenId = 1;
 
     //* Register NFT to rent market.
-    console.log("call registerNFT()");
+    // console.log("call registerNFT()");
     await registerNFT({
       rentMarketContract,
       testNFTContract,
@@ -139,7 +139,7 @@ describe("test rentNFT true case.", function () {
     response = await rentMarketContract
       .connect(userSigner)
       .getRegisterData(testNFTContract.address, startTokenId);
-    console.log("getRegisterData response: ", response);
+    // console.log("getRegisterData response: ", response);
     const options = {
       value: response["rentFee"],
     };
@@ -159,9 +159,9 @@ describe("test rentNFT true case.", function () {
     response = await rentMarketContract
       .connect(userSigner)
       .getRentData(testNFTContract.address, startTokenId, userSigner.address);
-    console.log("getRentData response: ", response);
+    // console.log("getRentData response: ", response);
     let rentDuration = response["rentDuration"];
-    console.log("rentDuration: ", rentDuration);
+    // console.log("rentDuration: ", rentDuration);
 
     //* Check the default rent duration.
     expect(rentDuration).to.equal(defaultRentDuration);
@@ -182,9 +182,9 @@ describe("test rentNFT true case.", function () {
     response = await rentMarketContract
       .connect(userSigner)
       .getRentData(testNFTContract.address, startTokenId, userSigner.address);
-    console.log("getRentData response: ", response);
+    // console.log("getRentData response: ", response);
     rentDuration = response["rentDuration"];
-    console.log("rentDuration: ", rentDuration);
+    // console.log("rentDuration: ", rentDuration);
 
     //* Check the default rent duration.
     expect(rentDuration).to.equal(previousRentDuration.mul(2));
