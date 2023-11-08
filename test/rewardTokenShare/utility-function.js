@@ -314,7 +314,11 @@ const prepareContract = async ([wallet, other], provider) => {
   //* Settle.
   tx = await rentMarketContract
     .connect(userSigner)
-    .settleRentData(rentNFTContract.address, 1);
+    .settleRentData(
+      rentNFTContract.address,
+      1,
+      rentMarketContractSigner.address
+    );
   await tx.wait();
 
   //*---------------------------------------------------------------------------

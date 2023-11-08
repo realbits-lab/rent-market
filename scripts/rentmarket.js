@@ -612,12 +612,14 @@ task("settleRentData", "Settle rent data.")
   .addParam("contract", "rentMarket contract name")
   .addParam("address", "NFT address")
   .addParam("token", "Token ID")
+  .addParam("rentee", "Rentee address")
   .setAction(async function (taskArguments, hre) {
     const contract = await getRentMarketContract(taskArguments.contract, hre);
     // console.log("contract: ", contract);
     const tx = await contract.settleRentData(
       taskArguments.address,
       taskArguments.token,
+      taskArguments.rentee,
       {
         gasPrice: hre.ethers.utils.parseUnits("500", "gwei"),
         gasLimit: 5_000_000,

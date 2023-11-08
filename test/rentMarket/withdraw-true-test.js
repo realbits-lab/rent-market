@@ -106,7 +106,11 @@ describe("test withdrawMyBalance true case.", function () {
     // console.log("Do settleRentData.");
     transaction = await rentMarketContract
       .connect(rentMarketContractOwnerSigner)
-      .settleRentData(testNFTContract.address, startTokenId);
+      .settleRentData(
+        testNFTContract.address,
+        startTokenId,
+        userSigner.address
+      );
     await transaction.wait();
 
     // 6. Check each quota balanace for renter, rentee, and market.
@@ -299,7 +303,11 @@ describe("test withdrawMyBalance true case.", function () {
 
     transaction = await rentMarketContract
       .connect(rentMarketContractOwnerSigner)
-      .settleRentData(testNFTContract.address, startTokenId);
+      .settleRentData(
+        testNFTContract.address,
+        startTokenId,
+        userSigner.address
+      );
     await transaction.wait();
 
     // 7. Check each quota balanace for renter, rentee, and market.

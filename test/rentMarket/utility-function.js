@@ -288,7 +288,8 @@ const removeAllData = async ({
     ) {
       tx = await rentMarketContract.settleRentData(
         element.nftAddress,
-        element.tokenId
+        element.tokenId,
+        element.renteeAddress
       );
       txArray.push(tx.wait());
     }
