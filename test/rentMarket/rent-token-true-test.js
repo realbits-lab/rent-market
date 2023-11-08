@@ -160,4 +160,131 @@ describe("test rentNFTByToken true case.", function () {
       rentStartTimestamp,
     ]);
   });
+
+  it("Check the duplicate rent by token result.", async function () {
+    let tx;
+    const startTokenId = 1;
+    const endTokenId = 1;
+    const rentFeeByToken = BigNumber.from(100);
+    const defaultRentDuration = BigNumber.from(60 * 60 * 24);
+
+    //* Register NFT to rent market.
+    // console.log("call registerNFT()");
+    await registerNFT({
+      rentMarketContract,
+      testNFTContract,
+      testNFTContractOwnerSigner,
+      startTokenId: startTokenId,
+      endTokenId: endTokenId,
+    });
+
+    //* Get rent fee.
+    response = await rentMarketContract
+      .connect(userSigner)
+      .getRegisterData(testNFTContract.address, startTokenId);
+    // console.log("getRegisterData response: ", response);
+
+    //* Set rent fee by token with rentFeeByToken.
+    await rentMarketContract
+      .connect(testNFTContractOwnerSigner)
+      .changeNFT(
+        testNFTContract.address,
+        startTokenId,
+        response["rentFee"],
+        testTokenContract.address,
+        rentFeeByToken,
+        response["rentDuration"]
+      );
+    const rentFee = response["rentFee"];
+    let rentDuration = response["rentDuration"];
+
+    // const ownerBalance = await testToken
+    //   .connect(owner)
+    //   .balanceOf(owner.address);
+    // const totalSupply = await testToken.connect(owner).totalSupply();
+    // const userBalance = await testToken.connect(owner).balanceOf(user.address);
+
+    //* Send rentFeeByToken amount to userSigner from testTokenContract.
+    // console.log("Start to transfer");
+    tx = await testTokenContract
+      .connect(rentMarketContractOwnerSigner)
+      .transfer(userSigner.address, rentFeeByToken);
+    await tx.wait();
+
+    //* Make signature.
+    // console.log("Start to sign");
+    let { r, s, v, deadline } = await erc20PermitSignature({
+      owner: userSigner.address,
+      spender: rentMarketContract.address,
+      amount: rentFeeByToken,
+      contract: testTokenContract,
+      signer: userSigner,
+    });
+
+    //* Rent NFT by token.
+    // console.log("Start to rentNFTByToken");
+    tx = await rentMarketContract
+      .connect(userSigner)
+      .rentNFTByToken(
+        testNFTContract.address,
+        startTokenId,
+        serviceContractOwnerSigner.address,
+        deadline,
+        v,
+        r,
+        s
+      );
+    await tx.wait();
+
+    //* Get rent duration.
+    response = await rentMarketContract
+      .connect(userSigner)
+      .getRentData(testNFTContract.address, startTokenId, userSigner.address);
+    // console.log("getRentData response: ", response);
+    rentDuration = response["rentDuration"];
+    // console.log("rentDuration: ", rentDuration);
+
+    //* Check the default rent duration.
+    expect(rentDuration).to.equal(defaultRentDuration);
+
+    // Send ERC20 token to user.
+    tx = await testTokenContract
+      .connect(rentMarketContractOwnerSigner)
+      .transfer(userSigner.address, rentFeeByToken);
+    await tx.wait();
+
+    ({ r, s, v, deadline } = await erc20PermitSignature({
+      owner: userSigner.address,
+      spender: rentMarketContract.address,
+      amount: rentFeeByToken,
+      contract: testTokenContract,
+      signer: userSigner,
+    }));
+
+    //* Rent the same NFT again.
+    tx = await rentMarketContract
+      .connect(userSigner)
+      .rentNFTByToken(
+        testNFTContract.address,
+        startTokenId,
+        serviceContractOwnerSigner.address,
+        deadline,
+        v,
+        r,
+        s
+      );
+    await tx.wait();
+
+    //* Get rent duration.
+    const previousRentDuration = rentDuration;
+    response = await rentMarketContract
+      .connect(userSigner)
+      .getRentData(testNFTContract.address, startTokenId, userSigner.address);
+    // console.log("getRentData response: ", response);
+    rentDuration = response["rentDuration"];
+    // console.log("rentDuration: ", rentDuration);
+
+    //* Check the default rent duration.
+    expect(rentDuration).to.equal(previousRentDuration.mul(2));
+  });
 });
