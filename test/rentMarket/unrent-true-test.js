@@ -75,13 +75,13 @@ describe("test unrentNFTData true case.", function () {
     // 4. Unrent NFT.
     tx = await rentMarketContract
       .connect(rentMarketContractOwnerSigner)
-      .unrentNFT(testNFTContract.address, startTokenId);
+      .unrentNFT(testNFTContract.address, startTokenId, userSigner.address);
     await tx.wait();
 
     // 5. Get rented NFT data from renter address.
     response = await rentMarketContract
       .connect(userSigner)
-      .getRentData(testNFTContract.address, startTokenId);
+      .getRentData(testNFTContract.address, startTokenId, userSigner.address);
     // console.log("response: ", response);
 
     // 6. Compare the output data with input data.

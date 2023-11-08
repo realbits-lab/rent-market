@@ -77,7 +77,11 @@ describe("test unrentNFTData false case.", function () {
     await expect(
       rentMarketContract
         .connect(userSigner)
-        .unrentNFT(ethers.constants.AddressZero, startTokenId)
+        .unrentNFT(
+          ethers.constants.AddressZero,
+          startTokenId,
+          userSigner.address
+        )
     ).to.be.revertedWith(errorMessage);
   });
 });
