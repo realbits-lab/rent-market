@@ -79,6 +79,10 @@ foo@bar:~$ npm run build:production
 ### Change prompt nft configuration
 - Change rent market address in prompt nft with changeRentMarketContract function.
 
+### Change reward token share configuration for market contract address setting
+- Change the getRentMarketContractAddressArray data for a new rent market contract address.
+- Use addRentMarketContractAddress or removeRentMarketContractAddress function.
+
 ### Change production service configuration
 - Change fictures service configuration
 - Change market service configuration
