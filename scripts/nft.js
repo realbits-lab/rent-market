@@ -416,9 +416,7 @@ task("changeRentMarketContract", "Change rent market contract of promptNFT.")
   .addParam("address", "The new rent market contract address.")
   .setAction(async function (taskArguments, hre) {
     const contract = await getNFTContract(taskArguments.contract, hre);
-    const response = await contract.changeRentMarketContract(
-      taskArguments.address
-    );
-
+    const tx = await contract.changeRentMarketContract(taskArguments.address);
+    const response = await tx.wait();
     console.log("response: ", response);
   });

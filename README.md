@@ -77,7 +77,7 @@ foo@bar:~$ npm run build:production
 - Re-register token
 
 ### Change prompt nft configuration
-- Change rent market address in prompt nft
+- Change rent market address in prompt nft with changeRentMarketContract function.
 
 ### Change production service configuration
 - Change fictures service configuration

@@ -707,11 +707,15 @@ task("getAllAccountBalance", "Get all account balance.")
     }
   });
 
-task("isOwnerOrRenter", "Check account is owner or renter.")
+task("getNFTOwner", "Get owner address of NFT.")
   .addParam("contract", "The NFT contract name.")
-  .addParam("account", "The account address.")
+  .addParam("address", "The NFT address.")
+  .addParam("id", "The NFT token id.")
   .setAction(async function (taskArguments, hre) {
     const contract = await getRentMarketContract(taskArguments.contract, hre);
-    const response = await contract.isOwnerOrRenter(taskArguments.account);
+    const response = await contract.getNFTOwner(
+      taskArguments.address,
+      taskArguments.id
+    );
     console.log("response: ", response);
   });

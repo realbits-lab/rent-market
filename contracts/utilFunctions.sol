@@ -2,6 +2,7 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "./IRentNFT.sol";
 
@@ -11,19 +12,18 @@ library utilFunctions {
     function getNFTOwner(
         address nftAddress,
         uint256 tokenId
-    ) public returns (address) {
-        bool response;
-        bytes memory responseData;
-
-        //* Get the owner address of NFT with token ID.
-        (response, responseData) = nftAddress.delegatecall(
-            abi.encodeWithSignature("ownerOf(uint256)", tokenId)
+    ) public view returns (address) {
+        //* Check nftAddress_ has IRentNFT interface.
+        bool supportInterfaceResult = nftAddress.supportsInterface(
+            type(IERC721).interfaceId
         );
 
-        // console.log("response: ", response);
-        //* Check sender address is same as owner address of NFT.
-        if (response == true) {
-            return abi.decode(responseData, (address));
+        //* Call checkRegisterRole function and return result.
+        if (supportInterfaceResult == true) {
+            //* Get the owner address of NFT with token ID.
+            address ownerAddress = IERC721(nftAddress).ownerOf(tokenId);
+            // console.log("ownerAddress: ", ownerAddress);
+            return ownerAddress;
         } else {
             return address(0);
         }

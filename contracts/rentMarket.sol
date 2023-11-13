@@ -1507,43 +1507,12 @@ contract rentMarket is Ownable, Pausable {
         address sender_
     ) private view returns (bool result) {
         return utilFunctions.checkRegister(nftAddress_, sender_);
-
-        // //* Check nftAddress_ has IRentNFT interface.
-        // bool supportInterfaceResult = nftAddress_.supportsInterface(
-        //     type(IRentNFT).interfaceId
-        // );
-
-        // //* Call checkRegisterRole function and return result.
-        // if (supportInterfaceResult == true) {
-        //     //* Get the owner address of NFT with token ID.
-        //     bool response = IRentNFT(nftAddress_).checkRegisterRole(sender_);
-        //     // console.log("response: ", response);
-        //     return response;
-        // } else {
-        //     return false;
-        // }
     }
 
     function getNFTOwner(
         address nftAddress,
         uint256 tokenId
-    ) private returns (address) {
+    ) private view returns (address ownerAddress_) {
         return utilFunctions.getNFTOwner(nftAddress, tokenId);
-
-        // bool response;
-        // bytes memory responseData;
-
-        // //* Get the owner address of NFT with token ID.
-        // (response, responseData) = nftAddress.call(
-        //     abi.encodeWithSignature("ownerOf(uint256)", tokenId)
-        // );
-
-        // // console.log("response: ", response);
-        // //* Check sender address is same as owner address of NFT.
-        // if (response == true) {
-        //     return abi.decode(responseData, (address));
-        // } else {
-        //     return address(0);
-        // }
     }
 }
