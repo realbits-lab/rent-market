@@ -22,6 +22,18 @@ library pendingRentFeeIterableMap {
         string[] keys;
     }
 
+    function getAllPendingRentFee(
+        pendingRentFeeMap storage self
+    ) public view returns (pendingRentFee[] memory) {
+        pendingRentFee[] memory data = new pendingRentFee[](self.keys.length);
+
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            data[i] = self.data[self.keys[i]].data;
+        }
+
+        return data;
+    }
+
     function encodeKey(
         address renterAddress,
         address serviceAddress,
@@ -261,6 +273,18 @@ library accountBalanceIterableMap {
     struct accountBalanceMap {
         mapping(string => accountBalanceEntry) data;
         string[] keys;
+    }
+
+    function getAllAccountBalance(
+        accountBalanceMap storage self
+    ) public view returns (accountBalance[] memory) {
+        accountBalance[] memory data = new accountBalance[](self.keys.length);
+
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            data[i] = self.data[self.keys[i]].data;
+        }
+
+        return data;
     }
 
     function encodeKey(
@@ -576,6 +600,18 @@ library collectionDataIterableMap {
         string[] keys;
     }
 
+    function getAllCollectionData(
+        collectionDataMap storage self
+    ) public view returns (collectionData[] memory) {
+        collectionData[] memory data = new collectionData[](self.keys.length);
+
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            data[i] = self.data[self.keys[i]].data;
+        }
+
+        return data;
+    }
+
     function encodeKey(
         address collectionAddress
     ) public pure returns (string memory) {
@@ -709,6 +745,18 @@ library serviceDataIterableMap {
     struct serviceDataMap {
         mapping(string => serviceDataEntry) data;
         string[] keys;
+    }
+
+    function getAllServiceData(
+        serviceDataMap storage self
+    ) public view returns (serviceData[] memory) {
+        serviceData[] memory data = new serviceData[](self.keys.length);
+
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            data[i] = self.data[self.keys[i]].data;
+        }
+
+        return data;
     }
 
     function encodeKey(
@@ -846,6 +894,18 @@ library registerDataIterableMap {
     struct registerDataMap {
         mapping(string => registerDataEntry) data;
         string[] keys;
+    }
+
+    function getAllRegisterData(
+        registerDataMap storage self
+    ) public view returns (registerData[] memory) {
+        registerData[] memory data = new registerData[](self.keys.length);
+
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            data[i] = self.data[self.keys[i]].data;
+        }
+
+        return data;
     }
 
     function encodeKey(
@@ -1019,6 +1079,18 @@ library rentDataIterableMap {
     struct rentDataMap {
         mapping(string => rentDataEntry) data;
         string[] keys;
+    }
+
+    function getAllRentData(
+        rentDataMap storage self
+    ) public view returns (rentData[] memory) {
+        rentData[] memory data = new rentData[](self.keys.length);
+
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            data[i] = self.data[self.keys[i]].data;
+        }
+
+        return data;
     }
 
     function encodeKey(

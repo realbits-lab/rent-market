@@ -269,16 +269,18 @@ contract rentMarket is Ownable, Pausable {
         view
         returns (collectionDataIterableMap.collectionData[] memory)
     {
-        collectionDataIterableMap.collectionData[]
-            memory data = new collectionDataIterableMap.collectionData[](
-                collectionItMap.keys.length
-            );
+        return collectionItMap.getAllCollectionData();
 
-        for (uint256 i = 0; i < collectionItMap.keys.length; i++) {
-            data[i] = collectionItMap.data[collectionItMap.keys[i]].data;
-        }
+        // collectionDataIterableMap.collectionData[]
+        //     memory data = new collectionDataIterableMap.collectionData[](
+        //         collectionItMap.keys.length
+        //     );
 
-        return data;
+        // for (uint256 i = 0; i < collectionItMap.keys.length; i++) {
+        //     data[i] = collectionItMap.data[collectionItMap.keys[i]].data;
+        // }
+
+        // return data;
     }
 
     /// @dev Return matched collection data with collection address.
@@ -366,16 +368,18 @@ contract rentMarket is Ownable, Pausable {
         view
         returns (serviceDataIterableMap.serviceData[] memory)
     {
-        serviceDataIterableMap.serviceData[]
-            memory data = new serviceDataIterableMap.serviceData[](
-                serviceItMap.keys.length
-            );
+        return serviceItMap.getAllServiceData();
 
-        for (uint256 i = 0; i < serviceItMap.keys.length; i++) {
-            data[i] = serviceItMap.data[serviceItMap.keys[i]].data;
-        }
+        // serviceDataIterableMap.serviceData[]
+        //     memory data = new serviceDataIterableMap.serviceData[](
+        //         serviceItMap.keys.length
+        //     );
 
-        return data;
+        // for (uint256 i = 0; i < serviceItMap.keys.length; i++) {
+        //     data[i] = serviceItMap.data[serviceItMap.keys[i]].data;
+        // }
+
+        // return data;
     }
 
     /// @dev Return matched service data with service address.
@@ -489,24 +493,26 @@ contract rentMarket is Ownable, Pausable {
         view
         returns (registerDataIterableMap.registerData[] memory)
     {
-        registerDataIterableMap.registerData[]
-            memory data = new registerDataIterableMap.registerData[](
-                registerDataItMap.keys.length
-            );
+        return registerDataItMap.getAllRegisterData();
 
-        for (uint256 i = 0; i < registerDataItMap.keys.length; i++) {
-            data[i] = registerDataItMap.data[registerDataItMap.keys[i]].data;
-        }
+        // registerDataIterableMap.registerData[]
+        //     memory data = new registerDataIterableMap.registerData[](
+        //         registerDataItMap.keys.length
+        //     );
 
-        // struct registerData {
-        //     address nftAddress;
-        //     uint256 tokenId;
-        //     uint256 rentFee;
-        //     address feeTokenAddress;
-        //     uint256 rentFeeByToken;
-        //     uint256 rentDuration;
+        // for (uint256 i = 0; i < registerDataItMap.keys.length; i++) {
+        //     data[i] = registerDataItMap.data[registerDataItMap.keys[i]].data;
         // }
-        return data;
+
+        // // struct registerData {
+        // //     address nftAddress;
+        // //     uint256 tokenId;
+        // //     uint256 rentFee;
+        // //     address feeTokenAddress;
+        // //     uint256 rentFeeByToken;
+        // //     uint256 rentDuration;
+        // // }
+        // return data;
     }
 
     /// @dev Return matched registered data with NFT address and token ID
@@ -749,16 +755,18 @@ contract rentMarket is Ownable, Pausable {
         view
         returns (rentDataIterableMap.rentData[] memory)
     {
-        rentDataIterableMap.rentData[]
-            memory data = new rentDataIterableMap.rentData[](
-                rentDataItMap.keys.length
-            );
+        return rentDataItMap.getAllRentData();
 
-        for (uint256 i = 0; i < rentDataItMap.keys.length; i++) {
-            data[i] = rentDataItMap.data[rentDataItMap.keys[i]].data;
-        }
+        // rentDataIterableMap.rentData[]
+        //     memory data = new rentDataIterableMap.rentData[](
+        //         rentDataItMap.keys.length
+        //     );
 
-        return data;
+        // for (uint256 i = 0; i < rentDataItMap.keys.length; i++) {
+        //     data[i] = rentDataItMap.data[rentDataItMap.keys[i]].data;
+        // }
+
+        // return data;
     }
 
     /// @dev Return matched rented data with NFT address and token ID
@@ -1255,16 +1263,18 @@ contract rentMarket is Ownable, Pausable {
         view
         returns (pendingRentFeeIterableMap.pendingRentFee[] memory)
     {
-        pendingRentFeeIterableMap.pendingRentFee[]
-            memory data = new pendingRentFeeIterableMap.pendingRentFee[](
-                pendingRentFeeMap.keys.length
-            );
+        return pendingRentFeeMap.getAllPendingRentFee();
 
-        for (uint256 i = 0; i < pendingRentFeeMap.keys.length; i++) {
-            data[i] = pendingRentFeeMap.data[pendingRentFeeMap.keys[i]].data;
-        }
+        // pendingRentFeeIterableMap.pendingRentFee[]
+        //     memory data = new pendingRentFeeIterableMap.pendingRentFee[](
+        //         pendingRentFeeMap.keys.length
+        //     );
 
-        return data;
+        // for (uint256 i = 0; i < pendingRentFeeMap.keys.length; i++) {
+        //     data[i] = pendingRentFeeMap.data[pendingRentFeeMap.keys[i]].data;
+        // }
+
+        // return data;
     }
 
     /// @dev Return all account balance data as array type
@@ -1274,18 +1284,20 @@ contract rentMarket is Ownable, Pausable {
         view
         returns (accountBalanceIterableMap.accountBalance[] memory)
     {
-        accountBalanceIterableMap.accountBalance[]
-            memory data = new accountBalanceIterableMap.accountBalance[](
-                accountBalanceItMap.keys.length
-            );
+        accountBalanceItMap.getAllAccountBalance();
 
-        for (uint256 i = 0; i < accountBalanceItMap.keys.length; i++) {
-            data[i] = accountBalanceItMap
-                .data[accountBalanceItMap.keys[i]]
-                .data;
-        }
+        // accountBalanceIterableMap.accountBalance[]
+        //     memory data = new accountBalanceIterableMap.accountBalance[](
+        //         accountBalanceItMap.keys.length
+        //     );
 
-        return data;
+        // for (uint256 i = 0; i < accountBalanceItMap.keys.length; i++) {
+        //     data[i] = accountBalanceItMap
+        //         .data[accountBalanceItMap.keys[i]]
+        //         .data;
+        // }
+
+        // return data;
     }
 
     /// @dev Return total account accumulated balance value
