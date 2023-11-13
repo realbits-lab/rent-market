@@ -1284,7 +1284,7 @@ contract rentMarket is Ownable, Pausable {
         view
         returns (accountBalanceIterableMap.accountBalance[] memory)
     {
-        accountBalanceItMap.getAllAccountBalance();
+        return accountBalanceItMap.getAllAccountBalance();
 
         // accountBalanceIterableMap.accountBalance[]
         //     memory data = new accountBalanceIterableMap.accountBalance[](
