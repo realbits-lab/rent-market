@@ -66,19 +66,20 @@ foo@bar:~$ npm run build:production
 
 ## If you change rent market contract
 
+### Change development configuration
 - Change rent market contract address in prompt-nft .env
 - Change rent market contract address in rent-content .env
 - Change rent market contract address in rent-market .env
 
-- Re-register collection
+### Re-register
+- Re-register collection (including payment nft)
 - Re-register service
 - Re-register token
 
-- Re-register payment nft
-- Re-register other nfts
-
+### Change prompt nft configuration
 - Change rent market address in prompt nft
 
+### Change production service configuration
 - Change fictures service configuration
 - Change market service configuration
 - Change other services configuration
