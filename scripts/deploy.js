@@ -266,6 +266,12 @@ task("deployRentMarket", "Deploy the rentMarket contract")
     const rentDataIterableMapLibrary =
       await rentDataIterableMapContract.deploy();
 
+    console.log("Try to deploy a utilFunctions.");
+    const utilFunctionsContract = await hre.ethers.getContractFactory(
+      "utilFunctions"
+    );
+    const utilFunctionsLibrary = await utilFunctionsContract.deploy();
+
     //* Wait all deployments.
     console.log("Wait all deployments.");
     await pendingRentFeeIterableMapLibrary.deployed();
@@ -275,6 +281,7 @@ task("deployRentMarket", "Deploy the rentMarket contract")
     await serviceDataIterableMapLibrary.deployed();
     await registerDataIterableMapLibrary.deployed();
     await rentDataIterableMapLibrary.deployed();
+    await utilFunctionsLibrary.deployed();
 
     //* Deploy rentMarket smart contract.
     console.log("Try to get a rentMarketContract.");
@@ -296,6 +303,7 @@ task("deployRentMarket", "Deploy the rentMarket contract")
             registerDataIterableMapLibrary.deployTransaction.creates,
           rentDataIterableMap:
             rentDataIterableMapLibrary.deployTransaction.creates,
+          utilFunctions: utilFunctionsLibrary.deployTransaction.creates,
         },
       }
     );
