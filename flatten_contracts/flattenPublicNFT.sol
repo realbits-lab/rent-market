@@ -2204,7 +2204,7 @@ library Counters {
 }
 
 
-// File contracts/rentNFT.sol
+// File contracts/publicNFT.sol
 
 // License-Identifier: Apache-2.0
 pragma solidity ^0.8.9;
@@ -2215,11 +2215,11 @@ pragma solidity ^0.8.9;
 
 
 
-/// @title A rentNFT contract.
+/// @title A publicNFT contract.
 /// @author A realbits software development team.
 /// @notice You can use this contract for building and deploying NFT.
 /// @dev All function calls are currently being tested.
-contract rentNFT is
+contract publicNFT is
     IRentNFT,
     ERC721,
     ERC721Enumerable,
@@ -2230,7 +2230,7 @@ contract rentNFT is
     using Counters for Counters.Counter;
 
     /// @dev Version.
-    string public VERSION = "0.0.5";
+    string public VERSION = "0.0.1";
 
     /// @notice Token ID counter variable
     /// @dev Token ID counter variable
@@ -2276,12 +2276,9 @@ contract rentNFT is
     }
 
     /// @notice Register can register NFT even though register is not the owner of the NFT.
-    function checkRegisterRole(address registerAddress)
-        public
-        view
-        override
-        returns (bool result)
-    {
+    function checkRegisterRole(
+        address registerAddress
+    ) public view override returns (bool result) {
         return hasRole(REGISTER_ROLE, registerAddress);
     }
 
@@ -2295,10 +2292,9 @@ contract rentNFT is
     /// @notice Set base URI of token
     /// @dev Only sender who has SETTER_ROLE can set base URI
     /// @param baseTokenURI_ URI of token as string
-    function setBaseURI(string memory baseTokenURI_)
-        public
-        onlyRole(SETTER_ROLE)
-    {
+    function setBaseURI(
+        string memory baseTokenURI_
+    ) public onlyRole(SETTER_ROLE) {
         _baseTokenURI = baseTokenURI_;
     }
 
@@ -2324,26 +2320,11 @@ contract rentNFT is
     /// @notice Mint NFT with auto incremented token ID
     /// @dev After increasing token ID, call _safeMint function in ERC721.sol
     /// @param to_ Receiver address who will receive minted NFT
-    function safeMint(address to_) public onlyRole(MINTER_ROLE) {
+    function safeMint(address to_) public {
         // Make token id start from 1.
         _tokenIdCounter.increment();
         uint256 tokenId = _tokenIdCounter.current();
         _safeMint(to_, tokenId);
-    }
-
-    /// @notice Mint NFT by amount
-    /// @dev Loop calling _safeMint function by amount
-    /// @param to_ Receiver address who will receive minted NFT
-    /// @param amount_ Amount by which NFT will be minted
-    function safeMintAmount(address to_, uint256 amount_)
-        public
-        onlyRole(MINTER_ROLE)
-    {
-        for (uint256 i = 0; i < amount_; i++) {
-            _tokenIdCounter.increment();
-            uint256 tokenId = _tokenIdCounter.current();
-            _safeMint(to_, tokenId);
-        }
     }
 
     /// @notice Hook function which is called before token will be transfered
@@ -2365,7 +2346,9 @@ contract rentNFT is
     /// @dev Override this function from ERC721 and ERC721Enumerable and AccessControl
     /// @param interfaceId interface ID as bytes4
     /// @return success or failure
-    function supportsInterface(bytes4 interfaceId)
+    function supportsInterface(
+        bytes4 interfaceId
+    )
         public
         view
         override(IERC165, ERC721, ERC721Enumerable, AccessControl)
