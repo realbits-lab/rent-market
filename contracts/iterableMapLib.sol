@@ -499,18 +499,6 @@ library tokenDataIterableMap {
         string[] keys;
     }
 
-    function getAllToken(
-        tokenDataMap storage self
-    ) public view returns (tokenData[] memory) {
-        tokenData[] memory data = new tokenData[](self.keys.length);
-
-        for (uint256 i = 0; i < self.keys.length; i++) {
-            data[i] = self.data[self.keys[i]].data;
-        }
-
-        return data;
-    }
-
     function encodeKey(
         address tokenAddress
     ) public pure returns (string memory) {
@@ -602,6 +590,18 @@ library tokenDataIterableMap {
     ) public view returns (string memory) {
         string memory key = encodeKey(tokenAddress);
         return self.data[key].data.name;
+    }
+
+    function getAll(
+        tokenDataMap storage self
+    ) public view returns (tokenData[] memory) {
+        tokenData[] memory data = new tokenData[](self.keys.length);
+
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            data[i] = self.data[self.keys[i]].data;
+        }
+
+        return data;
     }
 
     function getByAddress(

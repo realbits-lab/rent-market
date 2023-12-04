@@ -3,6 +3,7 @@ require("@nomiclabs/hardhat-ethers");
 require("@nomiclabs/hardhat-etherscan");
 require("@nomiclabs/hardhat-waffle");
 require("solidity-docgen");
+require('hardhat-contract-sizer');
 // require("hardhat-ethernal");
 
 require("./scripts/deploy.js");
