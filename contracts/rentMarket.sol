@@ -346,18 +346,7 @@ contract rentMarket is Ownable, Pausable {
         view
         returns (serviceDataIterableMap.serviceData[] memory)
     {
-        return serviceItMap.getAllServiceData();
-
-        // serviceDataIterableMap.serviceData[]
-        //     memory data = new serviceDataIterableMap.serviceData[](
-        //         serviceItMap.keys.length
-        //     );
-
-        // for (uint256 i = 0; i < serviceItMap.keys.length; i++) {
-        //     data[i] = serviceItMap.data[serviceItMap.keys[i]].data;
-        // }
-
-        // return data;
+        return serviceItMap.getAll();
     }
 
     /// @dev Return matched service data with service address.

@@ -791,18 +791,6 @@ library serviceDataIterableMap {
         string[] keys;
     }
 
-    function getAllServiceData(
-        serviceDataMap storage self
-    ) public view returns (serviceData[] memory) {
-        serviceData[] memory data = new serviceData[](self.keys.length);
-
-        for (uint256 i = 0; i < self.keys.length; i++) {
-            data[i] = self.data[self.keys[i]].data;
-        }
-
-        return data;
-    }
-
     function encodeKey(
         address serviceAddress
     ) public pure returns (string memory) {
@@ -894,6 +882,18 @@ library serviceDataIterableMap {
     ) public view returns (string memory) {
         string memory key = encodeKey(serviceAddress);
         return self.data[key].data.uri;
+    }
+
+    function getAll(
+        serviceDataMap storage self
+    ) public view returns (serviceData[] memory) {
+        serviceData[] memory data = new serviceData[](self.keys.length);
+
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            data[i] = self.data[self.keys[i]].data;
+        }
+
+        return data;
     }
 
     function getByAddress(
