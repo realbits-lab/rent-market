@@ -22,18 +22,6 @@ library pendingRentFeeIterableMap {
         string[] keys;
     }
 
-    function getAllPendingRentFee(
-        pendingRentFeeMap storage self
-    ) public view returns (pendingRentFee[] memory) {
-        pendingRentFee[] memory data = new pendingRentFee[](self.keys.length);
-
-        for (uint256 i = 0; i < self.keys.length; i++) {
-            data[i] = self.data[self.keys[i]].data;
-        }
-
-        return data;
-    }
-
     function encodeKey(
         address renterAddress,
         address serviceAddress,
@@ -228,6 +216,62 @@ library pendingRentFeeIterableMap {
         return self.data[key].data.amount;
     }
 
+    function getAll(
+        pendingRentFeeMap storage self
+    ) public view returns (pendingRentFee[] memory) {
+        pendingRentFee[] memory data = new pendingRentFee[](self.keys.length);
+
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            data[i] = self.data[self.keys[i]].data;
+        }
+
+        return data;
+    }
+
+    function getByRenterAddress(
+        pendingRentFeeMap storage self,
+        address renterAddress
+    ) public view returns (pendingRentFee[] memory) {
+        uint256 count = 0;
+
+        pendingRentFee[] memory data = new pendingRentFee[](self.keys.length);
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            if (self.data[self.keys[i]].data.renterAddress == renterAddress) {
+                data[i] = self.data[self.keys[i]].data;
+                count = count + 1;
+            }
+        }
+
+        pendingRentFee[] memory returnData = new pendingRentFee[](count);
+        for (uint256 i = 0; i < count; i++) {
+            returnData[i] = data[i];
+        }
+
+        return returnData;
+    }
+
+    function getByServiceAddress(
+        pendingRentFeeMap storage self,
+        address serviceAddress
+    ) public view returns (pendingRentFee[] memory) {
+        uint256 count = 0;
+
+        pendingRentFee[] memory data = new pendingRentFee[](self.keys.length);
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            if (self.data[self.keys[i]].data.serviceAddress == serviceAddress) {
+                data[i] = self.data[self.keys[i]].data;
+                count = count + 1;
+            }
+        }
+
+        pendingRentFee[] memory returnData = new pendingRentFee[](count);
+        for (uint256 i = 0; i < count; i++) {
+            returnData[i] = data[i];
+        }
+
+        return returnData;
+    }
+
     function getByAddress(
         pendingRentFeeMap storage self,
         address renterAddress,
@@ -273,18 +317,6 @@ library accountBalanceIterableMap {
     struct accountBalanceMap {
         mapping(string => accountBalanceEntry) data;
         string[] keys;
-    }
-
-    function getAllAccountBalance(
-        accountBalanceMap storage self
-    ) public view returns (accountBalance[] memory) {
-        accountBalance[] memory data = new accountBalance[](self.keys.length);
-
-        for (uint256 i = 0; i < self.keys.length; i++) {
-            data[i] = self.data[self.keys[i]].data;
-        }
-
-        return data;
     }
 
     function encodeKey(
@@ -414,6 +446,34 @@ library accountBalanceIterableMap {
         return self.data[key].data.amount;
     }
 
+    function getAll(
+        accountBalanceMap storage self
+    ) public view returns (accountBalance[] memory) {
+        accountBalance[] memory data = new accountBalance[](self.keys.length);
+
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            data[i] = self.data[self.keys[i]].data;
+        }
+
+        return data;
+    }
+
+    function getTotalBalance(
+        accountBalanceMap storage self,
+        address tokenAddress
+    ) public view returns (uint256) {
+        uint256 totalBalance = 0;
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            if (self.data[self.keys[i]].data.tokenAddress == tokenAddress) {
+                totalBalance =
+                    totalBalance +
+                    self.data[self.keys[i]].data.amount;
+            }
+        }
+
+        return totalBalance;
+    }
+
     function getByAddress(
         accountBalanceMap storage self,
         address accountAddress,
@@ -453,18 +513,6 @@ library tokenDataIterableMap {
     struct tokenDataMap {
         mapping(string => tokenDataEntry) data;
         string[] keys;
-    }
-
-    function getAllToken(
-        tokenDataMap storage self
-    ) public view returns (tokenData[] memory) {
-        tokenData[] memory data = new tokenData[](self.keys.length);
-
-        for (uint256 i = 0; i < self.keys.length; i++) {
-            data[i] = self.data[self.keys[i]].data;
-        }
-
-        return data;
     }
 
     function encodeKey(
@@ -560,6 +608,18 @@ library tokenDataIterableMap {
         return self.data[key].data.name;
     }
 
+    function getAll(
+        tokenDataMap storage self
+    ) public view returns (tokenData[] memory) {
+        tokenData[] memory data = new tokenData[](self.keys.length);
+
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            data[i] = self.data[self.keys[i]].data;
+        }
+
+        return data;
+    }
+
     function getByAddress(
         tokenDataMap storage self,
         address tokenAddress
@@ -598,18 +658,6 @@ library collectionDataIterableMap {
     struct collectionDataMap {
         mapping(string => collectionDataEntry) data;
         string[] keys;
-    }
-
-    function getAllCollectionData(
-        collectionDataMap storage self
-    ) public view returns (collectionData[] memory) {
-        collectionData[] memory data = new collectionData[](self.keys.length);
-
-        for (uint256 i = 0; i < self.keys.length; i++) {
-            data[i] = self.data[self.keys[i]].data;
-        }
-
-        return data;
     }
 
     function encodeKey(
@@ -707,6 +755,18 @@ library collectionDataIterableMap {
         return self.data[key].data.uri;
     }
 
+    function getAll(
+        collectionDataMap storage self
+    ) public view returns (collectionData[] memory) {
+        collectionData[] memory data = new collectionData[](self.keys.length);
+
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            data[i] = self.data[self.keys[i]].data;
+        }
+
+        return data;
+    }
+
     function getByAddress(
         collectionDataMap storage self,
         address collectionAddress
@@ -745,18 +805,6 @@ library serviceDataIterableMap {
     struct serviceDataMap {
         mapping(string => serviceDataEntry) data;
         string[] keys;
-    }
-
-    function getAllServiceData(
-        serviceDataMap storage self
-    ) public view returns (serviceData[] memory) {
-        serviceData[] memory data = new serviceData[](self.keys.length);
-
-        for (uint256 i = 0; i < self.keys.length; i++) {
-            data[i] = self.data[self.keys[i]].data;
-        }
-
-        return data;
     }
 
     function encodeKey(
@@ -852,6 +900,18 @@ library serviceDataIterableMap {
         return self.data[key].data.uri;
     }
 
+    function getAll(
+        serviceDataMap storage self
+    ) public view returns (serviceData[] memory) {
+        serviceData[] memory data = new serviceData[](self.keys.length);
+
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            data[i] = self.data[self.keys[i]].data;
+        }
+
+        return data;
+    }
+
     function getByAddress(
         serviceDataMap storage self,
         address serviceAddress
@@ -894,18 +954,6 @@ library registerDataIterableMap {
     struct registerDataMap {
         mapping(string => registerDataEntry) data;
         string[] keys;
-    }
-
-    function getAllRegisterData(
-        registerDataMap storage self
-    ) public view returns (registerData[] memory) {
-        registerData[] memory data = new registerData[](self.keys.length);
-
-        for (uint256 i = 0; i < self.keys.length; i++) {
-            data[i] = self.data[self.keys[i]].data;
-        }
-
-        return data;
     }
 
     function encodeKey(
@@ -1031,6 +1079,49 @@ library registerDataIterableMap {
         return self.keys.length;
     }
 
+    /// @dev Return all registered data as array type
+    /// @param self Self class
+    /// @return All registered data as array
+    function getAll(
+        registerDataMap storage self
+    ) public view returns (registerData[] memory) {
+        registerData[] memory data = new registerData[](self.keys.length);
+
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            data[i] = self.data[self.keys[i]].data;
+        }
+
+        return data;
+    }
+
+    /// @dev Return all registered data which has nft address
+    /// @param self Self class
+    /// @param nftAddress Self class
+    /// @return All registered data which has nft address
+    function getByCollection(
+        registerDataMap storage self,
+        address nftAddress
+    ) public view returns (registerData[] memory) {
+        uint256 count = 0;
+
+        // Filter with nft address through all register data.
+        registerData[] memory data = new registerData[](self.keys.length);
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            if (self.data[self.keys[i]].data.nftAddress == nftAddress) {
+                data[count] = self.data[self.keys[i]].data;
+                count = count + 1;
+            }
+        }
+
+        // Copy only filtered data with collection address.
+        registerData[] memory returnData = new registerData[](count);
+        for (uint256 i = 0; i < count; i++) {
+            returnData[i] = data[i];
+        }
+
+        return returnData;
+    }
+
     function getByNFT(
         registerDataMap storage self,
         address nftAddress,
@@ -1079,18 +1170,6 @@ library rentDataIterableMap {
     struct rentDataMap {
         mapping(string => rentDataEntry) data;
         string[] keys;
-    }
-
-    function getAllRentData(
-        rentDataMap storage self
-    ) public view returns (rentData[] memory) {
-        rentData[] memory data = new rentData[](self.keys.length);
-
-        for (uint256 i = 0; i < self.keys.length; i++) {
-            data[i] = self.data[self.keys[i]].data;
-        }
-
-        return data;
     }
 
     function encodeKey(
@@ -1202,6 +1281,73 @@ library rentDataIterableMap {
 
     function size(rentDataMap storage self) public view returns (uint256) {
         return self.keys.length;
+    }
+
+    /// @dev Return all rented data as array type
+    /// @param self Self class
+    /// @return All rented data as array
+    function getAll(
+        rentDataMap storage self
+    ) public view returns (rentData[] memory) {
+        rentData[] memory data = new rentData[](self.keys.length);
+
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            data[i] = self.data[self.keys[i]].data;
+        }
+
+        return data;
+    }
+
+    /// @dev Return all rented data which has nft address
+    /// @param self Self class
+    /// @param nftAddress Nft address
+    /// @return All rented data which has nft address
+    function getByNftAddress(
+        rentDataMap storage self,
+        address nftAddress
+    ) public view returns (rentData[] memory) {
+        uint256 count = 0;
+
+        rentData[] memory data = new rentData[](self.keys.length);
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            if (self.data[self.keys[i]].data.nftAddress == nftAddress) {
+                data[i] = self.data[self.keys[i]].data;
+                count = count + 1;
+            }
+        }
+
+        rentData[] memory returnData = new rentData[](count);
+        for (uint256 i = 0; i < count; i++) {
+            returnData[i] = data[i];
+        }
+
+        return returnData;
+    }
+
+    /// @dev Return all rented data which has rentee address
+    /// @param self Self class
+    /// @param renteeAddress Rentee address
+    /// @return All rented data which has nft address
+    function getByRenteeAddress(
+        rentDataMap storage self,
+        address renteeAddress
+    ) public view returns (rentData[] memory) {
+        uint256 count = 0;
+
+        rentData[] memory data = new rentData[](self.keys.length);
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            if (self.data[self.keys[i]].data.renteeAddress == renteeAddress) {
+                data[i] = self.data[self.keys[i]].data;
+                count = count + 1;
+            }
+        }
+
+        rentData[] memory returnData = new rentData[](count);
+        for (uint256 i = 0; i < count; i++) {
+            returnData[i] = data[i];
+        }
+
+        return returnData;
     }
 
     function getByRentData(

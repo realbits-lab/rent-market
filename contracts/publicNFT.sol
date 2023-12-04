@@ -3,6 +3,7 @@ pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
@@ -17,6 +18,7 @@ contract publicNFT is
     IRentNFT,
     ERC721,
     ERC721Enumerable,
+    ERC721URIStorage,
     Pausable,
     AccessControl,
     ERC721Burnable
@@ -33,6 +35,9 @@ contract publicNFT is
     /// @notice Base token URI variable
     /// @dev Base token URI variable
     string private _baseTokenURI;
+
+    /// @notice Flag for a public minting.
+    bool private _publicMint = false;
 
     /// @notice PAUSER_ROLE
     /// @dev PAUSER_ROLE
@@ -54,7 +59,7 @@ contract publicNFT is
     /// @dev Set base token URI and set each role of DEFAULT_ADMIN_ROLE, PAUSER_ROLE, MINTER_ROLE, and SETTER_ROLE
     /// @param name_ NFT token name
     /// @param symbol_ NFT token symbol
-    /// @param baseTokenURI_ base URI of NFT token
+    /// @param baseTokenURI_ base URI of NFT token. Set "" if you want to use ERC721URIStorage.
     constructor(
         string memory name_,
         string memory symbol_,
@@ -92,6 +97,16 @@ contract publicNFT is
         _baseTokenURI = baseTokenURI_;
     }
 
+    /// @notice Get URI of token
+    /// @dev Call the super function for getting token uri.
+    /// @param tokenId Token ID
+    /// @return Token URI
+    function tokenURI(
+        uint256 tokenId
+    ) public view override(ERC721, ERC721URIStorage) returns (string memory) {
+        return super.tokenURI(tokenId);
+    }
+
     /// @notice Get base URI of token
     /// @dev Return _baseTokenURI variable
     /// @return base URI of token as string
@@ -111,14 +126,41 @@ contract publicNFT is
         _unpause();
     }
 
+    function setPublicMint(bool publicMint_) public onlyRole(MINTER_ROLE) {
+        _publicMint = publicMint_;
+    }
+
     /// @notice Mint NFT with auto incremented token ID
     /// @dev After increasing token ID, call _safeMint function in ERC721.sol
     /// @param to_ Receiver address who will receive minted NFT
-    function safeMint(address to_) public {
+    // function safeMint(address to_) public {
+    //     require(
+    //         _publicMint == true || hasRole(MINTER_ROLE, msg.sender) == true,
+    //         "Not public mint or sender is not owner."
+    //     );
+
+    //     // Make token id start from 1.
+    //     _tokenIdCounter.increment();
+    //     uint256 tokenId = _tokenIdCounter.current();
+    //     _safeMint(to_, tokenId);
+    // }
+
+    /// @notice Mint NFT with token ID and URI
+    /// @dev Call _safeMint function in ERC721.sol with token ID and URI. Set token URI map to token ID.
+    /// @param to_ Receiver address who will receive minted NFT
+    /// @param uri_ Token URI
+    function safeMint(address to_, string memory uri_) public {
+        // Check the right for minting.
+        require(
+            _publicMint == true || hasRole(MINTER_ROLE, msg.sender) == true,
+            "Not public mint or sender is not owner."
+        );
+
         // Make token id start from 1.
         _tokenIdCounter.increment();
         uint256 tokenId = _tokenIdCounter.current();
         _safeMint(to_, tokenId);
+        _setTokenURI(tokenId, uri_);
     }
 
     /// @notice Hook function which is called before token will be transfered
@@ -136,6 +178,12 @@ contract publicNFT is
         super._beforeTokenTransfer(from, to, tokenId, batchSize);
     }
 
+    function _burn(
+        uint256 tokenId
+    ) internal override(ERC721, ERC721URIStorage) {
+        super._burn(tokenId);
+    }
+
     /// @notice Check function where or not supporting a specific interface
     /// @dev Override this function from ERC721 and ERC721Enumerable and AccessControl
     /// @param interfaceId interface ID as bytes4
@@ -145,7 +193,13 @@ contract publicNFT is
     )
         public
         view
-        override(IERC165, ERC721, ERC721Enumerable, AccessControl)
+        override(
+            IERC165,
+            ERC721,
+            ERC721Enumerable,
+            ERC721URIStorage,
+            AccessControl
+        )
         returns (bool)
     {
         return

@@ -180,18 +180,7 @@ contract rentMarket is Ownable, Pausable {
         view
         returns (tokenDataIterableMap.tokenData[] memory)
     {
-        return tokenItMap.getAllToken();
-
-        // tokenDataIterableMap.tokenData[]
-        //     memory data = new tokenDataIterableMap.tokenData[](
-        //         tokenItMap.keys.length
-        //     );
-
-        // for (uint256 i = 0; i < tokenItMap.keys.length; i++) {
-        //     data[i] = tokenItMap.data[tokenItMap.keys[i]].data;
-        // }
-
-        // return data;
+        return tokenItMap.getAll();
     }
 
     //*-------------------------------------------------------------------------
@@ -269,18 +258,7 @@ contract rentMarket is Ownable, Pausable {
         view
         returns (collectionDataIterableMap.collectionData[] memory)
     {
-        return collectionItMap.getAllCollectionData();
-
-        // collectionDataIterableMap.collectionData[]
-        //     memory data = new collectionDataIterableMap.collectionData[](
-        //         collectionItMap.keys.length
-        //     );
-
-        // for (uint256 i = 0; i < collectionItMap.keys.length; i++) {
-        //     data[i] = collectionItMap.data[collectionItMap.keys[i]].data;
-        // }
-
-        // return data;
+        return collectionItMap.getAll();
     }
 
     /// @dev Return matched collection data with collection address.
@@ -368,18 +346,7 @@ contract rentMarket is Ownable, Pausable {
         view
         returns (serviceDataIterableMap.serviceData[] memory)
     {
-        return serviceItMap.getAllServiceData();
-
-        // serviceDataIterableMap.serviceData[]
-        //     memory data = new serviceDataIterableMap.serviceData[](
-        //         serviceItMap.keys.length
-        //     );
-
-        // for (uint256 i = 0; i < serviceItMap.keys.length; i++) {
-        //     data[i] = serviceItMap.data[serviceItMap.keys[i]].data;
-        // }
-
-        // return data;
+        return serviceItMap.getAll();
     }
 
     /// @dev Return matched service data with service address.
@@ -493,26 +460,16 @@ contract rentMarket is Ownable, Pausable {
         view
         returns (registerDataIterableMap.registerData[] memory)
     {
-        return registerDataItMap.getAllRegisterData();
+        return registerDataItMap.getAll();
+    }
 
-        // registerDataIterableMap.registerData[]
-        //     memory data = new registerDataIterableMap.registerData[](
-        //         registerDataItMap.keys.length
-        //     );
-
-        // for (uint256 i = 0; i < registerDataItMap.keys.length; i++) {
-        //     data[i] = registerDataItMap.data[registerDataItMap.keys[i]].data;
-        // }
-
-        // // struct registerData {
-        // //     address nftAddress;
-        // //     uint256 tokenId;
-        // //     uint256 rentFee;
-        // //     address feeTokenAddress;
-        // //     uint256 rentFeeByToken;
-        // //     uint256 rentDuration;
-        // // }
-        // return data;
+    /// @dev Return matched registered data with NFT address
+    /// @param nftAddress NFT address
+    /// @return Matched registered data
+    function getRegisterDataByCollection(
+        address nftAddress
+    ) public view returns (registerDataIterableMap.registerData[] memory) {
+        return registerDataItMap.getByCollection(nftAddress);
     }
 
     /// @dev Return matched registered data with NFT address and token ID
@@ -755,23 +712,31 @@ contract rentMarket is Ownable, Pausable {
         view
         returns (rentDataIterableMap.rentData[] memory)
     {
-        return rentDataItMap.getAllRentData();
+        return rentDataItMap.getAll();
+    }
 
-        // rentDataIterableMap.rentData[]
-        //     memory data = new rentDataIterableMap.rentData[](
-        //         rentDataItMap.keys.length
-        //     );
+    /// @dev Return matched rented data with NFT address
+    /// @param nftAddress NFT address
+    /// @return Matched rented data
+    function getRentDataByNftAddress(
+        address nftAddress
+    ) public view returns (rentDataIterableMap.rentData[] memory) {
+        return rentDataItMap.getByNftAddress(nftAddress);
+    }
 
-        // for (uint256 i = 0; i < rentDataItMap.keys.length; i++) {
-        //     data[i] = rentDataItMap.data[rentDataItMap.keys[i]].data;
-        // }
-
-        // return data;
+    /// @dev Return matched rented data with rentee address
+    /// @param renteeAddress Rentee address
+    /// @return Matched rented data
+    function getRentDataByRenteeAddress(
+        address renteeAddress
+    ) public view returns (rentDataIterableMap.rentData[] memory) {
+        return rentDataItMap.getByRenteeAddress(renteeAddress);
     }
 
     /// @dev Return matched rented data with NFT address and token ID
     /// @param nftAddress NFT address
     /// @param tokenId token ID
+    /// @param renteeAddress Rentee address
     /// @return Matched rented data
     function getRentData(
         address nftAddress,
@@ -1263,19 +1228,26 @@ contract rentMarket is Ownable, Pausable {
         view
         returns (pendingRentFeeIterableMap.pendingRentFee[] memory)
     {
-        return pendingRentFeeMap.getAllPendingRentFee();
-
-        // pendingRentFeeIterableMap.pendingRentFee[]
-        //     memory data = new pendingRentFeeIterableMap.pendingRentFee[](
-        //         pendingRentFeeMap.keys.length
-        //     );
-
-        // for (uint256 i = 0; i < pendingRentFeeMap.keys.length; i++) {
-        //     data[i] = pendingRentFeeMap.data[pendingRentFeeMap.keys[i]].data;
-        // }
-
-        // return data;
+        return pendingRentFeeMap.getAll();
     }
+
+	//* TODO: Keep size under 24KiB
+    /// @dev Return pending rent fee data with renter address
+    /// @return Pending rent fee data with renter address
+    // function getPendingRentFeeByRenterAddress(
+    //     address renterAddress
+    // ) public view returns (pendingRentFeeIterableMap.pendingRentFee[] memory) {
+    //     return pendingRentFeeMap.getByRenterAddress(renterAddress);
+    // }
+
+	//* TODO: Keep size under 24KiB
+    /// @dev Return pending rent fee data with service address
+    /// @return Pending rent fee data with service address
+    // function getPendingRentFeeByServiceAddress(
+    //     address serviceAddress
+    // ) public view returns (pendingRentFeeIterableMap.pendingRentFee[] memory) {
+    //     return pendingRentFeeMap.getByServiceAddress(serviceAddress);
+    // }
 
     /// @dev Return all account balance data as array type
     /// @return All account balance data as array
@@ -1284,20 +1256,7 @@ contract rentMarket is Ownable, Pausable {
         view
         returns (accountBalanceIterableMap.accountBalance[] memory)
     {
-        return accountBalanceItMap.getAllAccountBalance();
-
-        // accountBalanceIterableMap.accountBalance[]
-        //     memory data = new accountBalanceIterableMap.accountBalance[](
-        //         accountBalanceItMap.keys.length
-        //     );
-
-        // for (uint256 i = 0; i < accountBalanceItMap.keys.length; i++) {
-        //     data[i] = accountBalanceItMap
-        //         .data[accountBalanceItMap.keys[i]]
-        //         .data;
-        // }
-
-        // return data;
+        return accountBalanceItMap.getAll();
     }
 
     /// @dev Return total account accumulated balance value
@@ -1305,17 +1264,7 @@ contract rentMarket is Ownable, Pausable {
     function getTotalAccountBalance(
         address tokenAddress_
     ) public view returns (uint256 totalAccountBalance_) {
-        uint256 totalAccountBalance = 0;
-        accountBalanceIterableMap.accountBalance memory data;
-
-        for (uint256 i = 0; i < accountBalanceItMap.keys.length; i++) {
-            data = accountBalanceItMap.data[accountBalanceItMap.keys[i]].data;
-            if (data.tokenAddress == tokenAddress_) {
-                totalAccountBalance += data.amount;
-            }
-        }
-
-        return totalAccountBalance;
+        return accountBalanceItMap.getTotalBalance(tokenAddress_);
     }
 
     function withdrawMyBalance(

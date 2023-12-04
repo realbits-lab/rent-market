@@ -43,6 +43,7 @@ const prepareContract = async ([wallet, other], provider) => {
   //*---------------------------------------------------------------------------
   let rentMarketContract;
   let testNFTContract;
+  let testNFTContract2;
   let testTokenContract;
 
   //*---------------------------------------------------------------------------
@@ -163,6 +164,12 @@ const prepareContract = async ([wallet, other], provider) => {
     .deploy(NFT_NAME, NFT_SYMBOL, NFT_BASE_URI);
   response = await testNFTContract.deployed();
 
+  // Make one more nft contract for testing.
+  testNFTContract2 = await testNFTContractFactory
+    .connect(testNFTContractOwnerSigner)
+    .deploy(NFT_NAME, NFT_SYMBOL, NFT_BASE_URI);
+  response = await testNFTContract2.deployed();
+
   //*---------------------------------------------------------------------------
   //* Deploy testToken contract.
   //*---------------------------------------------------------------------------
@@ -180,6 +187,9 @@ const prepareContract = async ([wallet, other], provider) => {
   for (let i = MINT_START_TOKEN_ID; i <= MINT_END_TOKEN_ID; i++) {
     await testNFTContract.safeMint(testNFTContractOwnerSigner.address);
   }
+  for (let i = MINT_START_TOKEN_ID; i <= MINT_END_TOKEN_ID; i++) {
+    await testNFTContract2.safeMint(testNFTContractOwnerSigner.address);
+  }
 
   return {
     //* Return signer values.
@@ -191,13 +201,13 @@ const prepareContract = async ([wallet, other], provider) => {
     //* Return contract values.
     rentMarketContract,
     testNFTContract,
+    testNFTContract2,
     testTokenContract,
   };
 };
 
 const removeAllData = async ({
   rentMarketContract,
-  testNFTContract,
   testTokenContract,
   rentMarketContractOwnerSigner,
   testNFTContractOwnerSigner,
@@ -377,6 +387,7 @@ const initializeBeforeEach = async () => {
     // Contract values.
     rentMarketContract,
     testNFTContract,
+    testNFTContract2,
     testTokenContract,
   } = await loadFixture(prepareContract);
 
@@ -395,7 +406,6 @@ const initializeBeforeEach = async () => {
   //* ---------------------------------------------------------------------------
   await removeAllData({
     rentMarketContract,
-    testNFTContract,
     testTokenContract,
     rentMarketContractOwnerSigner,
     testNFTContractOwnerSigner,
@@ -416,6 +426,11 @@ const initializeBeforeEach = async () => {
   transaction = await rentMarketContract
     .connect(rentMarketContractOwnerSigner)
     .registerCollection(testNFTContract.address, COLLECTION_URI);
+  txArray.push(transaction.wait());
+
+  transaction = await rentMarketContract
+    .connect(rentMarketContractOwnerSigner)
+    .registerCollection(testNFTContract2.address, COLLECTION_URI);
   txArray.push(transaction.wait());
 
   //*---------------------------------------------------------------------------
@@ -439,6 +454,7 @@ const initializeBeforeEach = async () => {
     // Contract values.
     rentMarketContract,
     testNFTContract,
+    testNFTContract2,
     testTokenContract,
   };
 };

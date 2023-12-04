@@ -13,6 +13,34 @@ const {
   getEnvVariable,
 } = require("./utils");
 
+task("safeMintforPublic", "Mints from the Public NFT contract")
+  .addParam("contract", "The NFT contract name.")
+  .addParam("to", "The address to receive a token.")
+  .addParam("uri", "Token URI.")
+  .addParam("estimate", "The estimate gas fee flag.")
+  .setAction(async function (taskArguments, hre) {
+    const contract = await getNFTContract(taskArguments.contract, hre);
+    if (taskArguments.estimate === "true") {
+      const estimation = await contract.estimateGas.safeMint(
+        taskArguments.to,
+        taskArguments.uri,
+        {
+          // gasPrice: hre.ethers.utils.parseUnits("50", "gwei"),
+        }
+      );
+      console.log("estimation: ", estimation.toNumber());
+    } else {
+      const transactionResponse = await contract.safeMint(
+        taskArguments.to,
+        taskArguments.uri,
+        {
+          // gasPrice: hre.ethers.utils.parseUnits("50", "gwei"),
+        }
+      );
+      console.log(`Transaction Hash: ${transactionResponse.hash}`);
+    }
+  });
+
 task("safeMint", "Mints from the NFT contract")
   .addParam("contract", "The NFT contract name.")
   .addParam("to", "The address to receive a token.")
