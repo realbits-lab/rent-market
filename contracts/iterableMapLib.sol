@@ -913,17 +913,18 @@ library registerDataIterableMap {
 
     /// @dev Return all registered data which has collection nft address
     /// @param self Self class
+    /// @param nftAddress Self class
     /// @return All registered data which has collection nft address
     function getRegisterData(
         registerDataMap storage self,
-        address collectionAddress
+        address nftAddress
     ) public view returns (registerData[] memory) {
         uint256 count = 0;
 
-        // Filter with collection address through all register data.
+        // Filter with nft address through all register data.
         registerData[] memory data = new registerData[](self.keys.length);
         for (uint256 i = 0; i < self.keys.length; i++) {
-            if (self.data[self.keys[i]].data.nftAddress == collectionAddress) {
+            if (self.data[self.keys[i]].data.nftAddress == nftAddress) {
                 data[count] = self.data[self.keys[i]].data;
                 count = count + 1;
             }
