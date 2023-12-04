@@ -164,7 +164,7 @@ const prepareContract = async ([wallet, other], provider) => {
     .deploy(NFT_NAME, NFT_SYMBOL, NFT_BASE_URI);
   response = await testNFTContract.deployed();
 
-	// Make one more nft contract for testing.
+  // Make one more nft contract for testing.
   testNFTContract2 = await testNFTContractFactory
     .connect(testNFTContractOwnerSigner)
     .deploy(NFT_NAME, NFT_SYMBOL, NFT_BASE_URI);
@@ -205,7 +205,6 @@ const prepareContract = async ([wallet, other], provider) => {
 
 const removeAllData = async ({
   rentMarketContract,
-  testNFTContract,
   testTokenContract,
   rentMarketContractOwnerSigner,
   testNFTContractOwnerSigner,
@@ -403,7 +402,6 @@ const initializeBeforeEach = async () => {
   //* ---------------------------------------------------------------------------
   await removeAllData({
     rentMarketContract,
-    testNFTContract,
     testTokenContract,
     rentMarketContractOwnerSigner,
     testNFTContractOwnerSigner,
