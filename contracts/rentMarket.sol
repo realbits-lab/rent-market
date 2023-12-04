@@ -494,25 +494,15 @@ contract rentMarket is Ownable, Pausable {
         returns (registerDataIterableMap.registerData[] memory)
     {
         return registerDataItMap.getAllRegisterData();
+    }
 
-        // registerDataIterableMap.registerData[]
-        //     memory data = new registerDataIterableMap.registerData[](
-        //         registerDataItMap.keys.length
-        //     );
-
-        // for (uint256 i = 0; i < registerDataItMap.keys.length; i++) {
-        //     data[i] = registerDataItMap.data[registerDataItMap.keys[i]].data;
-        // }
-
-        // // struct registerData {
-        // //     address nftAddress;
-        // //     uint256 tokenId;
-        // //     uint256 rentFee;
-        // //     address feeTokenAddress;
-        // //     uint256 rentFeeByToken;
-        // //     uint256 rentDuration;
-        // // }
-        // return data;
+    /// @dev Return matched registered data with NFT address
+    /// @param collectionAddress NFT address
+    /// @return Matched registered data
+    function getRegisterData(
+        address collectionAddress
+    ) public view returns (registerDataIterableMap.registerData[] memory) {
+        return registerDataItMap.getRegisterData(collectionAddress);
     }
 
     /// @dev Return matched registered data with NFT address and token ID

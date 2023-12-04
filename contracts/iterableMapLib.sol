@@ -896,6 +896,9 @@ library registerDataIterableMap {
         string[] keys;
     }
 
+    /// @dev Return all registered data as array type
+    /// @param self Self class
+    /// @return All registered data as array
     function getAllRegisterData(
         registerDataMap storage self
     ) public view returns (registerData[] memory) {
@@ -906,6 +909,33 @@ library registerDataIterableMap {
         }
 
         return data;
+    }
+
+    /// @dev Return all registered data which has collection nft address
+    /// @param self Self class
+    /// @return All registered data which has collection nft address
+    function getRegisterData(
+        registerDataMap storage self,
+        address collectionAddress
+    ) public view returns (registerData[] memory) {
+        uint256 count = 0;
+
+        // Filter with collection address through all register data.
+        registerData[] memory data = new registerData[](self.keys.length);
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            if (self.data[self.keys[i]].data.nftAddress == collectionAddress) {
+                data[count] = self.data[self.keys[i]].data;
+                count = count + 1;
+            }
+        }
+
+        // Copy only filtered data with collection address.
+        registerData[] memory returnData = new registerData[](count);
+        for (uint256 i = 0; i < count; i++) {
+            returnData[count] = data[i];
+        }
+
+        return returnData;
     }
 
     function encodeKey(
