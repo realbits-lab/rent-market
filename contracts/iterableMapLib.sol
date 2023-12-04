@@ -1034,10 +1034,10 @@ library registerDataIterableMap {
         return data;
     }
 
-    /// @dev Return all registered data which has collection nft address
+    /// @dev Return all registered data which has nft address
     /// @param self Self class
     /// @param nftAddress Self class
-    /// @return All registered data which has collection nft address
+    /// @return All registered data which has nft address
     function getByCollection(
         registerDataMap storage self,
         address nftAddress
@@ -1110,18 +1110,6 @@ library rentDataIterableMap {
     struct rentDataMap {
         mapping(string => rentDataEntry) data;
         string[] keys;
-    }
-
-    function getAllRentData(
-        rentDataMap storage self
-    ) public view returns (rentData[] memory) {
-        rentData[] memory data = new rentData[](self.keys.length);
-
-        for (uint256 i = 0; i < self.keys.length; i++) {
-            data[i] = self.data[self.keys[i]].data;
-        }
-
-        return data;
     }
 
     function encodeKey(
@@ -1233,6 +1221,73 @@ library rentDataIterableMap {
 
     function size(rentDataMap storage self) public view returns (uint256) {
         return self.keys.length;
+    }
+
+    /// @dev Return all rented data as array type
+    /// @param self Self class
+    /// @return All rented data as array
+    function getAll(
+        rentDataMap storage self
+    ) public view returns (rentData[] memory) {
+        rentData[] memory data = new rentData[](self.keys.length);
+
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            data[i] = self.data[self.keys[i]].data;
+        }
+
+        return data;
+    }
+
+    /// @dev Return all rented data which has nft address
+    /// @param self Self class
+    /// @param nftAddress Nft address
+    /// @return All rented data which has nft address
+    function getByNftAddress(
+        rentDataMap storage self,
+        address nftAddress
+    ) public view returns (rentData[] memory) {
+        uint256 count = 0;
+
+        rentData[] memory data = new rentData[](self.keys.length);
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            if (self.data[self.keys[i]].data.nftAddress == nftAddress) {
+                data[i] = self.data[self.keys[i]].data;
+                count = count + 1;
+            }
+        }
+
+        rentData[] memory returnData = new rentData[](count);
+        for (uint256 i = 0; i < count; i++) {
+            returnData[i] = data[i];
+        }
+
+        return returnData;
+    }
+
+    /// @dev Return all rented data which has rentee address
+    /// @param self Self class
+    /// @param renteeAddress Rentee address
+    /// @return All rented data which has nft address
+    function getByRenteeAddress(
+        rentDataMap storage self,
+        address renteeAddress
+    ) public view returns (rentData[] memory) {
+        uint256 count = 0;
+
+        rentData[] memory data = new rentData[](self.keys.length);
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            if (self.data[self.keys[i]].data.renteeAddress == renteeAddress) {
+                data[i] = self.data[self.keys[i]].data;
+                count = count + 1;
+            }
+        }
+
+        rentData[] memory returnData = new rentData[](count);
+        for (uint256 i = 0; i < count; i++) {
+            returnData[i] = data[i];
+        }
+
+        return returnData;
     }
 
     function getByRentData(

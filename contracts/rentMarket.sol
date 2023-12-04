@@ -745,7 +745,7 @@ contract rentMarket is Ownable, Pausable {
         view
         returns (rentDataIterableMap.rentData[] memory)
     {
-        return rentDataItMap.getAllRentData();
+        return rentDataItMap.getAll();
     }
 
     /// @dev Return matched rented data with NFT address
@@ -753,8 +753,17 @@ contract rentMarket is Ownable, Pausable {
     /// @return Matched rented data
     function getRentDataByNftAddress(
         address nftAddress
-    ) public view returns (rentDataIterableMap.rentData memory) {
+    ) public view returns (rentDataIterableMap.rentData[] memory) {
         return rentDataItMap.getByNftAddress(nftAddress);
+    }
+
+    /// @dev Return matched rented data with rentee address
+    /// @param renteeAddress Rentee address
+    /// @return Matched rented data
+    function getRentDataByRenteeAddress(
+        address renteeAddress
+    ) public view returns (rentDataIterableMap.rentData[] memory) {
+        return rentDataItMap.getByRenteeAddress(renteeAddress);
     }
 
     /// @dev Return matched rented data with NFT address and token ID
