@@ -458,6 +458,22 @@ library accountBalanceIterableMap {
         return data;
     }
 
+    function getTotalBalance(
+        accountBalanceMap storage self,
+        address tokenAddress
+    ) public view returns (uint256) {
+        uint256 totalBalance = 0;
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            if (self.data[self.keys[i]].data.tokenAddress == tokenAddress) {
+                totalBalance =
+                    totalBalance +
+                    self.data[self.keys[i]].data.amount;
+            }
+        }
+
+        return totalBalance;
+    }
+
     function getByAddress(
         accountBalanceMap storage self,
         address accountAddress,

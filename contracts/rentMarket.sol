@@ -1262,17 +1262,7 @@ contract rentMarket is Ownable, Pausable {
     function getTotalAccountBalance(
         address tokenAddress_
     ) public view returns (uint256 totalAccountBalance_) {
-        uint256 totalAccountBalance = 0;
-        accountBalanceIterableMap.accountBalance memory data;
-
-        for (uint256 i = 0; i < accountBalanceItMap.keys.length; i++) {
-            data = accountBalanceItMap.data[accountBalanceItMap.keys[i]].data;
-            if (data.tokenAddress == tokenAddress_) {
-                totalAccountBalance += data.amount;
-            }
-        }
-
-        return totalAccountBalance;
+        return accountBalanceItMap.getTotalBalance(tokenAddress_);
     }
 
     function withdrawMyBalance(
