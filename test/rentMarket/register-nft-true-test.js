@@ -11,9 +11,7 @@ const {
 } = require("./utility-function");
 
 describe("test registerNFT true case.", function () {
-  /*****************************************************************************
-   * Define variables.
-   ****************************************************************************/
+  // Define variables.
   let // Signer values.
     rentMarketContractOwnerSigner,
     testNFTContractOwnerSigner,
@@ -23,6 +21,7 @@ describe("test registerNFT true case.", function () {
     // Contract values.
     rentMarketContract,
     testNFTContract,
+    testNFTContract2,
     testTokenContract;
 
   beforeEach(async function () {
@@ -49,6 +48,7 @@ describe("test registerNFT true case.", function () {
       // Contract values.
       rentMarketContract,
       testNFTContract,
+      testNFTContract2,
       testTokenContract,
     } = response);
   });
@@ -94,7 +94,7 @@ describe("test registerNFT true case.", function () {
     ]);
   });
 
-  it("getAllRequestData function with multiple input data.", async function () {
+  it("getAllRegisterData function with multiple input data.", async function () {
     /***************************************************************************
      * Define variables.
      **************************************************************************/
@@ -122,6 +122,51 @@ describe("test registerNFT true case.", function () {
     /***************************************************************************
      * Compare the output data with input data.
      **************************************************************************/
+    for (let i = startTokenId; i <= endTokenId; i++) {
+      const idx = i - startTokenId;
+      expect(response[idx]).to.deep.equal([
+        testNFTContract.address,
+        BigNumber.from(i),
+        defaultRentFee,
+        defaultFeeToken,
+        defaultRentFeeByToken,
+        defaultRentDuration,
+      ]);
+    }
+  });
+
+  it("getRegisterData function with multiple input data and nft address.", async function () {
+    // Define variables.
+    const startTokenId = 1;
+    const endTokenId = 10;
+
+    // Register test NFT to rent market from start to end token id.
+    await registerNFT({
+      rentMarketContract,
+      testNFTContract,
+      testNFTContractOwnerSigner,
+      startTokenId: startTokenId,
+      endTokenId: endTokenId,
+    });
+
+    // Register test2 NFT to rent market from start to end token id.
+    await registerNFT({
+      rentMarketContract,
+      testNFTContract2,
+      testNFTContractOwnerSigner,
+      startTokenId: startTokenId,
+      endTokenId: endTokenId,
+    });
+
+    // Get all registered NFT data.
+    const response = await rentMarketContract
+      .connect(userSigner)
+      .getAllRegisterData(testNFTContract.address);
+
+    // Check the response length.
+    expect(response.length, endTokenId - startTokenId + 1);
+
+    // Compare the output data with input data.
     for (let i = startTokenId; i <= endTokenId; i++) {
       const idx = i - startTokenId;
       expect(response[idx]).to.deep.equal([

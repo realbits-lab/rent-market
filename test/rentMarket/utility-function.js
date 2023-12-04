@@ -43,6 +43,7 @@ const prepareContract = async ([wallet, other], provider) => {
   //*---------------------------------------------------------------------------
   let rentMarketContract;
   let testNFTContract;
+  let testNFTContract2;
   let testTokenContract;
 
   //*---------------------------------------------------------------------------
@@ -163,6 +164,12 @@ const prepareContract = async ([wallet, other], provider) => {
     .deploy(NFT_NAME, NFT_SYMBOL, NFT_BASE_URI);
   response = await testNFTContract.deployed();
 
+	// Make one more nft contract for testing.
+  testNFTContract2 = await testNFTContractFactory
+    .connect(testNFTContractOwnerSigner)
+    .deploy(NFT_NAME, NFT_SYMBOL, NFT_BASE_URI);
+  response = await testNFTContract2.deployed();
+
   //*---------------------------------------------------------------------------
   //* Deploy testToken contract.
   //*---------------------------------------------------------------------------
@@ -191,6 +198,7 @@ const prepareContract = async ([wallet, other], provider) => {
     //* Return contract values.
     rentMarketContract,
     testNFTContract,
+    testNFTContract2,
     testTokenContract,
   };
 };
