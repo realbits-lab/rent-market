@@ -1231,21 +1231,23 @@ contract rentMarket is Ownable, Pausable {
         return pendingRentFeeMap.getAll();
     }
 
+	//* TODO: Keep size under 24KiB
     /// @dev Return pending rent fee data with renter address
     /// @return Pending rent fee data with renter address
-    function getPendingRentFeeByRenterAddress(
-        address renterAddress
-    ) public view returns (pendingRentFeeIterableMap.pendingRentFee[] memory) {
-        return pendingRentFeeMap.getByRenterAddress(renterAddress);
-    }
+    // function getPendingRentFeeByRenterAddress(
+    //     address renterAddress
+    // ) public view returns (pendingRentFeeIterableMap.pendingRentFee[] memory) {
+    //     return pendingRentFeeMap.getByRenterAddress(renterAddress);
+    // }
 
+	//* TODO: Keep size under 24KiB
     /// @dev Return pending rent fee data with service address
     /// @return Pending rent fee data with service address
-    function getPendingRentFeeByServiceAddress(
-        address serviceAddress
-    ) public view returns (pendingRentFeeIterableMap.pendingRentFee[] memory) {
-        return pendingRentFeeMap.getByServiceAddress(serviceAddress);
-    }
+    // function getPendingRentFeeByServiceAddress(
+    //     address serviceAddress
+    // ) public view returns (pendingRentFeeIterableMap.pendingRentFee[] memory) {
+    //     return pendingRentFeeMap.getByServiceAddress(serviceAddress);
+    // }
 
     /// @dev Return all account balance data as array type
     /// @return All account balance data as array
