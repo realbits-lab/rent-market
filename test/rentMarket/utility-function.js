@@ -384,6 +384,7 @@ const initializeBeforeEach = async () => {
     // Contract values.
     rentMarketContract,
     testNFTContract,
+    testNFTContract2,
     testTokenContract,
   } = await loadFixture(prepareContract);
 
@@ -424,6 +425,11 @@ const initializeBeforeEach = async () => {
     .registerCollection(testNFTContract.address, COLLECTION_URI);
   txArray.push(transaction.wait());
 
+  transaction = await rentMarketContract
+    .connect(rentMarketContractOwnerSigner)
+    .registerCollection(testNFTContracts2.address, COLLECTION_URI);
+  txArray.push(transaction.wait());
+
   //*---------------------------------------------------------------------------
   //* Register service.
   //*---------------------------------------------------------------------------
@@ -445,6 +451,7 @@ const initializeBeforeEach = async () => {
     // Contract values.
     rentMarketContract,
     testNFTContract,
+    testNFTContract2,
     testTokenContract,
   };
 };

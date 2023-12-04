@@ -135,7 +135,7 @@ describe("test registerNFT true case.", function () {
     }
   });
 
-  it("getRegisterData function with multiple input data and nft address.", async function () {
+  it("getRegisterData function with nft address.", async function () {
     // Define variables.
     const startTokenId = 1;
     const endTokenId = 10;
@@ -159,11 +159,13 @@ describe("test registerNFT true case.", function () {
     });
 
     // Get all registered NFT data.
+    console.log("testNFTContract: ", testNFTContract);
     const response = await rentMarketContract
       .connect(userSigner)
       .getAllRegisterData(testNFTContract.address);
 
     // Check the response length.
+    console.log("response: ", response);
     expect(response.length, endTokenId - startTokenId + 1);
 
     // Compare the output data with input data.
