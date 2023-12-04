@@ -644,18 +644,6 @@ library collectionDataIterableMap {
         string[] keys;
     }
 
-    function getAllCollectionData(
-        collectionDataMap storage self
-    ) public view returns (collectionData[] memory) {
-        collectionData[] memory data = new collectionData[](self.keys.length);
-
-        for (uint256 i = 0; i < self.keys.length; i++) {
-            data[i] = self.data[self.keys[i]].data;
-        }
-
-        return data;
-    }
-
     function encodeKey(
         address collectionAddress
     ) public pure returns (string memory) {
@@ -749,6 +737,18 @@ library collectionDataIterableMap {
     ) public view returns (string memory) {
         string memory key = encodeKey(collectionAddress);
         return self.data[key].data.uri;
+    }
+
+    function getAll(
+        collectionDataMap storage self
+    ) public view returns (collectionData[] memory) {
+        collectionData[] memory data = new collectionData[](self.keys.length);
+
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            data[i] = self.data[self.keys[i]].data;
+        }
+
+        return data;
     }
 
     function getByAddress(
