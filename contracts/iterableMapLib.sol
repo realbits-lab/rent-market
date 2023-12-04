@@ -915,7 +915,7 @@ library registerDataIterableMap {
     /// @param self Self class
     /// @param nftAddress Self class
     /// @return All registered data which has collection nft address
-    function getRegisterData(
+    function getRegisterDataByCollection(
         registerDataMap storage self,
         address nftAddress
     ) public view returns (registerData[] memory) {
@@ -933,7 +933,7 @@ library registerDataIterableMap {
         // Copy only filtered data with collection address.
         registerData[] memory returnData = new registerData[](count);
         for (uint256 i = 0; i < count; i++) {
-            returnData[count] = data[i];
+            returnData[i] = data[i];
         }
 
         return returnData;

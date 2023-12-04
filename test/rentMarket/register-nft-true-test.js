@@ -151,7 +151,7 @@ describe("test registerNFT true case.", function () {
 
     // Register test2 NFT to rent market from start to end token id.
     // console.log("testNFTContract: ", testNFTContract);
-    // console.log("testNFTContract.address: ", testNFTContract.address);
+    console.log("testNFTContract.address: ", testNFTContract.address);
     // console.log("testNFTContract2: ", testNFTContract2);
     // console.log("testNFTContract2.address: ", testNFTContract2.address);
     await registerNFT({
@@ -165,7 +165,7 @@ describe("test registerNFT true case.", function () {
     // Get all registered NFT data.
     const response = await rentMarketContract
       .connect(userSigner)
-      .getRegisterData(testNFTContract.address);
+      .getRegisterDataByCollection(testNFTContract.address);
 
     // Check the response length.
     console.log("response: ", response);
