@@ -228,6 +228,50 @@ library pendingRentFeeIterableMap {
         return data;
     }
 
+    function getByRenterAddress(
+        pendingRentFeeMap storage self,
+        address renterAddress
+    ) public view returns (pendingRentFee[] memory) {
+        uint256 count = 0;
+
+        pendingRentFee[] memory data = new pendingRentFee[](self.keys.length);
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            if (self.data[self.keys[i]].data.renterAddress == renterAddress) {
+                data[i] = self.data[self.keys[i]].data;
+                count = count + 1;
+            }
+        }
+
+        pendingRentFee[] memory returnData = new pendingRentFee[](count);
+        for (uint256 i = 0; i < count; i++) {
+            returnData[i] = data[i];
+        }
+
+        return returnData;
+    }
+
+    function getByServiceAddress(
+        pendingRentFeeMap storage self,
+        address serviceAddress
+    ) public view returns (pendingRentFee[] memory) {
+        uint256 count = 0;
+
+        pendingRentFee[] memory data = new pendingRentFee[](self.keys.length);
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            if (self.data[self.keys[i]].data.serviceAddress == serviceAddress) {
+                data[i] = self.data[self.keys[i]].data;
+                count = count + 1;
+            }
+        }
+
+        pendingRentFee[] memory returnData = new pendingRentFee[](count);
+        for (uint256 i = 0; i < count; i++) {
+            returnData[i] = data[i];
+        }
+
+        return returnData;
+    }
+
     function getByAddress(
         pendingRentFeeMap storage self,
         address renterAddress,
