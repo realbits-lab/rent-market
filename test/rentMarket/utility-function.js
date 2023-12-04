@@ -187,6 +187,9 @@ const prepareContract = async ([wallet, other], provider) => {
   for (let i = MINT_START_TOKEN_ID; i <= MINT_END_TOKEN_ID; i++) {
     await testNFTContract.safeMint(testNFTContractOwnerSigner.address);
   }
+  for (let i = MINT_START_TOKEN_ID; i <= MINT_END_TOKEN_ID; i++) {
+    await testNFTContract2.safeMint(testNFTContractOwnerSigner.address);
+  }
 
   return {
     //* Return signer values.
@@ -427,7 +430,7 @@ const initializeBeforeEach = async () => {
 
   transaction = await rentMarketContract
     .connect(rentMarketContractOwnerSigner)
-    .registerCollection(testNFTContracts2.address, COLLECTION_URI);
+    .registerCollection(testNFTContract2.address, COLLECTION_URI);
   txArray.push(transaction.wait());
 
   //*---------------------------------------------------------------------------
