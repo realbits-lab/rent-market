@@ -1261,18 +1261,7 @@ contract rentMarket is Ownable, Pausable {
         view
         returns (pendingRentFeeIterableMap.pendingRentFee[] memory)
     {
-        return pendingRentFeeMap.getAllPendingRentFee();
-
-        // pendingRentFeeIterableMap.pendingRentFee[]
-        //     memory data = new pendingRentFeeIterableMap.pendingRentFee[](
-        //         pendingRentFeeMap.keys.length
-        //     );
-
-        // for (uint256 i = 0; i < pendingRentFeeMap.keys.length; i++) {
-        //     data[i] = pendingRentFeeMap.data[pendingRentFeeMap.keys[i]].data;
-        // }
-
-        // return data;
+        return pendingRentFeeMap.getAll();
     }
 
     /// @dev Return all account balance data as array type
@@ -1282,20 +1271,7 @@ contract rentMarket is Ownable, Pausable {
         view
         returns (accountBalanceIterableMap.accountBalance[] memory)
     {
-        return accountBalanceItMap.getAllAccountBalance();
-
-        // accountBalanceIterableMap.accountBalance[]
-        //     memory data = new accountBalanceIterableMap.accountBalance[](
-        //         accountBalanceItMap.keys.length
-        //     );
-
-        // for (uint256 i = 0; i < accountBalanceItMap.keys.length; i++) {
-        //     data[i] = accountBalanceItMap
-        //         .data[accountBalanceItMap.keys[i]]
-        //         .data;
-        // }
-
-        // return data;
+        return accountBalanceItMap.getAll();
     }
 
     /// @dev Return total account accumulated balance value

@@ -22,18 +22,6 @@ library pendingRentFeeIterableMap {
         string[] keys;
     }
 
-    function getAllPendingRentFee(
-        pendingRentFeeMap storage self
-    ) public view returns (pendingRentFee[] memory) {
-        pendingRentFee[] memory data = new pendingRentFee[](self.keys.length);
-
-        for (uint256 i = 0; i < self.keys.length; i++) {
-            data[i] = self.data[self.keys[i]].data;
-        }
-
-        return data;
-    }
-
     function encodeKey(
         address renterAddress,
         address serviceAddress,
@@ -228,6 +216,18 @@ library pendingRentFeeIterableMap {
         return self.data[key].data.amount;
     }
 
+    function getAll(
+        pendingRentFeeMap storage self
+    ) public view returns (pendingRentFee[] memory) {
+        pendingRentFee[] memory data = new pendingRentFee[](self.keys.length);
+
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            data[i] = self.data[self.keys[i]].data;
+        }
+
+        return data;
+    }
+
     function getByAddress(
         pendingRentFeeMap storage self,
         address renterAddress,
@@ -273,18 +273,6 @@ library accountBalanceIterableMap {
     struct accountBalanceMap {
         mapping(string => accountBalanceEntry) data;
         string[] keys;
-    }
-
-    function getAllAccountBalance(
-        accountBalanceMap storage self
-    ) public view returns (accountBalance[] memory) {
-        accountBalance[] memory data = new accountBalance[](self.keys.length);
-
-        for (uint256 i = 0; i < self.keys.length; i++) {
-            data[i] = self.data[self.keys[i]].data;
-        }
-
-        return data;
     }
 
     function encodeKey(
@@ -412,6 +400,18 @@ library accountBalanceIterableMap {
     ) public view returns (uint256) {
         string memory key = encodeKey(accountAddress, tokenAddress);
         return self.data[key].data.amount;
+    }
+
+    function getAll(
+        accountBalanceMap storage self
+    ) public view returns (accountBalance[] memory) {
+        accountBalance[] memory data = new accountBalance[](self.keys.length);
+
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            data[i] = self.data[self.keys[i]].data;
+        }
+
+        return data;
     }
 
     function getByAddress(
