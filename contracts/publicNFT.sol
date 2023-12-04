@@ -150,7 +150,7 @@ contract publicNFT is
     /// @param to_ Receiver address who will receive minted NFT
     /// @param uri_ Token URI
     function safeMint(address to_, string memory uri_) public {
-    	// Check the right for minting.
+        // Check the right for minting.
         require(
             _publicMint == true || hasRole(MINTER_ROLE, msg.sender) == true,
             "Not public mint or sender is not owner."
@@ -193,7 +193,13 @@ contract publicNFT is
     )
         public
         view
-        override(IERC165, ERC721, ERC721Enumerable, AccessControl)
+        override(
+            IERC165,
+            ERC721,
+            ERC721Enumerable,
+            ERC721URIStorage,
+            AccessControl
+        )
         returns (bool)
     {
         return
