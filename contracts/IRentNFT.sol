@@ -10,8 +10,7 @@ interface IRentNFT is IERC165 {
     /**
      * @dev Returns the register's account address.
      */
-    function checkRegisterRole(address registerAddress)
-        external
-        view
-        returns (bool result);
+    function checkRegisterRole(
+        address registerAddress
+    ) external view returns (bool result);
 }

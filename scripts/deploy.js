@@ -142,6 +142,25 @@ task(
   });
 
 // Deploy a normal contract.
+task("deployPublicNftContract", "Deploys the publicNFT contract")
+  .addParam("contract", "The contract name to be deployed.")
+  .addParam("name", "The contract name to be deployed.")
+  .addParam("symbol", "The contract name to be deployed.")
+  .addParam("uri", "The base uri of nft.")
+  .setAction(async function (taskArguments, hre) {
+    const contractFactory = await hre.ethers.getContractFactory(
+      taskArguments.contract,
+      getAccount()
+    );
+    const response = await contractFactory.deploy(
+      taskArguments.name,
+      taskArguments.symbol,
+      taskArguments.uri
+    );
+
+    console.log("Contract deployed to address: ", response.address);
+  });
+
 task("deployRentNftContract", "Deploys the rentNFT contract")
   .addParam("contract", "The contract name to be deployed.")
   .addParam("name", "The contract name to be deployed.")
@@ -266,6 +285,12 @@ task("deployRentMarket", "Deploy the rentMarket contract")
     const rentDataIterableMapLibrary =
       await rentDataIterableMapContract.deploy();
 
+    console.log("Try to deploy a utilFunctions.");
+    const utilFunctionsContract = await hre.ethers.getContractFactory(
+      "utilFunctions"
+    );
+    const utilFunctionsLibrary = await utilFunctionsContract.deploy();
+
     //* Wait all deployments.
     console.log("Wait all deployments.");
     await pendingRentFeeIterableMapLibrary.deployed();
@@ -275,6 +300,7 @@ task("deployRentMarket", "Deploy the rentMarket contract")
     await serviceDataIterableMapLibrary.deployed();
     await registerDataIterableMapLibrary.deployed();
     await rentDataIterableMapLibrary.deployed();
+    await utilFunctionsLibrary.deployed();
 
     //* Deploy rentMarket smart contract.
     console.log("Try to get a rentMarketContract.");
@@ -296,6 +322,7 @@ task("deployRentMarket", "Deploy the rentMarket contract")
             registerDataIterableMapLibrary.deployTransaction.creates,
           rentDataIterableMap:
             rentDataIterableMapLibrary.deployTransaction.creates,
+          utilFunctions: utilFunctionsLibrary.deployTransaction.creates,
         },
       }
     );

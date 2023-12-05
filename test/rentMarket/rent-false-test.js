@@ -73,61 +73,6 @@ describe("test rentNFT false case.", function () {
     ).to.be.revertedWith(errorMessage);
   });
 
-  it("test rentNFT with the already-rented registerData.", async function () {
-    let tx;
-    const errorMessage = "RM9";
-    const startTokenId = 1;
-    const endTokenId = 1;
-
-    // * -----------------------------------------------------------------------
-    // * Register NFT to rent market.
-    // * -----------------------------------------------------------------------
-    await registerNFT({
-      rentMarketContract,
-      testNFTContract,
-      testNFTContractOwnerSigner,
-      startTokenId: startTokenId,
-      endTokenId: endTokenId,
-    });
-
-    // * -----------------------------------------------------------------------
-    // * Get rent fee.
-    // * -----------------------------------------------------------------------
-    response = await rentMarketContract
-      .connect(userSigner)
-      .getRegisterData(testNFTContract.address, startTokenId);
-    const options = {
-      value: response["rentFee"],
-    };
-
-    // * -----------------------------------------------------------------------
-    // * Rent NFT with rent fee.
-    // * -----------------------------------------------------------------------
-    tx = await rentMarketContract
-      .connect(userSigner)
-      .rentNFT(
-        testNFTContract.address,
-        startTokenId,
-        serviceContractOwnerSigner.address,
-        options
-      );
-    await tx.wait();
-
-    // * -----------------------------------------------------------------------
-    // * Check error if user rent NFT which is already rented.
-    // * -----------------------------------------------------------------------
-    await expect(
-      rentMarketContract
-        .connect(userSigner)
-        .rentNFT(
-          testNFTContract.address,
-          startTokenId,
-          serviceContractOwnerSigner.address,
-          options
-        )
-    ).to.be.revertedWith(errorMessage);
-  });
-
   it("test rentNFT with wrong rent fee.", async function () {
     let tx;
     const errorMessage = "RM8";

@@ -911,111 +911,12 @@ abstract contract AccessControl is Context, IAccessControl, ERC165 {
 }
 
 
-// File @openzeppelin/contracts/security/Pausable.sol@v4.9.3
+// File @openzeppelin/contracts/interfaces/IERC165.sol@v4.9.3
 
 // Original license: SPDX_License_Identifier: MIT
-// OpenZeppelin Contracts (last updated v4.7.0) (security/Pausable.sol)
+// OpenZeppelin Contracts v4.4.1 (interfaces/IERC165.sol)
 
 pragma solidity ^0.8.0;
-
-/**
- * @dev Contract module which allows children to implement an emergency stop
- * mechanism that can be triggered by an authorized account.
- *
- * This module is used through inheritance. It will make available the
- * modifiers `whenNotPaused` and `whenPaused`, which can be applied to
- * the functions of your contract. Note that they will not be pausable by
- * simply including this module, only once the modifiers are put in place.
- */
-abstract contract Pausable is Context {
-    /**
-     * @dev Emitted when the pause is triggered by `account`.
-     */
-    event Paused(address account);
-
-    /**
-     * @dev Emitted when the pause is lifted by `account`.
-     */
-    event Unpaused(address account);
-
-    bool private _paused;
-
-    /**
-     * @dev Initializes the contract in unpaused state.
-     */
-    constructor() {
-        _paused = false;
-    }
-
-    /**
-     * @dev Modifier to make a function callable only when the contract is not paused.
-     *
-     * Requirements:
-     *
-     * - The contract must not be paused.
-     */
-    modifier whenNotPaused() {
-        _requireNotPaused();
-        _;
-    }
-
-    /**
-     * @dev Modifier to make a function callable only when the contract is paused.
-     *
-     * Requirements:
-     *
-     * - The contract must be paused.
-     */
-    modifier whenPaused() {
-        _requirePaused();
-        _;
-    }
-
-    /**
-     * @dev Returns true if the contract is paused, and false otherwise.
-     */
-    function paused() public view virtual returns (bool) {
-        return _paused;
-    }
-
-    /**
-     * @dev Throws if the contract is paused.
-     */
-    function _requireNotPaused() internal view virtual {
-        require(!paused(), "Pausable: paused");
-    }
-
-    /**
-     * @dev Throws if the contract is not paused.
-     */
-    function _requirePaused() internal view virtual {
-        require(paused(), "Pausable: not paused");
-    }
-
-    /**
-     * @dev Triggers stopped state.
-     *
-     * Requirements:
-     *
-     * - The contract must not be paused.
-     */
-    function _pause() internal virtual whenNotPaused {
-        _paused = true;
-        emit Paused(_msgSender());
-    }
-
-    /**
-     * @dev Returns to normal state.
-     *
-     * Requirements:
-     *
-     * - The contract must be paused.
-     */
-    function _unpause() internal virtual whenPaused {
-        _paused = false;
-        emit Unpaused(_msgSender());
-    }
-}
 
 
 // File @openzeppelin/contracts/token/ERC721/IERC721.sol@v4.9.3
@@ -1149,6 +1050,143 @@ interface IERC721 is IERC165 {
      * See {setApprovalForAll}
      */
     function isApprovedForAll(address owner, address operator) external view returns (bool);
+}
+
+
+// File @openzeppelin/contracts/interfaces/IERC721.sol@v4.9.3
+
+// Original license: SPDX_License_Identifier: MIT
+// OpenZeppelin Contracts v4.4.1 (interfaces/IERC721.sol)
+
+pragma solidity ^0.8.0;
+
+
+// File @openzeppelin/contracts/interfaces/IERC4906.sol@v4.9.3
+
+// Original license: SPDX_License_Identifier: MIT
+// OpenZeppelin Contracts (last updated v4.9.0) (interfaces/IERC4906.sol)
+
+pragma solidity ^0.8.0;
+
+
+/// @title EIP-721 Metadata Update Extension
+interface IERC4906 is IERC165, IERC721 {
+    /// @dev This event emits when the metadata of a token is changed.
+    /// So that the third-party platforms such as NFT market could
+    /// timely update the images and related attributes of the NFT.
+    event MetadataUpdate(uint256 _tokenId);
+
+    /// @dev This event emits when the metadata of a range of tokens is changed.
+    /// So that the third-party platforms such as NFT market could
+    /// timely update the images and related attributes of the NFTs.
+    event BatchMetadataUpdate(uint256 _fromTokenId, uint256 _toTokenId);
+}
+
+
+// File @openzeppelin/contracts/security/Pausable.sol@v4.9.3
+
+// Original license: SPDX_License_Identifier: MIT
+// OpenZeppelin Contracts (last updated v4.7.0) (security/Pausable.sol)
+
+pragma solidity ^0.8.0;
+
+/**
+ * @dev Contract module which allows children to implement an emergency stop
+ * mechanism that can be triggered by an authorized account.
+ *
+ * This module is used through inheritance. It will make available the
+ * modifiers `whenNotPaused` and `whenPaused`, which can be applied to
+ * the functions of your contract. Note that they will not be pausable by
+ * simply including this module, only once the modifiers are put in place.
+ */
+abstract contract Pausable is Context {
+    /**
+     * @dev Emitted when the pause is triggered by `account`.
+     */
+    event Paused(address account);
+
+    /**
+     * @dev Emitted when the pause is lifted by `account`.
+     */
+    event Unpaused(address account);
+
+    bool private _paused;
+
+    /**
+     * @dev Initializes the contract in unpaused state.
+     */
+    constructor() {
+        _paused = false;
+    }
+
+    /**
+     * @dev Modifier to make a function callable only when the contract is not paused.
+     *
+     * Requirements:
+     *
+     * - The contract must not be paused.
+     */
+    modifier whenNotPaused() {
+        _requireNotPaused();
+        _;
+    }
+
+    /**
+     * @dev Modifier to make a function callable only when the contract is paused.
+     *
+     * Requirements:
+     *
+     * - The contract must be paused.
+     */
+    modifier whenPaused() {
+        _requirePaused();
+        _;
+    }
+
+    /**
+     * @dev Returns true if the contract is paused, and false otherwise.
+     */
+    function paused() public view virtual returns (bool) {
+        return _paused;
+    }
+
+    /**
+     * @dev Throws if the contract is paused.
+     */
+    function _requireNotPaused() internal view virtual {
+        require(!paused(), "Pausable: paused");
+    }
+
+    /**
+     * @dev Throws if the contract is not paused.
+     */
+    function _requirePaused() internal view virtual {
+        require(paused(), "Pausable: not paused");
+    }
+
+    /**
+     * @dev Triggers stopped state.
+     *
+     * Requirements:
+     *
+     * - The contract must not be paused.
+     */
+    function _pause() internal virtual whenNotPaused {
+        _paused = true;
+        emit Paused(_msgSender());
+    }
+
+    /**
+     * @dev Returns to normal state.
+     *
+     * Requirements:
+     *
+     * - The contract must be paused.
+     */
+    function _unpause() internal virtual whenPaused {
+        _paused = false;
+        emit Unpaused(_msgSender());
+    }
 }
 
 
@@ -2148,6 +2186,82 @@ abstract contract ERC721Enumerable is ERC721, IERC721Enumerable {
 }
 
 
+// File @openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol@v4.9.3
+
+// Original license: SPDX_License_Identifier: MIT
+// OpenZeppelin Contracts (last updated v4.9.0) (token/ERC721/extensions/ERC721URIStorage.sol)
+
+pragma solidity ^0.8.0;
+
+
+/**
+ * @dev ERC721 token with storage based token URI management.
+ */
+abstract contract ERC721URIStorage is IERC4906, ERC721 {
+    using Strings for uint256;
+
+    // Optional mapping for token URIs
+    mapping(uint256 => string) private _tokenURIs;
+
+    /**
+     * @dev See {IERC165-supportsInterface}
+     */
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721, IERC165) returns (bool) {
+        return interfaceId == bytes4(0x49064906) || super.supportsInterface(interfaceId);
+    }
+
+    /**
+     * @dev See {IERC721Metadata-tokenURI}.
+     */
+    function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
+        _requireMinted(tokenId);
+
+        string memory _tokenURI = _tokenURIs[tokenId];
+        string memory base = _baseURI();
+
+        // If there is no base URI, return the token URI.
+        if (bytes(base).length == 0) {
+            return _tokenURI;
+        }
+        // If both are set, concatenate the baseURI and tokenURI (via abi.encodePacked).
+        if (bytes(_tokenURI).length > 0) {
+            return string(abi.encodePacked(base, _tokenURI));
+        }
+
+        return super.tokenURI(tokenId);
+    }
+
+    /**
+     * @dev Sets `_tokenURI` as the tokenURI of `tokenId`.
+     *
+     * Emits {MetadataUpdate}.
+     *
+     * Requirements:
+     *
+     * - `tokenId` must exist.
+     */
+    function _setTokenURI(uint256 tokenId, string memory _tokenURI) internal virtual {
+        require(_exists(tokenId), "ERC721URIStorage: URI set of nonexistent token");
+        _tokenURIs[tokenId] = _tokenURI;
+
+        emit MetadataUpdate(tokenId);
+    }
+
+    /**
+     * @dev See {ERC721-_burn}. This override additionally checks to see if a
+     * token-specific URI was set for the token, and if so, it deletes the token URI from
+     * the storage mapping.
+     */
+    function _burn(uint256 tokenId) internal virtual override {
+        super._burn(tokenId);
+
+        if (bytes(_tokenURIs[tokenId]).length != 0) {
+            delete _tokenURIs[tokenId];
+        }
+    }
+}
+
+
 // File contracts/IRentNFT.sol
 
 // Original license: SPDX_License_Identifier: Apache-2.0
@@ -2213,7 +2327,7 @@ library Counters {
 }
 
 
-// File contracts/rentNFT.sol
+// File contracts/publicNFT.sol
 
 // Original license: SPDX_License_Identifier: Apache-2.0
 pragma solidity ^0.8.9;
@@ -2224,14 +2338,16 @@ pragma solidity ^0.8.9;
 
 
 
-/// @title A rentNFT contract.
+
+/// @title A publicNFT contract.
 /// @author A realbits software development team.
 /// @notice You can use this contract for building and deploying NFT.
 /// @dev All function calls are currently being tested.
-contract rentNFT is
+contract publicNFT is
     IRentNFT,
     ERC721,
     ERC721Enumerable,
+    ERC721URIStorage,
     Pausable,
     AccessControl,
     ERC721Burnable
@@ -2239,7 +2355,7 @@ contract rentNFT is
     using Counters for Counters.Counter;
 
     /// @dev Version.
-    string public VERSION = "0.0.5";
+    string public VERSION = "0.0.1";
 
     /// @notice Token ID counter variable
     /// @dev Token ID counter variable
@@ -2248,6 +2364,9 @@ contract rentNFT is
     /// @notice Base token URI variable
     /// @dev Base token URI variable
     string private _baseTokenURI;
+
+    /// @notice Flag for a public minting.
+    bool private _publicMint = false;
 
     /// @notice PAUSER_ROLE
     /// @dev PAUSER_ROLE
@@ -2269,7 +2388,7 @@ contract rentNFT is
     /// @dev Set base token URI and set each role of DEFAULT_ADMIN_ROLE, PAUSER_ROLE, MINTER_ROLE, and SETTER_ROLE
     /// @param name_ NFT token name
     /// @param symbol_ NFT token symbol
-    /// @param baseTokenURI_ base URI of NFT token
+    /// @param baseTokenURI_ base URI of NFT token. Set "" if you want to use ERC721URIStorage.
     constructor(
         string memory name_,
         string memory symbol_,
@@ -2285,12 +2404,9 @@ contract rentNFT is
     }
 
     /// @notice Register can register NFT even though register is not the owner of the NFT.
-    function checkRegisterRole(address registerAddress)
-        public
-        view
-        override
-        returns (bool result)
-    {
+    function checkRegisterRole(
+        address registerAddress
+    ) public view override returns (bool result) {
         return hasRole(REGISTER_ROLE, registerAddress);
     }
 
@@ -2304,11 +2420,20 @@ contract rentNFT is
     /// @notice Set base URI of token
     /// @dev Only sender who has SETTER_ROLE can set base URI
     /// @param baseTokenURI_ URI of token as string
-    function setBaseURI(string memory baseTokenURI_)
-        public
-        onlyRole(SETTER_ROLE)
-    {
+    function setBaseURI(
+        string memory baseTokenURI_
+    ) public onlyRole(SETTER_ROLE) {
         _baseTokenURI = baseTokenURI_;
+    }
+
+    /// @notice Get URI of token
+    /// @dev Call the super function for getting token uri.
+    /// @param tokenId Token ID
+    /// @return Token URI
+    function tokenURI(
+        uint256 tokenId
+    ) public view override(ERC721, ERC721URIStorage) returns (string memory) {
+        return super.tokenURI(tokenId);
     }
 
     /// @notice Get base URI of token
@@ -2330,29 +2455,41 @@ contract rentNFT is
         _unpause();
     }
 
+    function setPublicMint(bool publicMint_) public onlyRole(MINTER_ROLE) {
+        _publicMint = publicMint_;
+    }
+
     /// @notice Mint NFT with auto incremented token ID
     /// @dev After increasing token ID, call _safeMint function in ERC721.sol
     /// @param to_ Receiver address who will receive minted NFT
-    function safeMint(address to_) public onlyRole(MINTER_ROLE) {
+    // function safeMint(address to_) public {
+    //     require(
+    //         _publicMint == true || hasRole(MINTER_ROLE, msg.sender) == true,
+    //         "Not public mint or sender is not owner."
+    //     );
+
+    //     // Make token id start from 1.
+    //     _tokenIdCounter.increment();
+    //     uint256 tokenId = _tokenIdCounter.current();
+    //     _safeMint(to_, tokenId);
+    // }
+
+    /// @notice Mint NFT with token ID and URI
+    /// @dev Call _safeMint function in ERC721.sol with token ID and URI. Set token URI map to token ID.
+    /// @param to_ Receiver address who will receive minted NFT
+    /// @param uri_ Token URI
+    function safeMint(address to_, string memory uri_) public {
+        // Check the right for minting.
+        require(
+            _publicMint == true || hasRole(MINTER_ROLE, msg.sender) == true,
+            "Not public mint or sender is not owner."
+        );
+
         // Make token id start from 1.
         _tokenIdCounter.increment();
         uint256 tokenId = _tokenIdCounter.current();
         _safeMint(to_, tokenId);
-    }
-
-    /// @notice Mint NFT by amount
-    /// @dev Loop calling _safeMint function by amount
-    /// @param to_ Receiver address who will receive minted NFT
-    /// @param amount_ Amount by which NFT will be minted
-    function safeMintAmount(address to_, uint256 amount_)
-        public
-        onlyRole(MINTER_ROLE)
-    {
-        for (uint256 i = 0; i < amount_; i++) {
-            _tokenIdCounter.increment();
-            uint256 tokenId = _tokenIdCounter.current();
-            _safeMint(to_, tokenId);
-        }
+        _setTokenURI(tokenId, uri_);
     }
 
     /// @notice Hook function which is called before token will be transfered
@@ -2370,14 +2507,28 @@ contract rentNFT is
         super._beforeTokenTransfer(from, to, tokenId, batchSize);
     }
 
+    function _burn(
+        uint256 tokenId
+    ) internal override(ERC721, ERC721URIStorage) {
+        super._burn(tokenId);
+    }
+
     /// @notice Check function where or not supporting a specific interface
     /// @dev Override this function from ERC721 and ERC721Enumerable and AccessControl
     /// @param interfaceId interface ID as bytes4
     /// @return success or failure
-    function supportsInterface(bytes4 interfaceId)
+    function supportsInterface(
+        bytes4 interfaceId
+    )
         public
         view
-        override(IERC165, ERC721, ERC721Enumerable, AccessControl)
+        override(
+            IERC165,
+            ERC721,
+            ERC721Enumerable,
+            ERC721URIStorage,
+            AccessControl
+        )
         returns (bool)
     {
         return

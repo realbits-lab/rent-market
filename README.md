@@ -32,6 +32,11 @@ foo@bar:~$ remixd
 ## Use hardhat
 
 - If you want to use hardhat, use hardhat command.
+- Check contract size.
+
+```bash
+hh size-contracts (--no-compile)
+```
 
 ## Build package
 
@@ -66,18 +71,28 @@ foo@bar:~$ npm run build:production
 
 ## If you change rent market contract
 
+### Change development configuration
+
 - Change rent market contract address in prompt-nft .env
 - Change rent market contract address in rent-content .env
 - Change rent market contract address in rent-market .env
 
-- Re-register collection
+### Re-register
+
+- Re-register collection (including payment nft)
 - Re-register service
 - Re-register token
 
-- Re-register payment nft
-- Re-register other nfts
+### Change prompt nft configuration
 
-- Change rent market address in prompt nft
+- Change rent market address in prompt nft with changeRentMarketContract function.
+
+### Change reward token share configuration for market contract address setting
+
+- Change the getRentMarketContractAddressArray data for a new rent market contract address.
+- Use addRentMarketContractAddress or removeRentMarketContractAddress function.
+
+### Change production service configuration
 
 - Change fictures service configuration
 - Change market service configuration

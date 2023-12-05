@@ -198,7 +198,8 @@ describe("test settleRentData true case.", function () {
       if (currentTimestamp.gt(endTimestamp) === true) {
         const tx = rentMarketContract.settleRentData(
           element["nftAddress"],
-          element["tokenId"]
+          element["tokenId"],
+          element["renteeAddress"]
         );
         txArray.push(tx);
       }
@@ -440,7 +441,8 @@ describe("test settleRentData true case.", function () {
       ) {
         const tx = rentMarketContract.settleRentData(
           element["nftAddress"],
-          element["tokenId"]
+          element["tokenId"],
+          element["renteeAddress"]
         );
         txArray.push(tx);
       }

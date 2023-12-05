@@ -141,7 +141,8 @@ describe("test settleRentData true case.", function () {
       if (currentTimestamp.gt(endTimestamp) === true) {
         const tx = rentMarketContract.settleRentData(
           element["nftAddress"],
-          element["tokenId"]
+          element["tokenId"],
+          element["renteeAddress"]
         );
         txArray.push(tx);
       }
@@ -318,7 +319,8 @@ describe("test settleRentData true case.", function () {
       ) {
         const tx = rentMarketContract.settleRentData(
           element["nftAddress"],
-          element["tokenId"]
+          element["tokenId"],
+          element["renteeAddress"]
         );
         txArray.push(tx);
       }
@@ -451,36 +453,32 @@ describe("test settleRentData true case.", function () {
      **************************************************************************/
     response = await rentMarketContract
       .connect(userSigner)
-      .getRentData(testNFTContract.address, startTokenId);
+      .getRentData(testNFTContract.address, startTokenId, userSigner.address);
     rentFee = response["rentFee"];
     rentDuration = response["rentDuration"];
     // console.log("rentFee: ", rentFee);
     // console.log("rentDuration: ", rentDuration);
 
-    /***************************************************************************
-     * Wait some times.
-     **************************************************************************/
+    // Wait some times.
     await sleep(progressTime * 1000);
 
-    /***************************************************************************
-     * Progress blocks.
-     **************************************************************************/
+    // Progress blocks.
     await hre.network.provider.send("hardhat_mine", [`0x${progressTime}`]);
 
-    /***************************************************************************
-     * Unrent NFT.
-     **************************************************************************/
+    // Unrent NFT.
     tx = await rentMarketContract
       .connect(userSigner)
-      .unrentNFT(testNFTContract.address, startTokenId);
+      .unrentNFT(
+        testNFTContract.address,
+        startTokenId,
+        rentMarketContractOwnerSigner.address
+      );
     await tx.wait();
     const unrentTimestamp = (await ethers.provider.getBlock("latest"))
       .timestamp;
     // console.log("unrentTimestamp: ", unrentTimestamp);
 
-    /***************************************************************************
-     * Get real value of each balanace for renter, rentee, and market.
-     **************************************************************************/
+    // Get real value of each balanace for renter, rentee, and market.
     const realRenterBalance = await rentMarketContract
       .connect(testNFTContractOwnerSigner)
       .getMyBalance(ethers.constants.AddressZero);
@@ -491,9 +489,7 @@ describe("test settleRentData true case.", function () {
       .connect(rentMarketContractOwnerSigner)
       .getMyBalance(ethers.constants.AddressZero);
 
-    /***************************************************************************
-     * Get expected value of each quota and balance for renter, rentee, and market.
-     **************************************************************************/
+    // Get expected value of each quota and balance for renter, rentee, and market.
     const usedTimestamp = unrentTimestamp - rentTimestamp;
     // console.log("usedTimestamp: ", usedTimestamp);
     // console.log("rentDutaion: ", rentDuration);

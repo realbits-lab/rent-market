@@ -166,7 +166,7 @@ describe("test the distribute vesting function case.", function () {
     for (i = 2; i < nftCount; i++) {
       tx = await rentMarketContract
         .connect(userSigner)
-        .settleRentData(rentNFTContract.address, i);
+        .settleRentData(rentNFTContract.address, i, userSigner.address);
       txArray.push(tx.wait());
     }
     await Promise.all(txArray);

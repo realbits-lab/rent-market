@@ -47,7 +47,7 @@ describe("test rentNFT true case.", function () {
     } = response);
   });
 
-  it("Check rent result.", async function () {
+  it("Check rent result with normal case.", async function () {
     let tx;
     const startTokenId = 1;
     const endTokenId = 1;
@@ -90,7 +90,7 @@ describe("test rentNFT true case.", function () {
     //* Check rent data.
     response = await rentMarketContract
       .connect(userSigner)
-      .getRentData(testNFTContract.address, startTokenId);
+      .getRentData(testNFTContract.address, startTokenId, userSigner.address);
     // struct rentData {
     //     address nftAddress;
     //     uint256 tokenId;
@@ -120,12 +120,13 @@ describe("test rentNFT true case.", function () {
     ]);
   });
 
-  it("Check duplicate rent result.", async function () {
+  it("Check the duplicate rent result.", async function () {
     let tx;
     const startTokenId = 1;
     const endTokenId = 1;
 
     //* Register NFT to rent market.
+    // console.log("call registerNFT()");
     await registerNFT({
       rentMarketContract,
       testNFTContract,
@@ -157,7 +158,7 @@ describe("test rentNFT true case.", function () {
     //* Get rent duration.
     response = await rentMarketContract
       .connect(userSigner)
-      .getRentData(testNFTContract.address, startTokenId);
+      .getRentData(testNFTContract.address, startTokenId, userSigner.address);
     // console.log("getRentData response: ", response);
     let rentDuration = response["rentDuration"];
     // console.log("rentDuration: ", rentDuration);
@@ -180,7 +181,7 @@ describe("test rentNFT true case.", function () {
     const previousRentDuration = rentDuration;
     response = await rentMarketContract
       .connect(userSigner)
-      .getRentData(testNFTContract.address, startTokenId);
+      .getRentData(testNFTContract.address, startTokenId, userSigner.address);
     // console.log("getRentData response: ", response);
     rentDuration = response["rentDuration"];
     // console.log("rentDuration: ", rentDuration);

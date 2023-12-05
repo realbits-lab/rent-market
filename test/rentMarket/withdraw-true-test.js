@@ -106,7 +106,11 @@ describe("test withdrawMyBalance true case.", function () {
     // console.log("Do settleRentData.");
     transaction = await rentMarketContract
       .connect(rentMarketContractOwnerSigner)
-      .settleRentData(testNFTContract.address, startTokenId);
+      .settleRentData(
+        testNFTContract.address,
+        startTokenId,
+        userSigner.address
+      );
     await transaction.wait();
 
     // 6. Check each quota balanace for renter, rentee, and market.
@@ -146,7 +150,7 @@ describe("test withdrawMyBalance true case.", function () {
     // console.log("Check rent data is empty.");
     response = await rentMarketContract
       .connect(userSigner)
-      .getRentData(testNFTContract.address, startTokenId);
+      .getRentData(testNFTContract.address, startTokenId, userSigner.address);
 
     expect(response).to.deep.equal([
       ethers.constants.AddressZero,
@@ -292,14 +296,18 @@ describe("test withdrawMyBalance true case.", function () {
     // 6. Do settleRentData.
     response = await rentMarketContract
       .connect(userSigner)
-      .getRentData(testNFTContract.address, startTokenId);
+      .getRentData(testNFTContract.address, startTokenId, userSigner.address);
     // console.log("response: ", response);
     const responseRentFeeByToken = response["rentFeeByToken"];
     expect(responseRentFeeByToken).to.be.equal(rentFeeByToken);
 
     transaction = await rentMarketContract
       .connect(rentMarketContractOwnerSigner)
-      .settleRentData(testNFTContract.address, startTokenId);
+      .settleRentData(
+        testNFTContract.address,
+        startTokenId,
+        userSigner.address
+      );
     await transaction.wait();
 
     // 7. Check each quota balanace for renter, rentee, and market.
@@ -334,7 +342,7 @@ describe("test withdrawMyBalance true case.", function () {
     // 8. Check rent data is empty.
     response = await rentMarketContract
       .connect(userSigner)
-      .getRentData(testNFTContract.address, startTokenId);
+      .getRentData(testNFTContract.address, startTokenId, userSigner.address);
 
     expect(response).to.deep.equal([
       ethers.constants.AddressZero,
