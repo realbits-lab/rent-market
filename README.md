@@ -94,9 +94,10 @@ foo@bar:~$ npm run build:production
 
 ### Change production service configuration
 
-- Change fictures service configuration
-- Change market service configuration
-- Change other services configuration
+- Change prompt-nft configuration
+- Change rent-market configuration
+- Change rent-content configuration
+- Change other services configuration, if any
 
 ## Change .env variables for selecting blockchain network
 
