@@ -97,3 +97,13 @@ foo@bar:~$ npm run build:production
 - Change fictures service configuration
 - Change market service configuration
 - Change other services configuration
+
+## Change .env variables for selecting blockchain network
+
+- ACCOUNT_PRIVATE_KEY
+- RENTMARKET_CONTRACT_ADDRESS
+- NFT_CONTRACT_ADDRESS
+- REWARD_TOKEN_CONTRACT_ADDRESS
+- REWARD_TOKEN_SHARE_CONTRACT_ADDRESS
+- TEST_TOKEN_CONTRACT_ADDRESS
+- NETWORK
