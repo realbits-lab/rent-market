@@ -32,6 +32,11 @@ foo@bar:~$ remixd
 ## Use hardhat
 
 - If you want to use hardhat, use hardhat command.
+- Check contract size.
+
+```bash
+hh size-contracts (--no-compile)
+```
 
 ## Build package
 
