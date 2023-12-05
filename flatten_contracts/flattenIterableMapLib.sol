@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: MIXED
 
-// Sources flattened with hardhat v2.12.6 https://hardhat.org
+// Sources flattened with hardhat v2.19.1 https://hardhat.org
 
-// File @openzeppelin/contracts/utils/math/Math.sol@v4.8.0
+// License-Identifier: Apache-2.0 AND MIT
 
-// License-Identifier: MIT
-// OpenZeppelin Contracts (last updated v4.8.0) (utils/math/Math.sol)
+// File @openzeppelin/contracts/utils/math/Math.sol@v4.9.3
+
+// Original license: SPDX_License_Identifier: MIT
+// OpenZeppelin Contracts (last updated v4.9.0) (utils/math/Math.sol)
 
 pragma solidity ^0.8.0;
 
@@ -58,11 +60,7 @@ library Math {
      * @dev Original credit to Remco Bloemen under MIT license (https://xn--2-umb.com/21/muldiv)
      * with further edits by Uniswap Labs also under MIT license.
      */
-    function mulDiv(
-        uint256 x,
-        uint256 y,
-        uint256 denominator
-    ) internal pure returns (uint256 result) {
+    function mulDiv(uint256 x, uint256 y, uint256 denominator) internal pure returns (uint256 result) {
         unchecked {
             // 512-bit multiply [prod1 prod0] = x * y. Compute the product mod 2^256 and mod 2^256 - 1, then use
             // use the Chinese Remainder Theorem to reconstruct the 512 bit result. The result is stored in two 256
@@ -77,11 +75,14 @@ library Math {
 
             // Handle non-overflow cases, 256 by 256 division.
             if (prod1 == 0) {
+                // Solidity will revert if denominator == 0, unlike the div opcode on its own.
+                // The surrounding unchecked block does not change this fact.
+                // See https://docs.soliditylang.org/en/latest/control-structures.html#checked-or-unchecked-arithmetic.
                 return prod0 / denominator;
             }
 
             // Make sure the result is less than 2^256. Also prevents denominator == 0.
-            require(denominator > prod1);
+            require(denominator > prod1, "Math: mulDiv overflow");
 
             ///////////////////////////////////////////////
             // 512 by 256 division.
@@ -143,12 +144,7 @@ library Math {
     /**
      * @notice Calculates x * y / denominator with full precision, following the selected rounding direction.
      */
-    function mulDiv(
-        uint256 x,
-        uint256 y,
-        uint256 denominator,
-        Rounding rounding
-    ) internal pure returns (uint256) {
+    function mulDiv(uint256 x, uint256 y, uint256 denominator, Rounding rounding) internal pure returns (uint256) {
         uint256 result = mulDiv(x, y, denominator);
         if (rounding == Rounding.Up && mulmod(x, y, denominator) > 0) {
             result += 1;
@@ -264,31 +260,31 @@ library Math {
     function log10(uint256 value) internal pure returns (uint256) {
         uint256 result = 0;
         unchecked {
-            if (value >= 10**64) {
-                value /= 10**64;
+            if (value >= 10 ** 64) {
+                value /= 10 ** 64;
                 result += 64;
             }
-            if (value >= 10**32) {
-                value /= 10**32;
+            if (value >= 10 ** 32) {
+                value /= 10 ** 32;
                 result += 32;
             }
-            if (value >= 10**16) {
-                value /= 10**16;
+            if (value >= 10 ** 16) {
+                value /= 10 ** 16;
                 result += 16;
             }
-            if (value >= 10**8) {
-                value /= 10**8;
+            if (value >= 10 ** 8) {
+                value /= 10 ** 8;
                 result += 8;
             }
-            if (value >= 10**4) {
-                value /= 10**4;
+            if (value >= 10 ** 4) {
+                value /= 10 ** 4;
                 result += 4;
             }
-            if (value >= 10**2) {
-                value /= 10**2;
+            if (value >= 10 ** 2) {
+                value /= 10 ** 2;
                 result += 2;
             }
-            if (value >= 10**1) {
+            if (value >= 10 ** 1) {
                 result += 1;
             }
         }
@@ -302,7 +298,7 @@ library Math {
     function log10(uint256 value, Rounding rounding) internal pure returns (uint256) {
         unchecked {
             uint256 result = log10(value);
-            return result + (rounding == Rounding.Up && 10**result < value ? 1 : 0);
+            return result + (rounding == Rounding.Up && 10 ** result < value ? 1 : 0);
         }
     }
 
@@ -339,24 +335,72 @@ library Math {
     }
 
     /**
-     * @dev Return the log in base 10, following the selected rounding direction, of a positive value.
+     * @dev Return the log in base 256, following the selected rounding direction, of a positive value.
      * Returns 0 if given 0.
      */
     function log256(uint256 value, Rounding rounding) internal pure returns (uint256) {
         unchecked {
             uint256 result = log256(value);
-            return result + (rounding == Rounding.Up && 1 << (result * 8) < value ? 1 : 0);
+            return result + (rounding == Rounding.Up && 1 << (result << 3) < value ? 1 : 0);
         }
     }
 }
 
 
-// File @openzeppelin/contracts/utils/Strings.sol@v4.8.0
+// File @openzeppelin/contracts/utils/math/SignedMath.sol@v4.9.3
 
-// License-Identifier: MIT
-// OpenZeppelin Contracts (last updated v4.8.0) (utils/Strings.sol)
+// Original license: SPDX_License_Identifier: MIT
+// OpenZeppelin Contracts (last updated v4.8.0) (utils/math/SignedMath.sol)
 
 pragma solidity ^0.8.0;
+
+/**
+ * @dev Standard signed math utilities missing in the Solidity language.
+ */
+library SignedMath {
+    /**
+     * @dev Returns the largest of two signed numbers.
+     */
+    function max(int256 a, int256 b) internal pure returns (int256) {
+        return a > b ? a : b;
+    }
+
+    /**
+     * @dev Returns the smallest of two signed numbers.
+     */
+    function min(int256 a, int256 b) internal pure returns (int256) {
+        return a < b ? a : b;
+    }
+
+    /**
+     * @dev Returns the average of two signed numbers without overflow.
+     * The result is rounded towards zero.
+     */
+    function average(int256 a, int256 b) internal pure returns (int256) {
+        // Formula from the book "Hacker's Delight"
+        int256 x = (a & b) + ((a ^ b) >> 1);
+        return x + (int256(uint256(x) >> 255) & (a ^ b));
+    }
+
+    /**
+     * @dev Returns the absolute unsigned value of a signed value.
+     */
+    function abs(int256 n) internal pure returns (uint256) {
+        unchecked {
+            // must be unchecked in order to support `n = type(int256).min`
+            return uint256(n >= 0 ? n : -n);
+        }
+    }
+}
+
+
+// File @openzeppelin/contracts/utils/Strings.sol@v4.9.3
+
+// Original license: SPDX_License_Identifier: MIT
+// OpenZeppelin Contracts (last updated v4.9.0) (utils/Strings.sol)
+
+pragma solidity ^0.8.0;
+
 
 /**
  * @dev String operations.
@@ -391,6 +435,13 @@ library Strings {
     }
 
     /**
+     * @dev Converts a `int256` to its ASCII `string` decimal representation.
+     */
+    function toString(int256 value) internal pure returns (string memory) {
+        return string(abi.encodePacked(value < 0 ? "-" : "", toString(SignedMath.abs(value))));
+    }
+
+    /**
      * @dev Converts a `uint256` to its ASCII `string` hexadecimal representation.
      */
     function toHexString(uint256 value) internal pure returns (string memory) {
@@ -420,12 +471,19 @@ library Strings {
     function toHexString(address addr) internal pure returns (string memory) {
         return toHexString(uint256(uint160(addr)), _ADDRESS_LENGTH);
     }
+
+    /**
+     * @dev Returns true if the two strings are equal.
+     */
+    function equal(string memory a, string memory b) internal pure returns (bool) {
+        return keccak256(bytes(a)) == keccak256(bytes(b));
+    }
 }
 
 
 // File contracts/iterableMapLib.sol
 
-// License-Identifier: Apache-2.0
+// Original license: SPDX_License_Identifier: Apache-2.0
 pragma solidity ^0.8.9;
 
 library pendingRentFeeIterableMap {
@@ -445,18 +503,6 @@ library pendingRentFeeIterableMap {
     struct pendingRentFeeMap {
         mapping(string => pendingRentFeeEntry) data;
         string[] keys;
-    }
-
-    function getAllPendingRentFee(
-        pendingRentFeeMap storage self
-    ) public view returns (pendingRentFee[] memory) {
-        pendingRentFee[] memory data = new pendingRentFee[](self.keys.length);
-
-        for (uint256 i = 0; i < self.keys.length; i++) {
-            data[i] = self.data[self.keys[i]].data;
-        }
-
-        return data;
     }
 
     function encodeKey(
@@ -653,6 +699,62 @@ library pendingRentFeeIterableMap {
         return self.data[key].data.amount;
     }
 
+    function getAll(
+        pendingRentFeeMap storage self
+    ) public view returns (pendingRentFee[] memory) {
+        pendingRentFee[] memory data = new pendingRentFee[](self.keys.length);
+
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            data[i] = self.data[self.keys[i]].data;
+        }
+
+        return data;
+    }
+
+    function getByRenterAddress(
+        pendingRentFeeMap storage self,
+        address renterAddress
+    ) public view returns (pendingRentFee[] memory) {
+        uint256 count = 0;
+
+        pendingRentFee[] memory data = new pendingRentFee[](self.keys.length);
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            if (self.data[self.keys[i]].data.renterAddress == renterAddress) {
+                data[i] = self.data[self.keys[i]].data;
+                count = count + 1;
+            }
+        }
+
+        pendingRentFee[] memory returnData = new pendingRentFee[](count);
+        for (uint256 i = 0; i < count; i++) {
+            returnData[i] = data[i];
+        }
+
+        return returnData;
+    }
+
+    function getByServiceAddress(
+        pendingRentFeeMap storage self,
+        address serviceAddress
+    ) public view returns (pendingRentFee[] memory) {
+        uint256 count = 0;
+
+        pendingRentFee[] memory data = new pendingRentFee[](self.keys.length);
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            if (self.data[self.keys[i]].data.serviceAddress == serviceAddress) {
+                data[i] = self.data[self.keys[i]].data;
+                count = count + 1;
+            }
+        }
+
+        pendingRentFee[] memory returnData = new pendingRentFee[](count);
+        for (uint256 i = 0; i < count; i++) {
+            returnData[i] = data[i];
+        }
+
+        return returnData;
+    }
+
     function getByAddress(
         pendingRentFeeMap storage self,
         address renterAddress,
@@ -698,18 +800,6 @@ library accountBalanceIterableMap {
     struct accountBalanceMap {
         mapping(string => accountBalanceEntry) data;
         string[] keys;
-    }
-
-    function getAllAccountBalance(
-        accountBalanceMap storage self
-    ) public view returns (accountBalance[] memory) {
-        accountBalance[] memory data = new accountBalance[](self.keys.length);
-
-        for (uint256 i = 0; i < self.keys.length; i++) {
-            data[i] = self.data[self.keys[i]].data;
-        }
-
-        return data;
     }
 
     function encodeKey(
@@ -839,6 +929,34 @@ library accountBalanceIterableMap {
         return self.data[key].data.amount;
     }
 
+    function getAll(
+        accountBalanceMap storage self
+    ) public view returns (accountBalance[] memory) {
+        accountBalance[] memory data = new accountBalance[](self.keys.length);
+
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            data[i] = self.data[self.keys[i]].data;
+        }
+
+        return data;
+    }
+
+    function getTotalBalance(
+        accountBalanceMap storage self,
+        address tokenAddress
+    ) public view returns (uint256) {
+        uint256 totalBalance = 0;
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            if (self.data[self.keys[i]].data.tokenAddress == tokenAddress) {
+                totalBalance =
+                    totalBalance +
+                    self.data[self.keys[i]].data.amount;
+            }
+        }
+
+        return totalBalance;
+    }
+
     function getByAddress(
         accountBalanceMap storage self,
         address accountAddress,
@@ -878,18 +996,6 @@ library tokenDataIterableMap {
     struct tokenDataMap {
         mapping(string => tokenDataEntry) data;
         string[] keys;
-    }
-
-    function getAllToken(
-        tokenDataMap storage self
-    ) public view returns (tokenData[] memory) {
-        tokenData[] memory data = new tokenData[](self.keys.length);
-
-        for (uint256 i = 0; i < self.keys.length; i++) {
-            data[i] = self.data[self.keys[i]].data;
-        }
-
-        return data;
     }
 
     function encodeKey(
@@ -985,6 +1091,18 @@ library tokenDataIterableMap {
         return self.data[key].data.name;
     }
 
+    function getAll(
+        tokenDataMap storage self
+    ) public view returns (tokenData[] memory) {
+        tokenData[] memory data = new tokenData[](self.keys.length);
+
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            data[i] = self.data[self.keys[i]].data;
+        }
+
+        return data;
+    }
+
     function getByAddress(
         tokenDataMap storage self,
         address tokenAddress
@@ -1023,18 +1141,6 @@ library collectionDataIterableMap {
     struct collectionDataMap {
         mapping(string => collectionDataEntry) data;
         string[] keys;
-    }
-
-    function getAllCollectionData(
-        collectionDataMap storage self
-    ) public view returns (collectionData[] memory) {
-        collectionData[] memory data = new collectionData[](self.keys.length);
-
-        for (uint256 i = 0; i < self.keys.length; i++) {
-            data[i] = self.data[self.keys[i]].data;
-        }
-
-        return data;
     }
 
     function encodeKey(
@@ -1132,6 +1238,18 @@ library collectionDataIterableMap {
         return self.data[key].data.uri;
     }
 
+    function getAll(
+        collectionDataMap storage self
+    ) public view returns (collectionData[] memory) {
+        collectionData[] memory data = new collectionData[](self.keys.length);
+
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            data[i] = self.data[self.keys[i]].data;
+        }
+
+        return data;
+    }
+
     function getByAddress(
         collectionDataMap storage self,
         address collectionAddress
@@ -1170,18 +1288,6 @@ library serviceDataIterableMap {
     struct serviceDataMap {
         mapping(string => serviceDataEntry) data;
         string[] keys;
-    }
-
-    function getAllServiceData(
-        serviceDataMap storage self
-    ) public view returns (serviceData[] memory) {
-        serviceData[] memory data = new serviceData[](self.keys.length);
-
-        for (uint256 i = 0; i < self.keys.length; i++) {
-            data[i] = self.data[self.keys[i]].data;
-        }
-
-        return data;
     }
 
     function encodeKey(
@@ -1277,6 +1383,18 @@ library serviceDataIterableMap {
         return self.data[key].data.uri;
     }
 
+    function getAll(
+        serviceDataMap storage self
+    ) public view returns (serviceData[] memory) {
+        serviceData[] memory data = new serviceData[](self.keys.length);
+
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            data[i] = self.data[self.keys[i]].data;
+        }
+
+        return data;
+    }
+
     function getByAddress(
         serviceDataMap storage self,
         address serviceAddress
@@ -1319,18 +1437,6 @@ library registerDataIterableMap {
     struct registerDataMap {
         mapping(string => registerDataEntry) data;
         string[] keys;
-    }
-
-    function getAllRegisterData(
-        registerDataMap storage self
-    ) public view returns (registerData[] memory) {
-        registerData[] memory data = new registerData[](self.keys.length);
-
-        for (uint256 i = 0; i < self.keys.length; i++) {
-            data[i] = self.data[self.keys[i]].data;
-        }
-
-        return data;
     }
 
     function encodeKey(
@@ -1456,6 +1562,49 @@ library registerDataIterableMap {
         return self.keys.length;
     }
 
+    /// @dev Return all registered data as array type
+    /// @param self Self class
+    /// @return All registered data as array
+    function getAll(
+        registerDataMap storage self
+    ) public view returns (registerData[] memory) {
+        registerData[] memory data = new registerData[](self.keys.length);
+
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            data[i] = self.data[self.keys[i]].data;
+        }
+
+        return data;
+    }
+
+    /// @dev Return all registered data which has nft address
+    /// @param self Self class
+    /// @param nftAddress Self class
+    /// @return All registered data which has nft address
+    function getByCollection(
+        registerDataMap storage self,
+        address nftAddress
+    ) public view returns (registerData[] memory) {
+        uint256 count = 0;
+
+        // Filter with nft address through all register data.
+        registerData[] memory data = new registerData[](self.keys.length);
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            if (self.data[self.keys[i]].data.nftAddress == nftAddress) {
+                data[count] = self.data[self.keys[i]].data;
+                count = count + 1;
+            }
+        }
+
+        // Copy only filtered data with collection address.
+        registerData[] memory returnData = new registerData[](count);
+        for (uint256 i = 0; i < count; i++) {
+            returnData[i] = data[i];
+        }
+
+        return returnData;
+    }
+
     function getByNFT(
         registerDataMap storage self,
         address nftAddress,
@@ -1504,18 +1653,6 @@ library rentDataIterableMap {
     struct rentDataMap {
         mapping(string => rentDataEntry) data;
         string[] keys;
-    }
-
-    function getAllRentData(
-        rentDataMap storage self
-    ) public view returns (rentData[] memory) {
-        rentData[] memory data = new rentData[](self.keys.length);
-
-        for (uint256 i = 0; i < self.keys.length; i++) {
-            data[i] = self.data[self.keys[i]].data;
-        }
-
-        return data;
     }
 
     function encodeKey(
@@ -1627,6 +1764,73 @@ library rentDataIterableMap {
 
     function size(rentDataMap storage self) public view returns (uint256) {
         return self.keys.length;
+    }
+
+    /// @dev Return all rented data as array type
+    /// @param self Self class
+    /// @return All rented data as array
+    function getAll(
+        rentDataMap storage self
+    ) public view returns (rentData[] memory) {
+        rentData[] memory data = new rentData[](self.keys.length);
+
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            data[i] = self.data[self.keys[i]].data;
+        }
+
+        return data;
+    }
+
+    /// @dev Return all rented data which has nft address
+    /// @param self Self class
+    /// @param nftAddress Nft address
+    /// @return All rented data which has nft address
+    function getByNftAddress(
+        rentDataMap storage self,
+        address nftAddress
+    ) public view returns (rentData[] memory) {
+        uint256 count = 0;
+
+        rentData[] memory data = new rentData[](self.keys.length);
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            if (self.data[self.keys[i]].data.nftAddress == nftAddress) {
+                data[i] = self.data[self.keys[i]].data;
+                count = count + 1;
+            }
+        }
+
+        rentData[] memory returnData = new rentData[](count);
+        for (uint256 i = 0; i < count; i++) {
+            returnData[i] = data[i];
+        }
+
+        return returnData;
+    }
+
+    /// @dev Return all rented data which has rentee address
+    /// @param self Self class
+    /// @param renteeAddress Rentee address
+    /// @return All rented data which has nft address
+    function getByRenteeAddress(
+        rentDataMap storage self,
+        address renteeAddress
+    ) public view returns (rentData[] memory) {
+        uint256 count = 0;
+
+        rentData[] memory data = new rentData[](self.keys.length);
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            if (self.data[self.keys[i]].data.renteeAddress == renteeAddress) {
+                data[i] = self.data[self.keys[i]].data;
+                count = count + 1;
+            }
+        }
+
+        rentData[] memory returnData = new rentData[](count);
+        for (uint256 i = 0; i < count; i++) {
+            returnData[i] = data[i];
+        }
+
+        return returnData;
     }
 
     function getByRentData(

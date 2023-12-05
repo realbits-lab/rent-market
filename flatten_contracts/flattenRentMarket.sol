@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: MIXED
 
-// Sources flattened with hardhat v2.12.6 https://hardhat.org
+// Sources flattened with hardhat v2.19.1 https://hardhat.org
 
-// File @openzeppelin/contracts/utils/Context.sol@v4.8.0
+// License-Identifier: Apache-2.0 AND MIT
 
-// License-Identifier: MIT
+// File @openzeppelin/contracts/utils/Context.sol@v4.9.3
+
+// Original license: SPDX_License_Identifier: MIT
 // OpenZeppelin Contracts v4.4.1 (utils/Context.sol)
 
 pragma solidity ^0.8.0;
@@ -30,10 +32,10 @@ abstract contract Context {
 }
 
 
-// File @openzeppelin/contracts/access/Ownable.sol@v4.8.0
+// File @openzeppelin/contracts/access/Ownable.sol@v4.9.3
 
-// License-Identifier: MIT
-// OpenZeppelin Contracts (last updated v4.7.0) (access/Ownable.sol)
+// Original license: SPDX_License_Identifier: MIT
+// OpenZeppelin Contracts (last updated v4.9.0) (access/Ownable.sol)
 
 pragma solidity ^0.8.0;
 
@@ -85,10 +87,10 @@ abstract contract Ownable is Context {
 
     /**
      * @dev Leaves the contract without owner. It will not be possible to call
-     * `onlyOwner` functions anymore. Can only be called by the current owner.
+     * `onlyOwner` functions. Can only be called by the current owner.
      *
      * NOTE: Renouncing ownership will leave the contract without an owner,
-     * thereby removing any functionality that is only available to the owner.
+     * thereby disabling any functionality that is only available to the owner.
      */
     function renounceOwnership() public virtual onlyOwner {
         _transferOwnership(address(0));
@@ -115,9 +117,9 @@ abstract contract Ownable is Context {
 }
 
 
-// File @openzeppelin/contracts/security/Pausable.sol@v4.8.0
+// File @openzeppelin/contracts/security/Pausable.sol@v4.9.3
 
-// License-Identifier: MIT
+// Original license: SPDX_License_Identifier: MIT
 // OpenZeppelin Contracts (last updated v4.7.0) (security/Pausable.sol)
 
 pragma solidity ^0.8.0;
@@ -222,9 +224,83 @@ abstract contract Pausable is Context {
 }
 
 
-// File @openzeppelin/contracts/utils/introspection/IERC165.sol@v4.8.0
+// File @openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol@v4.9.3
 
-// License-Identifier: MIT
+// Original license: SPDX_License_Identifier: MIT
+// OpenZeppelin Contracts (last updated v4.9.0) (token/ERC20/extensions/IERC20Permit.sol)
+
+pragma solidity ^0.8.0;
+
+/**
+ * @dev Interface of the ERC20 Permit extension allowing approvals to be made via signatures, as defined in
+ * https://eips.ethereum.org/EIPS/eip-2612[EIP-2612].
+ *
+ * Adds the {permit} method, which can be used to change an account's ERC20 allowance (see {IERC20-allowance}) by
+ * presenting a message signed by the account. By not relying on {IERC20-approve}, the token holder account doesn't
+ * need to send a transaction, and thus is not required to hold Ether at all.
+ */
+interface IERC20Permit {
+    /**
+     * @dev Sets `value` as the allowance of `spender` over ``owner``'s tokens,
+     * given ``owner``'s signed approval.
+     *
+     * IMPORTANT: The same issues {IERC20-approve} has related to transaction
+     * ordering also apply here.
+     *
+     * Emits an {Approval} event.
+     *
+     * Requirements:
+     *
+     * - `spender` cannot be the zero address.
+     * - `deadline` must be a timestamp in the future.
+     * - `v`, `r` and `s` must be a valid `secp256k1` signature from `owner`
+     * over the EIP712-formatted function arguments.
+     * - the signature must use ``owner``'s current nonce (see {nonces}).
+     *
+     * For more information on the signature format, see the
+     * https://eips.ethereum.org/EIPS/eip-2612#specification[relevant EIP
+     * section].
+     */
+    function permit(
+        address owner,
+        address spender,
+        uint256 value,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) external;
+
+    /**
+     * @dev Returns the current nonce for `owner`. This value must be
+     * included whenever a signature is generated for {permit}.
+     *
+     * Every successful call to {permit} increases ``owner``'s nonce by one. This
+     * prevents a signature from being used multiple times.
+     */
+    function nonces(address owner) external view returns (uint256);
+
+    /**
+     * @dev Returns the domain separator used in the encoding of the signature for {permit}, as defined by {EIP712}.
+     */
+    // solhint-disable-next-line func-name-mixedcase
+    function DOMAIN_SEPARATOR() external view returns (bytes32);
+}
+
+
+// File @openzeppelin/contracts/token/ERC20/extensions/draft-IERC20Permit.sol@v4.9.3
+
+// Original license: SPDX_License_Identifier: MIT
+// OpenZeppelin Contracts (last updated v4.9.0) (token/ERC20/extensions/draft-IERC20Permit.sol)
+
+pragma solidity ^0.8.0;
+
+// EIP-2612 is Final as of 2022-11-01. This file is deprecated.
+
+
+// File @openzeppelin/contracts/utils/introspection/IERC165.sol@v4.9.3
+
+// Original license: SPDX_License_Identifier: MIT
 // OpenZeppelin Contracts v4.4.1 (utils/introspection/IERC165.sol)
 
 pragma solidity ^0.8.0;
@@ -251,10 +327,10 @@ interface IERC165 {
 }
 
 
-// File @openzeppelin/contracts/token/ERC721/IERC721.sol@v4.8.0
+// File @openzeppelin/contracts/token/ERC721/IERC721.sol@v4.9.3
 
-// License-Identifier: MIT
-// OpenZeppelin Contracts (last updated v4.8.0) (token/ERC721/IERC721.sol)
+// Original license: SPDX_License_Identifier: MIT
+// OpenZeppelin Contracts (last updated v4.9.0) (token/ERC721/IERC721.sol)
 
 pragma solidity ^0.8.0;
 
@@ -304,12 +380,7 @@ interface IERC721 is IERC165 {
      *
      * Emits a {Transfer} event.
      */
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 tokenId,
-        bytes calldata data
-    ) external;
+    function safeTransferFrom(address from, address to, uint256 tokenId, bytes calldata data) external;
 
     /**
      * @dev Safely transfers `tokenId` token from `from` to `to`, checking first that contract recipients
@@ -325,11 +396,7 @@ interface IERC721 is IERC165 {
      *
      * Emits a {Transfer} event.
      */
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 tokenId
-    ) external;
+    function safeTransferFrom(address from, address to, uint256 tokenId) external;
 
     /**
      * @dev Transfers `tokenId` token from `from` to `to`.
@@ -347,11 +414,7 @@ interface IERC721 is IERC165 {
      *
      * Emits a {Transfer} event.
      */
-    function transferFrom(
-        address from,
-        address to,
-        uint256 tokenId
-    ) external;
+    function transferFrom(address from, address to, uint256 tokenId) external;
 
     /**
      * @dev Gives permission to `to` to transfer `tokenId` token to another account.
@@ -378,7 +441,7 @@ interface IERC721 is IERC165 {
      *
      * Emits an {ApprovalForAll} event.
      */
-    function setApprovalForAll(address operator, bool _approved) external;
+    function setApprovalForAll(address operator, bool approved) external;
 
     /**
      * @dev Returns the account approved for `tokenId` token.
@@ -398,10 +461,10 @@ interface IERC721 is IERC165 {
 }
 
 
-// File @openzeppelin/contracts/utils/introspection/ERC165Checker.sol@v4.8.0
+// File @openzeppelin/contracts/utils/introspection/ERC165Checker.sol@v4.9.3
 
-// License-Identifier: MIT
-// OpenZeppelin Contracts (last updated v4.8.0) (utils/introspection/ERC165Checker.sol)
+// Original license: SPDX_License_Identifier: MIT
+// OpenZeppelin Contracts (last updated v4.9.0) (utils/introspection/ERC165Checker.sol)
 
 pragma solidity ^0.8.0;
 
@@ -448,11 +511,10 @@ library ERC165Checker {
      *
      * _Available since v3.4._
      */
-    function getSupportedInterfaces(address account, bytes4[] memory interfaceIds)
-        internal
-        view
-        returns (bool[] memory)
-    {
+    function getSupportedInterfaces(
+        address account,
+        bytes4[] memory interfaceIds
+    ) internal view returns (bool[] memory) {
         // an array of booleans corresponding to interfaceIds and whether they're supported or not
         bool[] memory interfaceIdsSupported = new bool[](interfaceIds.length);
 
@@ -502,6 +564,10 @@ library ERC165Checker {
      * @dev Assumes that account contains a contract that supports ERC165, otherwise
      * the behavior of this method is undefined. This precondition can be checked
      * with {supportsERC165}.
+     *
+     * Some precompiled contracts will falsely indicate support for a given interface, so caution
+     * should be exercised when using this function.
+     *
      * Interface identification is specified in ERC-165.
      */
     function supportsERC165InterfaceUnchecked(address account, bytes4 interfaceId) internal view returns (bool) {
@@ -523,10 +589,10 @@ library ERC165Checker {
 }
 
 
-// File @openzeppelin/contracts/utils/math/Math.sol@v4.8.0
+// File @openzeppelin/contracts/utils/math/Math.sol@v4.9.3
 
-// License-Identifier: MIT
-// OpenZeppelin Contracts (last updated v4.8.0) (utils/math/Math.sol)
+// Original license: SPDX_License_Identifier: MIT
+// OpenZeppelin Contracts (last updated v4.9.0) (utils/math/Math.sol)
 
 pragma solidity ^0.8.0;
 
@@ -579,11 +645,7 @@ library Math {
      * @dev Original credit to Remco Bloemen under MIT license (https://xn--2-umb.com/21/muldiv)
      * with further edits by Uniswap Labs also under MIT license.
      */
-    function mulDiv(
-        uint256 x,
-        uint256 y,
-        uint256 denominator
-    ) internal pure returns (uint256 result) {
+    function mulDiv(uint256 x, uint256 y, uint256 denominator) internal pure returns (uint256 result) {
         unchecked {
             // 512-bit multiply [prod1 prod0] = x * y. Compute the product mod 2^256 and mod 2^256 - 1, then use
             // use the Chinese Remainder Theorem to reconstruct the 512 bit result. The result is stored in two 256
@@ -598,11 +660,14 @@ library Math {
 
             // Handle non-overflow cases, 256 by 256 division.
             if (prod1 == 0) {
+                // Solidity will revert if denominator == 0, unlike the div opcode on its own.
+                // The surrounding unchecked block does not change this fact.
+                // See https://docs.soliditylang.org/en/latest/control-structures.html#checked-or-unchecked-arithmetic.
                 return prod0 / denominator;
             }
 
             // Make sure the result is less than 2^256. Also prevents denominator == 0.
-            require(denominator > prod1);
+            require(denominator > prod1, "Math: mulDiv overflow");
 
             ///////////////////////////////////////////////
             // 512 by 256 division.
@@ -664,12 +729,7 @@ library Math {
     /**
      * @notice Calculates x * y / denominator with full precision, following the selected rounding direction.
      */
-    function mulDiv(
-        uint256 x,
-        uint256 y,
-        uint256 denominator,
-        Rounding rounding
-    ) internal pure returns (uint256) {
+    function mulDiv(uint256 x, uint256 y, uint256 denominator, Rounding rounding) internal pure returns (uint256) {
         uint256 result = mulDiv(x, y, denominator);
         if (rounding == Rounding.Up && mulmod(x, y, denominator) > 0) {
             result += 1;
@@ -785,31 +845,31 @@ library Math {
     function log10(uint256 value) internal pure returns (uint256) {
         uint256 result = 0;
         unchecked {
-            if (value >= 10**64) {
-                value /= 10**64;
+            if (value >= 10 ** 64) {
+                value /= 10 ** 64;
                 result += 64;
             }
-            if (value >= 10**32) {
-                value /= 10**32;
+            if (value >= 10 ** 32) {
+                value /= 10 ** 32;
                 result += 32;
             }
-            if (value >= 10**16) {
-                value /= 10**16;
+            if (value >= 10 ** 16) {
+                value /= 10 ** 16;
                 result += 16;
             }
-            if (value >= 10**8) {
-                value /= 10**8;
+            if (value >= 10 ** 8) {
+                value /= 10 ** 8;
                 result += 8;
             }
-            if (value >= 10**4) {
-                value /= 10**4;
+            if (value >= 10 ** 4) {
+                value /= 10 ** 4;
                 result += 4;
             }
-            if (value >= 10**2) {
-                value /= 10**2;
+            if (value >= 10 ** 2) {
+                value /= 10 ** 2;
                 result += 2;
             }
-            if (value >= 10**1) {
+            if (value >= 10 ** 1) {
                 result += 1;
             }
         }
@@ -823,7 +883,7 @@ library Math {
     function log10(uint256 value, Rounding rounding) internal pure returns (uint256) {
         unchecked {
             uint256 result = log10(value);
-            return result + (rounding == Rounding.Up && 10**result < value ? 1 : 0);
+            return result + (rounding == Rounding.Up && 10 ** result < value ? 1 : 0);
         }
     }
 
@@ -860,24 +920,72 @@ library Math {
     }
 
     /**
-     * @dev Return the log in base 10, following the selected rounding direction, of a positive value.
+     * @dev Return the log in base 256, following the selected rounding direction, of a positive value.
      * Returns 0 if given 0.
      */
     function log256(uint256 value, Rounding rounding) internal pure returns (uint256) {
         unchecked {
             uint256 result = log256(value);
-            return result + (rounding == Rounding.Up && 1 << (result * 8) < value ? 1 : 0);
+            return result + (rounding == Rounding.Up && 1 << (result << 3) < value ? 1 : 0);
         }
     }
 }
 
 
-// File @openzeppelin/contracts/utils/Strings.sol@v4.8.0
+// File @openzeppelin/contracts/utils/math/SignedMath.sol@v4.9.3
 
-// License-Identifier: MIT
-// OpenZeppelin Contracts (last updated v4.8.0) (utils/Strings.sol)
+// Original license: SPDX_License_Identifier: MIT
+// OpenZeppelin Contracts (last updated v4.8.0) (utils/math/SignedMath.sol)
 
 pragma solidity ^0.8.0;
+
+/**
+ * @dev Standard signed math utilities missing in the Solidity language.
+ */
+library SignedMath {
+    /**
+     * @dev Returns the largest of two signed numbers.
+     */
+    function max(int256 a, int256 b) internal pure returns (int256) {
+        return a > b ? a : b;
+    }
+
+    /**
+     * @dev Returns the smallest of two signed numbers.
+     */
+    function min(int256 a, int256 b) internal pure returns (int256) {
+        return a < b ? a : b;
+    }
+
+    /**
+     * @dev Returns the average of two signed numbers without overflow.
+     * The result is rounded towards zero.
+     */
+    function average(int256 a, int256 b) internal pure returns (int256) {
+        // Formula from the book "Hacker's Delight"
+        int256 x = (a & b) + ((a ^ b) >> 1);
+        return x + (int256(uint256(x) >> 255) & (a ^ b));
+    }
+
+    /**
+     * @dev Returns the absolute unsigned value of a signed value.
+     */
+    function abs(int256 n) internal pure returns (uint256) {
+        unchecked {
+            // must be unchecked in order to support `n = type(int256).min`
+            return uint256(n >= 0 ? n : -n);
+        }
+    }
+}
+
+
+// File @openzeppelin/contracts/utils/Strings.sol@v4.9.3
+
+// Original license: SPDX_License_Identifier: MIT
+// OpenZeppelin Contracts (last updated v4.9.0) (utils/Strings.sol)
+
+pragma solidity ^0.8.0;
+
 
 /**
  * @dev String operations.
@@ -912,6 +1020,13 @@ library Strings {
     }
 
     /**
+     * @dev Converts a `int256` to its ASCII `string` decimal representation.
+     */
+    function toString(int256 value) internal pure returns (string memory) {
+        return string(abi.encodePacked(value < 0 ? "-" : "", toString(SignedMath.abs(value))));
+    }
+
+    /**
      * @dev Converts a `uint256` to its ASCII `string` hexadecimal representation.
      */
     function toHexString(uint256 value) internal pure returns (string memory) {
@@ -941,12 +1056,19 @@ library Strings {
     function toHexString(address addr) internal pure returns (string memory) {
         return toHexString(uint256(uint160(addr)), _ADDRESS_LENGTH);
     }
+
+    /**
+     * @dev Returns true if the two strings are equal.
+     */
+    function equal(string memory a, string memory b) internal pure returns (bool) {
+        return keccak256(bytes(a)) == keccak256(bytes(b));
+    }
 }
 
 
 // File contracts/IRentNFT.sol
 
-// License-Identifier: Apache-2.0
+// Original license: SPDX_License_Identifier: Apache-2.0
 pragma solidity ^0.8.9;
 
 /**
@@ -964,7 +1086,7 @@ interface IRentNFT is IERC165 {
 
 // File contracts/iterableMapLib.sol
 
-// License-Identifier: Apache-2.0
+// Original license: SPDX_License_Identifier: Apache-2.0
 pragma solidity ^0.8.9;
 
 library pendingRentFeeIterableMap {
@@ -984,18 +1106,6 @@ library pendingRentFeeIterableMap {
     struct pendingRentFeeMap {
         mapping(string => pendingRentFeeEntry) data;
         string[] keys;
-    }
-
-    function getAllPendingRentFee(
-        pendingRentFeeMap storage self
-    ) public view returns (pendingRentFee[] memory) {
-        pendingRentFee[] memory data = new pendingRentFee[](self.keys.length);
-
-        for (uint256 i = 0; i < self.keys.length; i++) {
-            data[i] = self.data[self.keys[i]].data;
-        }
-
-        return data;
     }
 
     function encodeKey(
@@ -1192,6 +1302,62 @@ library pendingRentFeeIterableMap {
         return self.data[key].data.amount;
     }
 
+    function getAll(
+        pendingRentFeeMap storage self
+    ) public view returns (pendingRentFee[] memory) {
+        pendingRentFee[] memory data = new pendingRentFee[](self.keys.length);
+
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            data[i] = self.data[self.keys[i]].data;
+        }
+
+        return data;
+    }
+
+    function getByRenterAddress(
+        pendingRentFeeMap storage self,
+        address renterAddress
+    ) public view returns (pendingRentFee[] memory) {
+        uint256 count = 0;
+
+        pendingRentFee[] memory data = new pendingRentFee[](self.keys.length);
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            if (self.data[self.keys[i]].data.renterAddress == renterAddress) {
+                data[i] = self.data[self.keys[i]].data;
+                count = count + 1;
+            }
+        }
+
+        pendingRentFee[] memory returnData = new pendingRentFee[](count);
+        for (uint256 i = 0; i < count; i++) {
+            returnData[i] = data[i];
+        }
+
+        return returnData;
+    }
+
+    function getByServiceAddress(
+        pendingRentFeeMap storage self,
+        address serviceAddress
+    ) public view returns (pendingRentFee[] memory) {
+        uint256 count = 0;
+
+        pendingRentFee[] memory data = new pendingRentFee[](self.keys.length);
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            if (self.data[self.keys[i]].data.serviceAddress == serviceAddress) {
+                data[i] = self.data[self.keys[i]].data;
+                count = count + 1;
+            }
+        }
+
+        pendingRentFee[] memory returnData = new pendingRentFee[](count);
+        for (uint256 i = 0; i < count; i++) {
+            returnData[i] = data[i];
+        }
+
+        return returnData;
+    }
+
     function getByAddress(
         pendingRentFeeMap storage self,
         address renterAddress,
@@ -1237,18 +1403,6 @@ library accountBalanceIterableMap {
     struct accountBalanceMap {
         mapping(string => accountBalanceEntry) data;
         string[] keys;
-    }
-
-    function getAllAccountBalance(
-        accountBalanceMap storage self
-    ) public view returns (accountBalance[] memory) {
-        accountBalance[] memory data = new accountBalance[](self.keys.length);
-
-        for (uint256 i = 0; i < self.keys.length; i++) {
-            data[i] = self.data[self.keys[i]].data;
-        }
-
-        return data;
     }
 
     function encodeKey(
@@ -1378,6 +1532,34 @@ library accountBalanceIterableMap {
         return self.data[key].data.amount;
     }
 
+    function getAll(
+        accountBalanceMap storage self
+    ) public view returns (accountBalance[] memory) {
+        accountBalance[] memory data = new accountBalance[](self.keys.length);
+
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            data[i] = self.data[self.keys[i]].data;
+        }
+
+        return data;
+    }
+
+    function getTotalBalance(
+        accountBalanceMap storage self,
+        address tokenAddress
+    ) public view returns (uint256) {
+        uint256 totalBalance = 0;
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            if (self.data[self.keys[i]].data.tokenAddress == tokenAddress) {
+                totalBalance =
+                    totalBalance +
+                    self.data[self.keys[i]].data.amount;
+            }
+        }
+
+        return totalBalance;
+    }
+
     function getByAddress(
         accountBalanceMap storage self,
         address accountAddress,
@@ -1417,18 +1599,6 @@ library tokenDataIterableMap {
     struct tokenDataMap {
         mapping(string => tokenDataEntry) data;
         string[] keys;
-    }
-
-    function getAllToken(
-        tokenDataMap storage self
-    ) public view returns (tokenData[] memory) {
-        tokenData[] memory data = new tokenData[](self.keys.length);
-
-        for (uint256 i = 0; i < self.keys.length; i++) {
-            data[i] = self.data[self.keys[i]].data;
-        }
-
-        return data;
     }
 
     function encodeKey(
@@ -1524,6 +1694,18 @@ library tokenDataIterableMap {
         return self.data[key].data.name;
     }
 
+    function getAll(
+        tokenDataMap storage self
+    ) public view returns (tokenData[] memory) {
+        tokenData[] memory data = new tokenData[](self.keys.length);
+
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            data[i] = self.data[self.keys[i]].data;
+        }
+
+        return data;
+    }
+
     function getByAddress(
         tokenDataMap storage self,
         address tokenAddress
@@ -1562,18 +1744,6 @@ library collectionDataIterableMap {
     struct collectionDataMap {
         mapping(string => collectionDataEntry) data;
         string[] keys;
-    }
-
-    function getAllCollectionData(
-        collectionDataMap storage self
-    ) public view returns (collectionData[] memory) {
-        collectionData[] memory data = new collectionData[](self.keys.length);
-
-        for (uint256 i = 0; i < self.keys.length; i++) {
-            data[i] = self.data[self.keys[i]].data;
-        }
-
-        return data;
     }
 
     function encodeKey(
@@ -1671,6 +1841,18 @@ library collectionDataIterableMap {
         return self.data[key].data.uri;
     }
 
+    function getAll(
+        collectionDataMap storage self
+    ) public view returns (collectionData[] memory) {
+        collectionData[] memory data = new collectionData[](self.keys.length);
+
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            data[i] = self.data[self.keys[i]].data;
+        }
+
+        return data;
+    }
+
     function getByAddress(
         collectionDataMap storage self,
         address collectionAddress
@@ -1709,18 +1891,6 @@ library serviceDataIterableMap {
     struct serviceDataMap {
         mapping(string => serviceDataEntry) data;
         string[] keys;
-    }
-
-    function getAllServiceData(
-        serviceDataMap storage self
-    ) public view returns (serviceData[] memory) {
-        serviceData[] memory data = new serviceData[](self.keys.length);
-
-        for (uint256 i = 0; i < self.keys.length; i++) {
-            data[i] = self.data[self.keys[i]].data;
-        }
-
-        return data;
     }
 
     function encodeKey(
@@ -1816,6 +1986,18 @@ library serviceDataIterableMap {
         return self.data[key].data.uri;
     }
 
+    function getAll(
+        serviceDataMap storage self
+    ) public view returns (serviceData[] memory) {
+        serviceData[] memory data = new serviceData[](self.keys.length);
+
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            data[i] = self.data[self.keys[i]].data;
+        }
+
+        return data;
+    }
+
     function getByAddress(
         serviceDataMap storage self,
         address serviceAddress
@@ -1858,18 +2040,6 @@ library registerDataIterableMap {
     struct registerDataMap {
         mapping(string => registerDataEntry) data;
         string[] keys;
-    }
-
-    function getAllRegisterData(
-        registerDataMap storage self
-    ) public view returns (registerData[] memory) {
-        registerData[] memory data = new registerData[](self.keys.length);
-
-        for (uint256 i = 0; i < self.keys.length; i++) {
-            data[i] = self.data[self.keys[i]].data;
-        }
-
-        return data;
     }
 
     function encodeKey(
@@ -1995,6 +2165,49 @@ library registerDataIterableMap {
         return self.keys.length;
     }
 
+    /// @dev Return all registered data as array type
+    /// @param self Self class
+    /// @return All registered data as array
+    function getAll(
+        registerDataMap storage self
+    ) public view returns (registerData[] memory) {
+        registerData[] memory data = new registerData[](self.keys.length);
+
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            data[i] = self.data[self.keys[i]].data;
+        }
+
+        return data;
+    }
+
+    /// @dev Return all registered data which has nft address
+    /// @param self Self class
+    /// @param nftAddress Self class
+    /// @return All registered data which has nft address
+    function getByCollection(
+        registerDataMap storage self,
+        address nftAddress
+    ) public view returns (registerData[] memory) {
+        uint256 count = 0;
+
+        // Filter with nft address through all register data.
+        registerData[] memory data = new registerData[](self.keys.length);
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            if (self.data[self.keys[i]].data.nftAddress == nftAddress) {
+                data[count] = self.data[self.keys[i]].data;
+                count = count + 1;
+            }
+        }
+
+        // Copy only filtered data with collection address.
+        registerData[] memory returnData = new registerData[](count);
+        for (uint256 i = 0; i < count; i++) {
+            returnData[i] = data[i];
+        }
+
+        return returnData;
+    }
+
     function getByNFT(
         registerDataMap storage self,
         address nftAddress,
@@ -2043,18 +2256,6 @@ library rentDataIterableMap {
     struct rentDataMap {
         mapping(string => rentDataEntry) data;
         string[] keys;
-    }
-
-    function getAllRentData(
-        rentDataMap storage self
-    ) public view returns (rentData[] memory) {
-        rentData[] memory data = new rentData[](self.keys.length);
-
-        for (uint256 i = 0; i < self.keys.length; i++) {
-            data[i] = self.data[self.keys[i]].data;
-        }
-
-        return data;
     }
 
     function encodeKey(
@@ -2168,6 +2369,73 @@ library rentDataIterableMap {
         return self.keys.length;
     }
 
+    /// @dev Return all rented data as array type
+    /// @param self Self class
+    /// @return All rented data as array
+    function getAll(
+        rentDataMap storage self
+    ) public view returns (rentData[] memory) {
+        rentData[] memory data = new rentData[](self.keys.length);
+
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            data[i] = self.data[self.keys[i]].data;
+        }
+
+        return data;
+    }
+
+    /// @dev Return all rented data which has nft address
+    /// @param self Self class
+    /// @param nftAddress Nft address
+    /// @return All rented data which has nft address
+    function getByNftAddress(
+        rentDataMap storage self,
+        address nftAddress
+    ) public view returns (rentData[] memory) {
+        uint256 count = 0;
+
+        rentData[] memory data = new rentData[](self.keys.length);
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            if (self.data[self.keys[i]].data.nftAddress == nftAddress) {
+                data[i] = self.data[self.keys[i]].data;
+                count = count + 1;
+            }
+        }
+
+        rentData[] memory returnData = new rentData[](count);
+        for (uint256 i = 0; i < count; i++) {
+            returnData[i] = data[i];
+        }
+
+        return returnData;
+    }
+
+    /// @dev Return all rented data which has rentee address
+    /// @param self Self class
+    /// @param renteeAddress Rentee address
+    /// @return All rented data which has nft address
+    function getByRenteeAddress(
+        rentDataMap storage self,
+        address renteeAddress
+    ) public view returns (rentData[] memory) {
+        uint256 count = 0;
+
+        rentData[] memory data = new rentData[](self.keys.length);
+        for (uint256 i = 0; i < self.keys.length; i++) {
+            if (self.data[self.keys[i]].data.renteeAddress == renteeAddress) {
+                data[i] = self.data[self.keys[i]].data;
+                count = count + 1;
+            }
+        }
+
+        rentData[] memory returnData = new rentData[](count);
+        for (uint256 i = 0; i < count; i++) {
+            returnData[i] = data[i];
+        }
+
+        return returnData;
+    }
+
     function getByRentData(
         rentDataMap storage self,
         address nftAddress,
@@ -2194,74 +2462,10 @@ library rentDataIterableMap {
 }
 
 
-// File @openzeppelin/contracts/token/ERC20/extensions/draft-IERC20Permit.sol@v4.8.0
+// File @openzeppelin/contracts/token/ERC20/IERC20.sol@v4.9.3
 
-// License-Identifier: MIT
-// OpenZeppelin Contracts v4.4.1 (token/ERC20/extensions/draft-IERC20Permit.sol)
-
-pragma solidity ^0.8.0;
-
-/**
- * @dev Interface of the ERC20 Permit extension allowing approvals to be made via signatures, as defined in
- * https://eips.ethereum.org/EIPS/eip-2612[EIP-2612].
- *
- * Adds the {permit} method, which can be used to change an account's ERC20 allowance (see {IERC20-allowance}) by
- * presenting a message signed by the account. By not relying on {IERC20-approve}, the token holder account doesn't
- * need to send a transaction, and thus is not required to hold Ether at all.
- */
-interface IERC20Permit {
-    /**
-     * @dev Sets `value` as the allowance of `spender` over ``owner``'s tokens,
-     * given ``owner``'s signed approval.
-     *
-     * IMPORTANT: The same issues {IERC20-approve} has related to transaction
-     * ordering also apply here.
-     *
-     * Emits an {Approval} event.
-     *
-     * Requirements:
-     *
-     * - `spender` cannot be the zero address.
-     * - `deadline` must be a timestamp in the future.
-     * - `v`, `r` and `s` must be a valid `secp256k1` signature from `owner`
-     * over the EIP712-formatted function arguments.
-     * - the signature must use ``owner``'s current nonce (see {nonces}).
-     *
-     * For more information on the signature format, see the
-     * https://eips.ethereum.org/EIPS/eip-2612#specification[relevant EIP
-     * section].
-     */
-    function permit(
-        address owner,
-        address spender,
-        uint256 value,
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) external;
-
-    /**
-     * @dev Returns the current nonce for `owner`. This value must be
-     * included whenever a signature is generated for {permit}.
-     *
-     * Every successful call to {permit} increases ``owner``'s nonce by one. This
-     * prevents a signature from being used multiple times.
-     */
-    function nonces(address owner) external view returns (uint256);
-
-    /**
-     * @dev Returns the domain separator used in the encoding of the signature for {permit}, as defined by {EIP712}.
-     */
-    // solhint-disable-next-line func-name-mixedcase
-    function DOMAIN_SEPARATOR() external view returns (bytes32);
-}
-
-
-// File @openzeppelin/contracts/token/ERC20/IERC20.sol@v4.8.0
-
-// License-Identifier: MIT
-// OpenZeppelin Contracts (last updated v4.6.0) (token/ERC20/IERC20.sol)
+// Original license: SPDX_License_Identifier: MIT
+// OpenZeppelin Contracts (last updated v4.9.0) (token/ERC20/IERC20.sol)
 
 pragma solidity ^0.8.0;
 
@@ -2336,18 +2540,14 @@ interface IERC20 {
      *
      * Emits a {Transfer} event.
      */
-    function transferFrom(
-        address from,
-        address to,
-        uint256 amount
-    ) external returns (bool);
+    function transferFrom(address from, address to, uint256 amount) external returns (bool);
 }
 
 
-// File @openzeppelin/contracts/utils/math/SafeMath.sol@v4.8.0
+// File @openzeppelin/contracts/utils/math/SafeMath.sol@v4.9.3
 
-// License-Identifier: MIT
-// OpenZeppelin Contracts (last updated v4.6.0) (utils/math/SafeMath.sol)
+// Original license: SPDX_License_Identifier: MIT
+// OpenZeppelin Contracts (last updated v4.9.0) (utils/math/SafeMath.sol)
 
 pragma solidity ^0.8.0;
 
@@ -2513,11 +2713,7 @@ library SafeMath {
      *
      * - Subtraction cannot overflow.
      */
-    function sub(
-        uint256 a,
-        uint256 b,
-        string memory errorMessage
-    ) internal pure returns (uint256) {
+    function sub(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
         unchecked {
             require(b <= a, errorMessage);
             return a - b;
@@ -2536,11 +2732,7 @@ library SafeMath {
      *
      * - The divisor cannot be zero.
      */
-    function div(
-        uint256 a,
-        uint256 b,
-        string memory errorMessage
-    ) internal pure returns (uint256) {
+    function div(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
         unchecked {
             require(b > 0, errorMessage);
             return a / b;
@@ -2562,11 +2754,7 @@ library SafeMath {
      *
      * - The divisor cannot be zero.
      */
-    function mod(
-        uint256 a,
-        uint256 b,
-        string memory errorMessage
-    ) internal pure returns (uint256) {
+    function mod(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
         unchecked {
             require(b > 0, errorMessage);
             return a % b;
@@ -2577,7 +2765,7 @@ library SafeMath {
 
 // File contracts/utilFunctions.sol
 
-// License-Identifier: Apache-2.0
+// Original license: SPDX_License_Identifier: Apache-2.0
 pragma solidity ^0.8.9;
 
 
@@ -2630,7 +2818,7 @@ library utilFunctions {
 
 // File contracts/rentMarket.sol
 
-// License-Identifier: Apache-2.0
+// Original license: SPDX_License_Identifier: Apache-2.0
 pragma solidity ^0.8.9;
 
 
@@ -2810,18 +2998,7 @@ contract rentMarket is Ownable, Pausable {
         view
         returns (tokenDataIterableMap.tokenData[] memory)
     {
-        return tokenItMap.getAllToken();
-
-        // tokenDataIterableMap.tokenData[]
-        //     memory data = new tokenDataIterableMap.tokenData[](
-        //         tokenItMap.keys.length
-        //     );
-
-        // for (uint256 i = 0; i < tokenItMap.keys.length; i++) {
-        //     data[i] = tokenItMap.data[tokenItMap.keys[i]].data;
-        // }
-
-        // return data;
+        return tokenItMap.getAll();
     }
 
     //*-------------------------------------------------------------------------
@@ -2899,18 +3076,7 @@ contract rentMarket is Ownable, Pausable {
         view
         returns (collectionDataIterableMap.collectionData[] memory)
     {
-        return collectionItMap.getAllCollectionData();
-
-        // collectionDataIterableMap.collectionData[]
-        //     memory data = new collectionDataIterableMap.collectionData[](
-        //         collectionItMap.keys.length
-        //     );
-
-        // for (uint256 i = 0; i < collectionItMap.keys.length; i++) {
-        //     data[i] = collectionItMap.data[collectionItMap.keys[i]].data;
-        // }
-
-        // return data;
+        return collectionItMap.getAll();
     }
 
     /// @dev Return matched collection data with collection address.
@@ -2998,18 +3164,7 @@ contract rentMarket is Ownable, Pausable {
         view
         returns (serviceDataIterableMap.serviceData[] memory)
     {
-        return serviceItMap.getAllServiceData();
-
-        // serviceDataIterableMap.serviceData[]
-        //     memory data = new serviceDataIterableMap.serviceData[](
-        //         serviceItMap.keys.length
-        //     );
-
-        // for (uint256 i = 0; i < serviceItMap.keys.length; i++) {
-        //     data[i] = serviceItMap.data[serviceItMap.keys[i]].data;
-        // }
-
-        // return data;
+        return serviceItMap.getAll();
     }
 
     /// @dev Return matched service data with service address.
@@ -3123,26 +3278,16 @@ contract rentMarket is Ownable, Pausable {
         view
         returns (registerDataIterableMap.registerData[] memory)
     {
-        return registerDataItMap.getAllRegisterData();
+        return registerDataItMap.getAll();
+    }
 
-        // registerDataIterableMap.registerData[]
-        //     memory data = new registerDataIterableMap.registerData[](
-        //         registerDataItMap.keys.length
-        //     );
-
-        // for (uint256 i = 0; i < registerDataItMap.keys.length; i++) {
-        //     data[i] = registerDataItMap.data[registerDataItMap.keys[i]].data;
-        // }
-
-        // // struct registerData {
-        // //     address nftAddress;
-        // //     uint256 tokenId;
-        // //     uint256 rentFee;
-        // //     address feeTokenAddress;
-        // //     uint256 rentFeeByToken;
-        // //     uint256 rentDuration;
-        // // }
-        // return data;
+    /// @dev Return matched registered data with NFT address
+    /// @param nftAddress NFT address
+    /// @return Matched registered data
+    function getRegisterDataByCollection(
+        address nftAddress
+    ) public view returns (registerDataIterableMap.registerData[] memory) {
+        return registerDataItMap.getByCollection(nftAddress);
     }
 
     /// @dev Return matched registered data with NFT address and token ID
@@ -3385,23 +3530,31 @@ contract rentMarket is Ownable, Pausable {
         view
         returns (rentDataIterableMap.rentData[] memory)
     {
-        return rentDataItMap.getAllRentData();
+        return rentDataItMap.getAll();
+    }
 
-        // rentDataIterableMap.rentData[]
-        //     memory data = new rentDataIterableMap.rentData[](
-        //         rentDataItMap.keys.length
-        //     );
+    /// @dev Return matched rented data with NFT address
+    /// @param nftAddress NFT address
+    /// @return Matched rented data
+    function getRentDataByNftAddress(
+        address nftAddress
+    ) public view returns (rentDataIterableMap.rentData[] memory) {
+        return rentDataItMap.getByNftAddress(nftAddress);
+    }
 
-        // for (uint256 i = 0; i < rentDataItMap.keys.length; i++) {
-        //     data[i] = rentDataItMap.data[rentDataItMap.keys[i]].data;
-        // }
-
-        // return data;
+    /// @dev Return matched rented data with rentee address
+    /// @param renteeAddress Rentee address
+    /// @return Matched rented data
+    function getRentDataByRenteeAddress(
+        address renteeAddress
+    ) public view returns (rentDataIterableMap.rentData[] memory) {
+        return rentDataItMap.getByRenteeAddress(renteeAddress);
     }
 
     /// @dev Return matched rented data with NFT address and token ID
     /// @param nftAddress NFT address
     /// @param tokenId token ID
+    /// @param renteeAddress Rentee address
     /// @return Matched rented data
     function getRentData(
         address nftAddress,
@@ -3893,19 +4046,26 @@ contract rentMarket is Ownable, Pausable {
         view
         returns (pendingRentFeeIterableMap.pendingRentFee[] memory)
     {
-        return pendingRentFeeMap.getAllPendingRentFee();
-
-        // pendingRentFeeIterableMap.pendingRentFee[]
-        //     memory data = new pendingRentFeeIterableMap.pendingRentFee[](
-        //         pendingRentFeeMap.keys.length
-        //     );
-
-        // for (uint256 i = 0; i < pendingRentFeeMap.keys.length; i++) {
-        //     data[i] = pendingRentFeeMap.data[pendingRentFeeMap.keys[i]].data;
-        // }
-
-        // return data;
+        return pendingRentFeeMap.getAll();
     }
+
+	//* TODO: Keep size under 24KiB
+    /// @dev Return pending rent fee data with renter address
+    /// @return Pending rent fee data with renter address
+    // function getPendingRentFeeByRenterAddress(
+    //     address renterAddress
+    // ) public view returns (pendingRentFeeIterableMap.pendingRentFee[] memory) {
+    //     return pendingRentFeeMap.getByRenterAddress(renterAddress);
+    // }
+
+	//* TODO: Keep size under 24KiB
+    /// @dev Return pending rent fee data with service address
+    /// @return Pending rent fee data with service address
+    // function getPendingRentFeeByServiceAddress(
+    //     address serviceAddress
+    // ) public view returns (pendingRentFeeIterableMap.pendingRentFee[] memory) {
+    //     return pendingRentFeeMap.getByServiceAddress(serviceAddress);
+    // }
 
     /// @dev Return all account balance data as array type
     /// @return All account balance data as array
@@ -3914,20 +4074,7 @@ contract rentMarket is Ownable, Pausable {
         view
         returns (accountBalanceIterableMap.accountBalance[] memory)
     {
-        return accountBalanceItMap.getAllAccountBalance();
-
-        // accountBalanceIterableMap.accountBalance[]
-        //     memory data = new accountBalanceIterableMap.accountBalance[](
-        //         accountBalanceItMap.keys.length
-        //     );
-
-        // for (uint256 i = 0; i < accountBalanceItMap.keys.length; i++) {
-        //     data[i] = accountBalanceItMap
-        //         .data[accountBalanceItMap.keys[i]]
-        //         .data;
-        // }
-
-        // return data;
+        return accountBalanceItMap.getAll();
     }
 
     /// @dev Return total account accumulated balance value
@@ -3935,17 +4082,7 @@ contract rentMarket is Ownable, Pausable {
     function getTotalAccountBalance(
         address tokenAddress_
     ) public view returns (uint256 totalAccountBalance_) {
-        uint256 totalAccountBalance = 0;
-        accountBalanceIterableMap.accountBalance memory data;
-
-        for (uint256 i = 0; i < accountBalanceItMap.keys.length; i++) {
-            data = accountBalanceItMap.data[accountBalanceItMap.keys[i]].data;
-            if (data.tokenAddress == tokenAddress_) {
-                totalAccountBalance += data.amount;
-            }
-        }
-
-        return totalAccountBalance;
+        return accountBalanceItMap.getTotalBalance(tokenAddress_);
     }
 
     function withdrawMyBalance(
